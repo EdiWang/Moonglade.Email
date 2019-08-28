@@ -8,6 +8,7 @@ namespace Moonglade.Notification.Models
     {
         None = 0,
         GeneralException = 1,
+        InvalidParameter = 2,
         EmailSendingDisabled = 500
     }
 }
