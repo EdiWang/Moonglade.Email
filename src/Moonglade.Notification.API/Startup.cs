@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Moonglade.Notification.Core;
 
 namespace Moonglade.Notification.API
 {
@@ -26,6 +27,7 @@ namespace Moonglade.Notification.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddTransient<IMoongladeNotification, EmailNotification>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
