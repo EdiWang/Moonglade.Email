@@ -16,5 +16,6 @@ namespace Moonglade.Notification.Core
         public string SmtpServer { get; set; }
         public string SmtpUserName { get; set; }
         public string BannedMailDomain { get; set; }
+        public string ApiKey { get; set; }
     }
 }

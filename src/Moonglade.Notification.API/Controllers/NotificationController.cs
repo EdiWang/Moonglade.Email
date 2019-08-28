@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Edi.Practice.RequestResponseModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -30,6 +31,7 @@ namespace Moonglade.Notification.API.Controllers
             return "Hello";
         }
 
+        [Authorize]
         [HttpPost]
         [Route("test")]
         public async Task<Response> SendTestNotification()

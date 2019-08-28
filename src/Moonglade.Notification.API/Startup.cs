@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Moonglade.Notification.API.Authentication;
 using Moonglade.Notification.Core;
 
 namespace Moonglade.Notification.API
@@ -32,6 +33,13 @@ namespace Moonglade.Notification.API
 
             services.AddControllers();
             services.AddTransient<IMoongladeNotification, EmailNotification>();
+
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = ApiKeyAuthenticationOptions.DefaultScheme;
+                    options.DefaultChallengeScheme = ApiKeyAuthenticationOptions.DefaultScheme;
+                })
+                .AddApiKeySupport(options => { });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,6 +70,8 @@ namespace Moonglade.Notification.API
             }
 
             app.UseRouting();
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
