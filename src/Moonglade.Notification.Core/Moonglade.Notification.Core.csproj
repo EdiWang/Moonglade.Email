@@ -10,6 +10,7 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="Edi.Practice.RequestResponseModel" Version="1.2.0" />
     <PackageReference Include="Edi.TemplateEmail.NetStd" Version="2019.1.5" />
   </ItemGroup>
 </Project>
