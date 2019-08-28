@@ -52,9 +52,9 @@ namespace Moonglade.Notification.API.Controllers
         [Authorize]
         [HttpPost]
         [Route("test")]
-        public async Task<Response> SendTestNotification()
+        public async Task<Response> SendTestNotification(NotificationRequest request)
         {
-            var result = await _notification.SendTestNotificationAsync();
+            var result = await _notification.SendTestNotificationAsync(request);
             if (!result.IsSuccess)
             {
                 Response.StatusCode = StatusCodes.Status500InternalServerError;

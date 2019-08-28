@@ -2,7 +2,7 @@
 
 namespace Moonglade.Notification.Models
 {
-    public class CommentReplyNotificationRequest
+    public class CommentReplyNotificationRequest : NotificationRequest
     {
         [Required]
         [EmailAddress]

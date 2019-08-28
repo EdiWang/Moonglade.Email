@@ -51,9 +51,7 @@ namespace Moonglade.Notification.Core
                         Settings.SmtpPassword,
                         Settings.SmtpServerPort)
                     {
-                        EnableSsl = settings.Value.EnableSsl,
-                        EmailDisplayName = settings.Value.EmailDisplayName,
-                        SenderName = settings.Value.EmailDisplayName
+                        EnableSsl = settings.Value.EnableSsl
                     };
 
                     EmailHelper = new EmailHelper(configSource, emailSettings);
@@ -68,13 +66,16 @@ namespace Moonglade.Notification.Core
             }
         }
 
-        public async Task<Response> SendTestNotificationAsync()
+        public async Task<Response> SendTestNotificationAsync(NotificationRequest request)
         {
             try
             {
                 if (IsEnabled)
                 {
                     _logger.LogInformation("Sending test mail");
+
+                    EmailHelper.Settings.EmailDisplayName = request.EmailDisplayName;
+                    EmailHelper.Settings.SenderName = request.EmailDisplayName;
 
                     var pipeline = new TemplatePipeline().Map(nameof(Environment.MachineName), Environment.MachineName)
                                                          .Map(nameof(EmailHelper.Settings.SmtpServer), EmailHelper.Settings.SmtpServer)
@@ -84,7 +85,7 @@ namespace Moonglade.Notification.Core
                                                          .Map(nameof(EmailHelper.Settings.EnableSsl), EmailHelper.Settings.EnableSsl);
 
                     await EmailHelper.ApplyTemplate(MailMesageTypes.TestMail.ToString(), pipeline)
-                                     .SendMailAsync(Settings.AdminEmail);
+                                     .SendMailAsync(request.AdminEmail);
 
                     return new SuccessResponse();
                 }
@@ -102,27 +103,30 @@ namespace Moonglade.Notification.Core
             }
         }
 
-        public async Task SendNewCommentNotificationAsync(NewCommentNotificationRequest comment, Func<string, string> funcCommentContentFormat)
+        public async Task SendNewCommentNotificationAsync(NewCommentNotificationRequest request, Func<string, string> funcCommentContentFormat)
         {
             if (IsEnabled)
             {
                 _logger.LogInformation("Sending NewCommentNotification mail");
 
-                var pipeline = new TemplatePipeline().Map(nameof(comment.Username), comment.Username)
-                                                     .Map(nameof(comment.Email), comment.Email)
-                                                     .Map(nameof(comment.IpAddress), comment.IpAddress)
-                                                     .Map(nameof(comment.CreateOnUtc), comment.CreateOnUtc.ToString("MM/dd/yyyy HH:mm"))
-                                                     .Map(nameof(comment.PostTitle), comment.PostTitle)
-                                                     .Map(nameof(comment.CommentContent), funcCommentContentFormat(comment.CommentContent));
+                EmailHelper.Settings.EmailDisplayName = request.EmailDisplayName;
+                EmailHelper.Settings.SenderName = request.EmailDisplayName;
+
+                var pipeline = new TemplatePipeline().Map(nameof(request.Username), request.Username)
+                                                     .Map(nameof(request.Email), request.Email)
+                                                     .Map(nameof(request.IpAddress), request.IpAddress)
+                                                     .Map(nameof(request.CreateOnUtc), request.CreateOnUtc.ToString("MM/dd/yyyy HH:mm"))
+                                                     .Map(nameof(request.PostTitle), request.PostTitle)
+                                                     .Map(nameof(request.CommentContent), funcCommentContentFormat(request.CommentContent));
 
                 await EmailHelper.ApplyTemplate(MailMesageTypes.NewCommentNotification.ToString(), pipeline)
-                                 .SendMailAsync(Settings.AdminEmail);
+                                 .SendMailAsync(request.AdminEmail);
             }
         }
 
-        public async Task SendCommentReplyNotificationAsync(CommentReplyNotificationRequest model)
+        public async Task SendCommentReplyNotificationAsync(CommentReplyNotificationRequest request)
         {
-            if (string.IsNullOrWhiteSpace(model.Email))
+            if (string.IsNullOrWhiteSpace(request.Email))
             {
                 return;
             }
@@ -131,31 +135,37 @@ namespace Moonglade.Notification.Core
             {
                 _logger.LogInformation("Sending AdminReplyNotification mail");
 
-                var pipeline = new TemplatePipeline().Map(nameof(model.ReplyContent), model.ReplyContent)
-                                                     .Map("RouteLink", model.PostLink)
-                                                     .Map("PostTitle", model.Title)
-                                                     .Map(nameof(model.CommentContent), model.CommentContent);
+                EmailHelper.Settings.EmailDisplayName = request.EmailDisplayName;
+                EmailHelper.Settings.SenderName = request.EmailDisplayName;
+
+                var pipeline = new TemplatePipeline().Map(nameof(request.ReplyContent), request.ReplyContent)
+                                                     .Map("RouteLink", request.PostLink)
+                                                     .Map("PostTitle", request.Title)
+                                                     .Map(nameof(request.CommentContent), request.CommentContent);
 
                 await EmailHelper.ApplyTemplate(MailMesageTypes.AdminReplyNotification.ToString(), pipeline)
-                                 .SendMailAsync(model.Email);
+                                 .SendMailAsync(request.Email);
             }
         }
 
-        public async Task SendPingNotificationAsync(PingNotificationRequest receivedPingback)
+        public async Task SendPingNotificationAsync(PingNotificationRequest request)
         {
             if (IsEnabled)
             {
-                _logger.LogInformation($"Sending BeingPinged mail for post '{receivedPingback.TargetPostTitle}'");
+                _logger.LogInformation($"Sending BeingPinged mail for post '{request.TargetPostTitle}'");
 
-                var pipeline = new TemplatePipeline().Map(nameof(receivedPingback.TargetPostTitle), receivedPingback.TargetPostTitle)
-                                                     .Map(nameof(receivedPingback.PingTimeUtc), receivedPingback.PingTimeUtc)
-                                                     .Map(nameof(receivedPingback.Domain), receivedPingback.Domain)
-                                                     .Map(nameof(receivedPingback.SourceIp), receivedPingback.SourceIp)
-                                                     .Map(nameof(receivedPingback.SourceTitle), receivedPingback.SourceTitle)
-                                                     .Map(nameof(receivedPingback.SourceUrl), receivedPingback.SourceUrl);
+                EmailHelper.Settings.EmailDisplayName = request.EmailDisplayName;
+                EmailHelper.Settings.SenderName = request.EmailDisplayName;
+
+                var pipeline = new TemplatePipeline().Map(nameof(request.TargetPostTitle), request.TargetPostTitle)
+                                                     .Map(nameof(request.PingTimeUtc), request.PingTimeUtc)
+                                                     .Map(nameof(request.Domain), request.Domain)
+                                                     .Map(nameof(request.SourceIp), request.SourceIp)
+                                                     .Map(nameof(request.SourceTitle), request.SourceTitle)
+                                                     .Map(nameof(request.SourceUrl), request.SourceUrl);
 
                 await EmailHelper.ApplyTemplate(MailMesageTypes.BeingPinged.ToString(), pipeline)
-                    .SendMailAsync(Settings.AdminEmail);
+                    .SendMailAsync(request.AdminEmail);
             }
         }
     }

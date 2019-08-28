@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Moonglade.Notification.Models
 {
-    public class NewCommentNotificationRequest
+    public class NewCommentNotificationRequest : NotificationRequest
     {
         [Required]
         public string Username { get; set; }
