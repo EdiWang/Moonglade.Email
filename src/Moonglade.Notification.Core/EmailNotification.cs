@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Edi.Practice.RequestResponseModel;
 using Edi.TemplateEmail.NetStd;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
@@ -23,17 +22,12 @@ namespace Moonglade.Notification.Core
 
         public EmailNotification(
             ILogger<EmailNotification> logger,
-            IOptions<AppSettings> settings,
-            IHostEnvironment env)
+            IOptions<AppSettings> settings)
         {
             _logger = logger;
             Settings = settings.Value;
 
             IsEnabled = Settings.EnableEmailSending;
-            if (env.IsDevelopment() && settings.Value.DisableEmailSendingInDevelopment)
-            {
-                IsEnabled = false;
-            }
 
             if (IsEnabled)
             {
