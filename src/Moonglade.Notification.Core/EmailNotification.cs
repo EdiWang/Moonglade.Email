@@ -18,19 +18,17 @@ namespace Moonglade.Notification.Core
 
         private readonly ILogger<EmailNotification> _logger;
 
-        private readonly INotificationConfig _blogConfig;
+        public AppSettings Settings { get; set; }
 
         public EmailNotification(
             ILogger<EmailNotification> logger,
             IOptions<AppSettings> settings,
-            IHostEnvironment env,
-            INotificationConfig blogConfig)
+            IHostEnvironment env)
         {
             _logger = logger;
+            Settings = settings.Value;
 
-            _blogConfig = blogConfig;
-
-            IsEnabled = _blogConfig.EmailSettings.EnableEmailSending;
+            IsEnabled = Settings.EnableEmailSending;
             if (env.IsDevelopment() && settings.Value.DisableEmailSendingInDevelopment)
             {
                 IsEnabled = false;
@@ -46,15 +44,15 @@ namespace Moonglade.Notification.Core
 
                 if (EmailHelper == null)
                 {
-                    var emailSettings = new Edi.TemplateEmail.NetStd.EmailSettings(
-                        _blogConfig.EmailSettings.SmtpServer,
-                        _blogConfig.EmailSettings.SmtpUserName,
-                        _blogConfig.EmailSettings.SmtpClearPassword,
-                        _blogConfig.EmailSettings.SmtpServerPort)
+                    var emailSettings = new EmailSettings(
+                        Settings.SmtpServer,
+                        Settings.SmtpUserName,
+                        Settings.SmtpPassword,
+                        Settings.SmtpServerPort)
                     {
-                        EnableSsl = _blogConfig.EmailSettings.EnableSsl,
-                        EmailDisplayName = _blogConfig.EmailSettings.EmailDisplayName,
-                        SenderName = _blogConfig.EmailSettings.EmailDisplayName
+                        EnableSsl = settings.Value.EnableSsl,
+                        EmailDisplayName = settings.Value.EmailDisplayName,
+                        SenderName = settings.Value.EmailDisplayName
                     };
 
                     EmailHelper = new EmailHelper(configSource, emailSettings);
@@ -85,7 +83,7 @@ namespace Moonglade.Notification.Core
                                                          .Map(nameof(EmailHelper.Settings.EnableSsl), EmailHelper.Settings.EnableSsl);
 
                     await EmailHelper.ApplyTemplate(MailMesageTypes.TestMail.ToString(), pipeline)
-                                     .SendMailAsync(_blogConfig.EmailSettings.AdminEmail);
+                                     .SendMailAsync(Settings.AdminEmail);
 
                     return new SuccessResponse();
                 }
@@ -117,7 +115,7 @@ namespace Moonglade.Notification.Core
                                                      .Map(nameof(comment.CommentContent), funcCommentContentFormat(comment.CommentContent));
 
                 await EmailHelper.ApplyTemplate(MailMesageTypes.NewCommentNotification.ToString(), pipeline)
-                                 .SendMailAsync(_blogConfig.EmailSettings.AdminEmail);
+                                 .SendMailAsync(Settings.AdminEmail);
             }
         }
 
@@ -156,7 +154,7 @@ namespace Moonglade.Notification.Core
                                                      .Map(nameof(receivedPingback.SourceUrl), receivedPingback.SourceUrl);
 
                 await EmailHelper.ApplyTemplate(MailMesageTypes.BeingPinged.ToString(), pipeline)
-                    .SendMailAsync(_blogConfig.EmailSettings.AdminEmail);
+                    .SendMailAsync(Settings.AdminEmail);
             }
         }
     }
