@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Moonglade.Notification.Core\Moonglade.Notification.Core.csproj" />
   </ItemGroup>
 
 </Project>
