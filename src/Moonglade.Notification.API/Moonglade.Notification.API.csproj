@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -7,6 +7,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Moonglade.Notification.Core\Moonglade.Notification.Core.csproj" />
     <ProjectReference Include="..\Moonglade.Notification.Models\Moonglade.Notification.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="mailConfiguration.xml" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>

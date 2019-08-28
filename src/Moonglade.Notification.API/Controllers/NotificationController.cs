@@ -31,7 +31,8 @@ namespace Moonglade.Notification.API.Controllers
         }
 
         [HttpPost]
-        public async Task<Response> SendTestNotificationAsync()
+        [Route("test")]
+        public async Task<Response> SendTestNotification()
         {
             return await _notification.SendTestNotificationAsync();
         }

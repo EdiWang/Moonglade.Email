@@ -16,6 +16,8 @@ namespace Moonglade.Notification.API
 {
     public class Startup
     {
+        private ILogger<Startup> _logger;
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -26,22 +28,40 @@ namespace Moonglade.Notification.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
+
             services.AddControllers();
             services.AddTransient<IMoongladeNotification, EmailNotification>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
+            _logger = logger;
+            _logger.LogInformation($"Moonglade.Notification.API Version {Utils.AppVersion}\n" +
+                                   "--------------------------------------------------------\n" +
+                                   $" Directory: {System.Environment.CurrentDirectory} \n" +
+                                   $" x64Process: {System.Environment.Is64BitProcess} \n" +
+                                   $" OSVersion: {System.Runtime.InteropServices.RuntimeInformation.OSDescription} \n" +
+                                   $" UserName: {System.Environment.UserName} \n" +
+                                   "--------------------------------------------------------");
+
+            var baseDir = env.ContentRootPath;
+            AppDomain.CurrentDomain.SetData(Constants.AppBaseDirectory, baseDir);
+
             if (env.IsDevelopment())
             {
+                _logger.LogWarning("Moonglade.Notification.API is running in DEBUG.");
                 app.UseDeveloperExceptionPage();
             }
-
-            app.UseHttpsRedirection();
+            else
+            {
+                app.UseStatusCodePages();
+                app.UseHsts();
+                app.UseHttpsRedirection();
+            }
 
             app.UseRouting();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
