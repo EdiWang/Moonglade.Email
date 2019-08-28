@@ -13,7 +13,7 @@ namespace Moonglade.Notification.Core
 
         Task SendNewCommentNotificationAsync(NewCommentNotificationRequest comment, Func<string, string> funcCommentContentFormat);
 
-        Task SendCommentReplyNotificationAsync(CommentReplyNotificationRequest model, string postLink);
+        Task SendCommentReplyNotificationAsync(CommentReplyNotificationRequest model);
 
         Task SendPingNotificationAsync(PingNotificationRequest receivedPingback);
     }

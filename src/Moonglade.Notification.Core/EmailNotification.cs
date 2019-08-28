@@ -120,7 +120,7 @@ namespace Moonglade.Notification.Core
             }
         }
 
-        public async Task SendCommentReplyNotificationAsync(CommentReplyNotificationRequest model, string postLink)
+        public async Task SendCommentReplyNotificationAsync(CommentReplyNotificationRequest model)
         {
             if (string.IsNullOrWhiteSpace(model.Email))
             {
@@ -132,7 +132,7 @@ namespace Moonglade.Notification.Core
                 _logger.LogInformation("Sending AdminReplyNotification mail");
 
                 var pipeline = new TemplatePipeline().Map(nameof(model.ReplyContent), model.ReplyContent)
-                                                     .Map("RouteLink", postLink)
+                                                     .Map("RouteLink", model.PostLink)
                                                      .Map("PostTitle", model.Title)
                                                      .Map(nameof(model.CommentContent), model.CommentContent);
 
