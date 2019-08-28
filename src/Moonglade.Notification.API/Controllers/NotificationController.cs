@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Edi.Practice.RequestResponseModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Moonglade.Notification.Core;
 
 namespace Moonglade.Notification.API.Controllers
 {
@@ -14,15 +16,24 @@ namespace Moonglade.Notification.API.Controllers
     {
         private readonly ILogger<NotificationController> _logger;
 
-        public NotificationController(ILogger<NotificationController> logger)
+        private readonly IMoongladeNotification _notification;
+
+        public NotificationController(ILogger<NotificationController> logger, IMoongladeNotification notification)
         {
             _logger = logger;
+            _notification = notification;
         }
 
         [HttpGet]
         public string Get()
         {
             return "Hello";
+        }
+
+        [HttpPost]
+        public async Task<Response> SendTestNotificationAsync()
+        {
+            return await _notification.SendTestNotificationAsync();
         }
     }
 }
