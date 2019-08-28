@@ -20,7 +20,14 @@ namespace Moonglade.Notification.API
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.CaptureStartupErrors(true)
+                              .ConfigureKestrel(c => c.AddServerHeader = false)
+                              .UseIISIntegration()
+                              .UseStartup<Startup>()
+                              .ConfigureLogging(logging =>
+                              {
+                                  logging.AddAzureWebAppDiagnostics();
+                              });
                 });
     }
 }

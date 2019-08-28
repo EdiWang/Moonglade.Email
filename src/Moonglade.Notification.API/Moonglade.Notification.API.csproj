@@ -2,11 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Authors>Edi Wang</Authors>
+    <Company>edi.wang</Company>
+    <AspNetCoreModuleName>AspNetCoreModuleV2</AspNetCoreModuleName>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Moonglade.Notification.Core\Moonglade.Notification.Core.csproj" />
     <ProjectReference Include="..\Moonglade.Notification.Models\Moonglade.Notification.Models.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="3.0.0-preview8.19405.4" />
   </ItemGroup>
 
   <ItemGroup>

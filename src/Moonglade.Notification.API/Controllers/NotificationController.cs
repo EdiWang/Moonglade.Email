@@ -28,7 +28,7 @@ namespace Moonglade.Notification.API.Controllers
         [HttpGet]
         public string Get()
         {
-            return "Hello";
+            return $"Moonglade.Notification.API Version {Utils.AppVersion}";
         }
 
         [Authorize]
