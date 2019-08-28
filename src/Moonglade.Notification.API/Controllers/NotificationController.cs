@@ -70,11 +70,6 @@ namespace Moonglade.Notification.API.Controllers
         {
             return await TryExecuteAsync(async () =>
             {
-                if (!ModelState.IsValid)
-                {
-                    //return BadRequest(ModelState);
-                }
-
                 await _notification.SendNewCommentNotificationAsync(comment, Utils.MdContentToHtml);
                 return new SuccessResponse();
             });
