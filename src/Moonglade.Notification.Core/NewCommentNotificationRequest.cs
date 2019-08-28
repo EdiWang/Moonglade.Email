@@ -6,5 +6,16 @@ namespace Moonglade.Notification.Core
 {
     public class NewCommentNotificationRequest
     {
+        public string Username { get; set; }
+
+        public string Email { get; set; }
+
+        public string IpAddress { get; set; }
+
+        public string PostTitle { get; set; }
+
+        public string CommentContent { get; set; }
+
+        public DateTime CreateOnUtc { get; set; }
     }
 }
