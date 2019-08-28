@@ -1,4 +1,4 @@
-﻿namespace Moonglade.Notification.Core
+﻿namespace Moonglade.Notification.Models
 {
     public class CommentReplyNotificationRequest
     {

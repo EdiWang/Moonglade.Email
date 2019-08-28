@@ -15,4 +15,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.0.0-preview8.19405.4" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0-preview8.19405.4" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Moonglade.Notification.Models\Moonglade.Notification.Models.csproj" />
+  </ItemGroup>
 </Project>

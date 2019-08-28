@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Edi.Practice.RequestResponseModel;
+using Moonglade.Notification.Models;
 
 namespace Moonglade.Notification.Core
 {

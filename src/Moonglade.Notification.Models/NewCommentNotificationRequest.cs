@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Moonglade.Notification.Core
+namespace Moonglade.Notification.Models
 {
     public class NewCommentNotificationRequest
     {

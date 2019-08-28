@@ -1,6 +1,6 @@
-﻿namespace Moonglade.Notification.Core
+﻿namespace Moonglade.Notification.Models
 {
-    internal enum MailMesageTypes
+    public enum MailMesageTypes
     {
         TestMail,
         NewCommentNotification,
