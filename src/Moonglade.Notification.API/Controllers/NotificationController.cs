@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Edi.Practice.RequestResponseModel;
 using Microsoft.AspNetCore.Authorization;
@@ -25,6 +27,21 @@ namespace Moonglade.Notification.API.Controllers
             _logger = logger;
             _notification = notification;
         }
+
+        private async Task<Response> TryExecuteAsync(Func<Task<Response>> func, [CallerMemberName] string callerMemberName = "", object keyParameter = null)
+        {
+            try
+            {
+                return await func();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"Error executing {callerMemberName}({keyParameter})");
+                Response.StatusCode = StatusCodes.Status500InternalServerError;
+                return new FailedResponse((int)ResponseFailureCode.GeneralException, e.Message);
+            }
+        }
+
 
         [HttpGet]
         public string Get()
@@ -51,23 +68,16 @@ namespace Moonglade.Notification.API.Controllers
         [Route("newcomment")]
         public async Task<Response> SendNewCommentNotification(NewCommentNotificationRequest comment)
         {
-            try
+            return await TryExecuteAsync(async () =>
             {
-                // TODO: Validate parameters
+                if (!ModelState.IsValid)
+                {
+                    //return BadRequest(ModelState);
+                }
 
                 await _notification.SendNewCommentNotificationAsync(comment, Utils.MdContentToHtml);
                 return new SuccessResponse();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, nameof(SendNewCommentNotification));
-                Response.StatusCode = StatusCodes.Status500InternalServerError;
-                return new FailedResponse((int)ResponseFailureCode.GeneralException)
-                {
-                    Exception = e,
-                    Message = e.Message
-                };
-            }
+            });
         }
 
         [Authorize]
@@ -75,47 +85,23 @@ namespace Moonglade.Notification.API.Controllers
         [Route("commentreply")]
         public async Task<Response> SendCommentReplyNotification(CommentReplyNotificationRequest commentReply)
         {
-            try
+            return await TryExecuteAsync(async () =>
             {
-                // TODO: Validate parameters
-
                 await _notification.SendCommentReplyNotificationAsync(commentReply);
                 return new SuccessResponse();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, nameof(SendCommentReplyNotification));
-                Response.StatusCode = StatusCodes.Status500InternalServerError;
-                return new FailedResponse((int)ResponseFailureCode.GeneralException)
-                {
-                    Exception = e,
-                    Message = e.Message
-                };
-            }
+            });
         }
 
         [Authorize]
         [HttpPost]
-        [Route("commentreply")]
+        [Route("ping")]
         public async Task<Response> SendPingNotification(PingNotificationRequest receivedPingback)
         {
-            try
+            return await TryExecuteAsync(async () =>
             {
-                // TODO: Validate parameters
-
                 await _notification.SendPingNotificationAsync(receivedPingback);
                 return new SuccessResponse();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, nameof(SendPingNotification));
-                Response.StatusCode = StatusCodes.Status500InternalServerError;
-                return new FailedResponse((int)ResponseFailureCode.GeneralException)
-                {
-                    Exception = e,
-                    Message = e.Message
-                };
-            }
+            });
         }
     }
 }
