@@ -11,6 +11,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Moonglade.Notification.Core\Moonglade.Notification.Core.csproj" />
     <ProjectReference Include="..\Moonglade.Notification.Models\Moonglade.Notification.Models.csproj" />
+    <PackageReference Include="AspNetCoreRateLimit" Version="3.0.5" />
     <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="3.0.0-preview8.19405.4" />
   </ItemGroup>
 
