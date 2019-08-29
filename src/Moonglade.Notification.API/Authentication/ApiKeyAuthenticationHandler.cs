@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
+using Microsoft.AspNetCore.Authentication;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
@@ -41,6 +40,11 @@ namespace Moonglade.Notification.API.Authentication
             if (apiKeyHeaderValues.Count == 0 || string.IsNullOrWhiteSpace(providedApiKey))
             {
                 return await Task.FromResult(AuthenticateResult.NoResult());
+            }
+
+            if (null == Settings.ApiKeys || !Settings.ApiKeys.Any())
+            {
+                throw new ArgumentNullException("Settings.ApiKeys", "No API Keys configured.");
             }
 
             IReadOnlyDictionary<string, ApiKey> apiKeysDic = Settings.ApiKeys.ToDictionary(x => x.Key, x => x);

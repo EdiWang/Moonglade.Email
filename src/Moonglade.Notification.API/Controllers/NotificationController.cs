@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Edi.Practice.RequestResponseModel;
@@ -11,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moonglade.Notification.Core;
 using Moonglade.Notification.Models;
-using Org.BouncyCastle.Bcpg;
 
 namespace Moonglade.Notification.API.Controllers
 {
