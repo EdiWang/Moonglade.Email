@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using Moonglade.Notification.Core;
+using Moonglade.Notification.Models;
 
 namespace Moonglade.Notification.API.Authentication
 {
@@ -20,10 +21,10 @@ namespace Moonglade.Notification.API.Authentication
         public AppSettings Settings { get; set; }
 
         public ApiKeyAuthenticationHandler(
-            IOptionsMonitor<ApiKeyAuthenticationOptions> options, 
-            ILoggerFactory logger, 
-            UrlEncoder encoder, 
-            ISystemClock clock, 
+            IOptionsMonitor<ApiKeyAuthenticationOptions> options,
+            ILoggerFactory logger,
+            UrlEncoder encoder,
+            ISystemClock clock,
             IOptions<AppSettings> settings) : base(options, logger, encoder, clock)
         {
             Settings = settings.Value;
@@ -42,13 +43,17 @@ namespace Moonglade.Notification.API.Authentication
                 return await Task.FromResult(AuthenticateResult.NoResult());
             }
 
-            if (Settings.ApiKey == providedApiKey)
+            IReadOnlyDictionary<string, ApiKey> apiKeysDic = Settings.ApiKeys.ToDictionary(x => x.Key, x => x);
+
+            if (apiKeysDic.ContainsKey(providedApiKey))
             {
+                var apiKey = apiKeysDic[providedApiKey];
+
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, "Admin"),
-                    new Claim(ClaimTypes.Role, "Administrators")
+                    new Claim(ClaimTypes.Name, apiKey.Owner)
                 };
+                claims.AddRange(apiKey.Roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
                 var identity = new ClaimsIdentity(claims, Options.AuthenticationType);
                 var identities = new List<ClaimsIdentity> { identity };

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Moonglade.Notification.Models;
 
 namespace Moonglade.Notification.Core
 {
@@ -12,6 +13,6 @@ namespace Moonglade.Notification.Core
         public string SmtpPassword { get; set; }
         public string SmtpServer { get; set; }
         public string SmtpUserName { get; set; }
-        public string ApiKey { get; set; }
+        public IReadOnlyCollection<ApiKey> ApiKeys { get; set; }
     }
 }
