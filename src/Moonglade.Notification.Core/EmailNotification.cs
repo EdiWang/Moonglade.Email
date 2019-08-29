@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Edi.Practice.RequestResponseModel;
 using Edi.TemplateEmail.NetStd;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
@@ -22,9 +23,11 @@ namespace Moonglade.Notification.Core
 
         public EmailNotification(
             ILogger<EmailNotification> logger,
-            IOptions<AppSettings> settings)
+            IOptions<AppSettings> settings, 
+            IConfiguration configuration)
         {
             _logger = logger;
+
             Settings = settings.Value;
 
             IsEnabled = Settings.EnableEmailSending;
@@ -42,7 +45,7 @@ namespace Moonglade.Notification.Core
                     var emailSettings = new EmailSettings(
                         Settings.SmtpServer,
                         Settings.SmtpUserName,
-                        Settings.SmtpPassword,
+                        configuration[configuration["AzureKeyVault:SmtpPasswordKey"]],
                         Settings.SmtpServerPort)
                     {
                         EnableSsl = settings.Value.EnableSsl
