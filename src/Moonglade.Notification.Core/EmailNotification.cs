@@ -100,7 +100,7 @@ namespace Moonglade.Notification.Core
             }
         }
 
-        public async Task SendNewCommentNotificationAsync(NewCommentNotificationRequest request, Func<string, string> funcCommentContentFormat)
+        public async Task SendNewCommentNotificationAsync(NewCommentNotificationRequest request)
         {
             if (IsEnabled)
             {
@@ -114,7 +114,7 @@ namespace Moonglade.Notification.Core
                                                      .Map(nameof(request.IpAddress), request.IpAddress)
                                                      .Map(nameof(request.CreateOnUtc), request.CreateOnUtc.ToString("MM/dd/yyyy HH:mm"))
                                                      .Map(nameof(request.PostTitle), request.PostTitle)
-                                                     .Map(nameof(request.CommentContent), funcCommentContentFormat(request.CommentContent));
+                                                     .Map(nameof(request.CommentContent), request.CommentContent);
 
                 await EmailHelper.ApplyTemplate(MailMesageTypes.NewCommentNotification.ToString(), pipeline)
                                  .SendMailAsync(request.AdminEmail);
