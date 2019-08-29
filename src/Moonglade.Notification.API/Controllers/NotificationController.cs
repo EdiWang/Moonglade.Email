@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moonglade.Notification.Core;
 using Moonglade.Notification.Models;
+using Org.BouncyCastle.Bcpg;
 
 namespace Moonglade.Notification.API.Controllers
 {
@@ -36,12 +37,11 @@ namespace Moonglade.Notification.API.Controllers
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Error executing {callerMemberName}({keyParameter})");
+                _logger.LogError(e, $"Error executing {callerMemberName}({keyParameter}). Requested by '{User.Identity.Name}'");
                 Response.StatusCode = StatusCodes.Status500InternalServerError;
                 return new FailedResponse((int)ResponseFailureCode.GeneralException, e.Message);
             }
         }
-
 
         [HttpGet]
         public string Get()
