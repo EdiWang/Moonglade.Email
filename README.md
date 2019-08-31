@@ -79,7 +79,7 @@ az keyvault set-policy --name '<YourKeyVaultName>' --object-id <PrincipalId> --s
 
 AppSettings section defines the email server configuration. Change the values as you need.
 
-```
+```json
 "EnableEmailSending": true,
 "EnableSsl": true,
 "SmtpServerPort": 587,
@@ -91,4 +91,18 @@ AppSettings section defines the email server configuration. Change the values as
 
 ### ApiKeys
 
-// TODO
+You must assign owners and their API keys before you can call the API.
+
+Define owners, roles, and API keys in AppSettings:ApiKeys
+
+*Roles are currently not used, in the future, Administrators will have management APIs while users can only make notification requests.*
+
+```json
+"ApiKeys": [
+  {
+    "Id": 1,
+    "Owner": "https-edi.wang",
+    "Key": "{AZURE-APPSVC-ENV}",
+    "Roles": [ "Administrators" ]
+  }
+```
