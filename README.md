@@ -18,9 +18,11 @@ Tools | Alternative
 
 ### Setup Azure Key Vault
 
-This API needs an pre-configured email account to send emaills. The account name and server infomations can be configured in appsettings.json or from environment variables. However, the password must be stored in Azure Key Vault to ensure security. Thus, you have to create an Azure Key Vault first.
+This API needs a pre-configured email account to send emaills. The account name and server infomations can be configured in appsettings.json or from environment variables. However, the password must be stored in Azure Key Vault to ensure security. Thus, you have to create an Azure Key Vault first.
 
-To be cool, please use Azure Cloud Shell.
+To be cool, please use Azure Cloud Shell. 
+
+You can also do it in [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest)
 
 ```bash
 az keyvault create --name "<YourKeyVaultName>" --resource-group "<YourResourceGroupName>" --location "East US"
@@ -75,7 +77,17 @@ az keyvault set-policy --name '<YourKeyVaultName>' --object-id <PrincipalId> --s
 
 ### Email Server
 
-// TODO
+AppSettings section defines the email server configuration. Change the values as you need.
+
+```
+"EnableEmailSending": true,
+"EnableSsl": true,
+"SmtpServerPort": 587,
+"AdminEmail": "{AZURE-APPSVC-ENV}",
+"EmailDisplayName": "{AZURE-APPSVC-ENV}",
+"SmtpServer": "{AZURE-APPSVC-ENV}",
+"SmtpUserName": "{AZURE-APPSVC-ENV}",
+```
 
 ### ApiKeys
 
