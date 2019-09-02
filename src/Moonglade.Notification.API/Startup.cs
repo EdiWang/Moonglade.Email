@@ -70,7 +70,7 @@ namespace Moonglade.Notification.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger, TelemetryConfiguration configuration)
         {
             _logger = logger;
             _logger.LogInformation($"Moonglade.Notification.API Version {Utils.AppVersion}\n" +
@@ -88,7 +88,7 @@ namespace Moonglade.Notification.API
             {
                 _logger.LogWarning("Application is running under DEBUG mode. Application Insights disabled.");
 
-                TelemetryConfiguration.CreateDefault().DisableTelemetry = true;
+                configuration.DisableTelemetry = true;
                 TelemetryDebugWriter.IsTracingDisabled = true;
             }
 
