@@ -1,7 +1,5 @@
 using System;
 using AspNetCoreRateLimit;
-using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -70,7 +68,7 @@ namespace Moonglade.Notification.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger, TelemetryConfiguration configuration)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
             _logger = logger;
             _logger.LogInformation($"Moonglade.Notification.API Version {Utils.AppVersion}\n" +
@@ -83,14 +81,6 @@ namespace Moonglade.Notification.API
 
             var baseDir = env.ContentRootPath;
             AppDomain.CurrentDomain.SetData(Constants.AppBaseDirectory, baseDir);
-
-            if (!env.IsProduction())
-            {
-                _logger.LogWarning("Application is running under DEBUG mode. Application Insights disabled.");
-
-                configuration.DisableTelemetry = true;
-                TelemetryDebugWriter.IsTracingDisabled = true;
-            }
 
             if (env.IsDevelopment())
             {
