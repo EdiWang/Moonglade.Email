@@ -25,7 +25,7 @@ To be cool, please use Azure Cloud Shell.
 You can also do it in [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest)
 
 ```bash
-az keyvault create --name "<YourKeyVaultName>" --resource-group "<YourResourceGroupName>" --location "East US"
+az keyvault create --name "<YourKeyVaultName>" --resource-group "<YourResourceGroupName>" --location "<Region Name>"
 ```
 
 Set the email account password which the API is going to use to send emails.
