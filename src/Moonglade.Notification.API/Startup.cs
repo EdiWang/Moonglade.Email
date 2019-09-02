@@ -18,9 +18,12 @@ namespace Moonglade.Notification.API
     {
         private ILogger<Startup> _logger;
 
-        public Startup(IConfiguration configuration)
+        public IWebHostEnvironment Environment { get; }
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            Environment = env;
         }
 
         public IConfiguration Configuration { get; }
@@ -42,6 +45,11 @@ namespace Moonglade.Notification.API
 
             services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
 
+            if (Environment.IsProduction())
+            {
+                services.AddApplicationInsightsTelemetry();
+            }
+
             services.AddControllers();
             services.AddTransient<IMoongladeNotification, EmailNotification>();
 
@@ -59,8 +67,6 @@ namespace Moonglade.Notification.API
 
             // configuration (resolvers, counter key builders)
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
-
-            services.AddApplicationInsightsTelemetry();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,13 +84,16 @@ namespace Moonglade.Notification.API
             var baseDir = env.ContentRootPath;
             AppDomain.CurrentDomain.SetData(Constants.AppBaseDirectory, baseDir);
 
-            if (env.IsDevelopment())
+            if (!env.IsProduction())
             {
-                _logger.LogWarning("Moonglade.Notification.API is running in DEBUG.");
+                _logger.LogWarning("Application is running under DEBUG mode. Application Insights disabled.");
 
                 TelemetryConfiguration.CreateDefault().DisableTelemetry = true;
                 TelemetryDebugWriter.IsTracingDisabled = true;
+            }
 
+            if (env.IsDevelopment())
+            {
                 app.UseDeveloperExceptionPage();
             }
             else
