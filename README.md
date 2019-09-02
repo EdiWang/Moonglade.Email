@@ -89,6 +89,14 @@ AppSettings section defines the email server configuration. Change the values as
 "SmtpUserName": "{AZURE-APPSVC-ENV}",
 ```
 
+You can use Azure CLI to setup these values for App Service:
+
+For example:
+
+```bash
+az webapp config appsettings set -g <Resource Group Name> -n <API App Name> --settings AppSettings:AdminEmail=<Admin Email>
+```
+
 ### ApiKeys
 
 You must assign owners and their API keys before you can call the API.
