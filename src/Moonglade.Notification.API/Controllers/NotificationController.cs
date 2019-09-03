@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Edi.Practice.RequestResponseModel;
@@ -37,30 +36,37 @@ namespace Moonglade.Notification.API.Controllers
         [HttpPost]
         public async Task<Response> Post(NotificationRequest request)
         {
+            T GetModelFromPayload<T>() where T : class
+            {
+                var json = request.Payload.ToString();
+                return JsonSerializer.Deserialize<T>(json);
+            }
+
             try
             {
+                _notification.AdminEmail = request.AdminEmail;
+                _notification.EmailDisplayName = request.EmailDisplayName;
                 switch (request.MessageType)
                 {
                     case MailMesageTypes.TestMail:
-                        var result = await _notification.SendTestNotificationAsync(request);
-                        if (!result.IsSuccess)
-                        {
-                            Response.StatusCode = StatusCodes.Status500InternalServerError;
-                        }
-                        return result;
-                    case MailMesageTypes.NewCommentNotification:
-                        var json = request.Payload.ToString();
-                        var model = JsonSerializer.Deserialize<NewCommentNotificationRequest>(json);
-                        _ = Task.Run(async () => await _notification.SendNewCommentNotificationAsync(model));
+                        await _notification.SendTestNotificationAsync();
                         return new SuccessResponse();
-                    //case MailMesageTypes.AdminReplyNotification:
-                    //    _ = Task.Run(async () => await _notification.SendCommentReplyNotificationAsync(
-                    //        request.Payload as CommentReplyNotificationRequest));
-                    //    return new SuccessResponse();
-                    //case MailMesageTypes.BeingPinged:
-                    //    _ = Task.Run(async () => await _notification.SendPingNotificationAsync(
-                    //        request.Payload as PingNotificationRequest));
-                    //    return new SuccessResponse();
+
+                    case MailMesageTypes.NewCommentNotification:
+                        var commentPayload = GetModelFromPayload<NewCommentPayload>();
+                        _ = Task.Run(async () => await _notification.SendNewCommentNotificationAsync(commentPayload));
+                        return new SuccessResponse();
+
+                    case MailMesageTypes.AdminReplyNotification:
+                        var replyPayload = GetModelFromPayload<CommentReplyPayload>();
+                        _ = Task.Run(async () => await _notification.SendCommentReplyNotificationAsync(replyPayload));
+                        return new SuccessResponse();
+
+                    case MailMesageTypes.BeingPinged:
+                        var pingPayload = GetModelFromPayload<PingPayload>();
+                        _ = Task.Run(async () => await _notification.SendPingNotificationAsync(pingPayload));
+                        return new SuccessResponse();
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

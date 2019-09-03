@@ -49,7 +49,7 @@ namespace Moonglade.Notification.API
             }
 
             services.AddControllers();
-            services.AddTransient<IMoongladeNotification, EmailNotification>();
+            services.AddTransient<IMoongladeNotification, EmailHandler>();
 
             services.AddAuthentication(options =>
                 {

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Moonglade.Notification.Models
 {
-    public class PingNotificationRequest : NotificationRequest
+    public class PingPayload
     {
         [Required]
         public string TargetPostTitle { get; set; }
