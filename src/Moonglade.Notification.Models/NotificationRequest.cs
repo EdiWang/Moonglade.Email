@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using System.Text.Json;
 
 namespace Moonglade.Notification.Models
 {
@@ -17,6 +18,6 @@ namespace Moonglade.Notification.Models
         [Required]
         public MailMesageTypes MessageType { get; set; }
 
-        public object Payload { get; set; }
+        public JsonElement Payload { get; set; }
     }
 }

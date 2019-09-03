@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Edi.Practice.RequestResponseModel;
 using Microsoft.AspNetCore.Authorization;
@@ -48,18 +49,18 @@ namespace Moonglade.Notification.API.Controllers
                         }
                         return result;
                     case MailMesageTypes.NewCommentNotification:
-                        // use automapper to convert this?
-                        var model = (NewCommentNotificationRequest) request.Payload;
+                        var json = request.Payload.ToString();
+                        var model = JsonSerializer.Deserialize<NewCommentNotificationRequest>(json);
                         _ = Task.Run(async () => await _notification.SendNewCommentNotificationAsync(model));
                         return new SuccessResponse();
-                    case MailMesageTypes.AdminReplyNotification:
-                        _ = Task.Run(async () => await _notification.SendCommentReplyNotificationAsync(
-                            request.Payload as CommentReplyNotificationRequest));
-                        return new SuccessResponse();
-                    case MailMesageTypes.BeingPinged:
-                        _ = Task.Run(async () => await _notification.SendPingNotificationAsync(
-                            request.Payload as PingNotificationRequest));
-                        return new SuccessResponse();
+                    //case MailMesageTypes.AdminReplyNotification:
+                    //    _ = Task.Run(async () => await _notification.SendCommentReplyNotificationAsync(
+                    //        request.Payload as CommentReplyNotificationRequest));
+                    //    return new SuccessResponse();
+                    //case MailMesageTypes.BeingPinged:
+                    //    _ = Task.Run(async () => await _notification.SendPingNotificationAsync(
+                    //        request.Payload as PingNotificationRequest));
+                    //    return new SuccessResponse();
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
