@@ -26,12 +26,11 @@ namespace Moonglade.Notification.API.Controllers
             _notification = notification;
         }
 
-        private async Task<Response> TryExecuteAsync(
-            Func<Task<Response>> func, [CallerMemberName] string callerMemberName = "", object keyParameter = null)
+        private Response TryExecute(Func<Response> func, [CallerMemberName] string callerMemberName = "", object keyParameter = null)
         {
             try
             {
-                return await func();
+                return func();
             }
             catch (Exception e)
             {
@@ -63,33 +62,33 @@ namespace Moonglade.Notification.API.Controllers
 
         [HttpPost]
         [Route("newcomment")]
-        public async Task<Response> SendNewCommentNotification(NewCommentNotificationRequest comment)
+        public Response SendNewCommentNotification(NewCommentNotificationRequest comment)
         {
-            return await TryExecuteAsync(async () =>
+            return TryExecute(() =>
             {
-                await _notification.SendNewCommentNotificationAsync(comment);
+                _ = Task.Run(async () => await _notification.SendNewCommentNotificationAsync(comment));
                 return new SuccessResponse();
             });
         }
 
         [HttpPost]
         [Route("commentreply")]
-        public async Task<Response> SendCommentReplyNotification(CommentReplyNotificationRequest commentReply)
+        public Response SendCommentReplyNotification(CommentReplyNotificationRequest commentReply)
         {
-            return await TryExecuteAsync(async () =>
+            return TryExecute(() =>
             {
-                await _notification.SendCommentReplyNotificationAsync(commentReply);
+                _ = Task.Run(async () => await _notification.SendCommentReplyNotificationAsync(commentReply));
                 return new SuccessResponse();
             });
         }
 
         [HttpPost]
         [Route("ping")]
-        public async Task<Response> SendPingNotification(PingNotificationRequest receivedPingback)
+        public Response SendPingNotification(PingNotificationRequest receivedPingback)
         {
-            return await TryExecuteAsync(async () =>
+            return TryExecute(() =>
             {
-                await _notification.SendPingNotificationAsync(receivedPingback);
+                _ = Task.Run(async () => await _notification.SendPingNotificationAsync(receivedPingback));
                 return new SuccessResponse();
             });
         }
