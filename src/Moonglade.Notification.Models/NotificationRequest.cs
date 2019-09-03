@@ -13,5 +13,10 @@ namespace Moonglade.Notification.Models
 
         [Required]
         public string EmailDisplayName { get; set; }
+
+        [Required]
+        public MailMesageTypes MessageType { get; set; }
+
+        public object Payload { get; set; }
     }
 }

@@ -2,9 +2,9 @@
 {
     public enum MailMesageTypes
     {
-        TestMail,
-        NewCommentNotification,
-        AdminReplyNotification,
-        BeingPinged
+        TestMail = 0,
+        NewCommentNotification = 100,
+        AdminReplyNotification = 101,
+        BeingPinged = 200
     }
 }
