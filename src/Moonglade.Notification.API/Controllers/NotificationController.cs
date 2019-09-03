@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Edi.Practice.RequestResponseModel;
 using Microsoft.AspNetCore.Authorization;
@@ -34,7 +35,7 @@ namespace Moonglade.Notification.API.Controllers
         }
 
         [HttpPost]
-        public async Task<Response> Post(NotificationRequest request)
+        public async Task<Response> Post(NotificationRequest request, CancellationToken ct)
         {
             T GetModelFromPayload<T>() where T : class
             {
@@ -54,17 +55,17 @@ namespace Moonglade.Notification.API.Controllers
 
                     case MailMesageTypes.NewCommentNotification:
                         var commentPayload = GetModelFromPayload<NewCommentPayload>();
-                        _ = Task.Run(async () => await _notification.SendNewCommentNotificationAsync(commentPayload));
+                        _ = Task.Run(async () => await _notification.SendNewCommentNotificationAsync(commentPayload), ct);
                         return new SuccessResponse();
 
                     case MailMesageTypes.AdminReplyNotification:
                         var replyPayload = GetModelFromPayload<CommentReplyPayload>();
-                        _ = Task.Run(async () => await _notification.SendCommentReplyNotificationAsync(replyPayload));
+                        _ = Task.Run(async () => await _notification.SendCommentReplyNotificationAsync(replyPayload), ct);
                         return new SuccessResponse();
 
                     case MailMesageTypes.BeingPinged:
                         var pingPayload = GetModelFromPayload<PingPayload>();
-                        _ = Task.Run(async () => await _notification.SendPingNotificationAsync(pingPayload));
+                        _ = Task.Run(async () => await _notification.SendPingNotificationAsync(pingPayload), ct);
                         return new SuccessResponse();
 
                     default:
