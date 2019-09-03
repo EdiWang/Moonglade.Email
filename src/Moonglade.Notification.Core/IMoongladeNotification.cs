@@ -1,18 +1,20 @@
-﻿using System;
-using System.Threading.Tasks;
-using Edi.Practice.RequestResponseModel;
+﻿using System.Threading.Tasks;
 using Moonglade.Notification.Models;
 
 namespace Moonglade.Notification.Core
 {
     public interface IMoongladeNotification
     {
-        Task<Response> SendTestNotificationAsync(NotificationRequest request);
+        string EmailDisplayName { get; set; }
 
-        Task SendNewCommentNotificationAsync(NewCommentNotificationRequest comment);
+        string AdminEmail { get; set; }
 
-        Task SendCommentReplyNotificationAsync(CommentReplyNotificationRequest model);
+        Task SendTestNotificationAsync();
 
-        Task SendPingNotificationAsync(PingNotificationRequest receivedPingback);
+        Task SendNewCommentNotificationAsync(NewCommentPayload model);
+
+        Task SendCommentReplyNotificationAsync(CommentReplyPayload model);
+
+        Task SendPingNotificationAsync(PingPayload model);
     }
 }

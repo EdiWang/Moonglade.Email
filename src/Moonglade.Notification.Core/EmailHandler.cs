@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Edi.Practice.RequestResponseModel;
 using Edi.TemplateEmail.NetStd;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -11,19 +10,23 @@ using Moonglade.Notification.Models;
 
 namespace Moonglade.Notification.Core
 {
-    public class EmailNotification : IMoongladeNotification
+    public class EmailHandler : IMoongladeNotification
     {
         public bool IsEnabled { get; set; }
 
         public IEmailHelper EmailHelper { get; }
 
-        private readonly ILogger<EmailNotification> _logger;
+        public string EmailDisplayName { get; set; }
+
+        public string AdminEmail { get; set; }
+
+        private readonly ILogger<EmailHandler> _logger;
 
         public AppSettings Settings { get; set; }
 
-        public EmailNotification(
-            ILogger<EmailNotification> logger,
-            IOptions<AppSettings> settings, 
+        public EmailHandler(
+            ILogger<EmailHandler> logger,
+            IOptions<AppSettings> settings,
             IConfiguration configuration)
         {
             _logger = logger;
@@ -63,51 +66,33 @@ namespace Moonglade.Notification.Core
             }
         }
 
-        public async Task<Response> SendTestNotificationAsync(NotificationRequest request)
+        public async Task SendTestNotificationAsync()
         {
-            try
+            if (IsEnabled)
             {
-                if (IsEnabled)
-                {
-                    _logger.LogInformation("Sending test mail");
+                _logger.LogInformation("Sending test mail");
 
-                    EmailHelper.Settings.EmailDisplayName = request.EmailDisplayName;
-                    EmailHelper.Settings.SenderName = request.EmailDisplayName;
+                SetEmailInfo();
 
-                    var pipeline = new TemplatePipeline().Map(nameof(Environment.MachineName), Environment.MachineName)
-                                                         .Map(nameof(EmailHelper.Settings.SmtpServer), EmailHelper.Settings.SmtpServer)
-                                                         .Map(nameof(EmailHelper.Settings.SmtpServerPort), EmailHelper.Settings.SmtpServerPort)
-                                                         .Map(nameof(EmailHelper.Settings.SmtpUserName), EmailHelper.Settings.SmtpUserName)
-                                                         .Map(nameof(EmailHelper.Settings.EmailDisplayName), EmailHelper.Settings.EmailDisplayName)
-                                                         .Map(nameof(EmailHelper.Settings.EnableSsl), EmailHelper.Settings.EnableSsl);
+                var pipeline = new TemplatePipeline().Map(nameof(Environment.MachineName), Environment.MachineName)
+                                                     .Map(nameof(EmailHelper.Settings.SmtpServer), EmailHelper.Settings.SmtpServer)
+                                                     .Map(nameof(EmailHelper.Settings.SmtpServerPort), EmailHelper.Settings.SmtpServerPort)
+                                                     .Map(nameof(EmailHelper.Settings.SmtpUserName), EmailHelper.Settings.SmtpUserName)
+                                                     .Map(nameof(EmailHelper.Settings.EmailDisplayName), EmailHelper.Settings.EmailDisplayName)
+                                                     .Map(nameof(EmailHelper.Settings.EnableSsl), EmailHelper.Settings.EnableSsl);
 
-                    await EmailHelper.ApplyTemplate(MailMesageTypes.TestMail.ToString(), pipeline)
-                                     .SendMailAsync(request.AdminEmail);
-
-                    return new SuccessResponse();
-                }
-
-                return new FailedResponse((int)ResponseFailureCode.EmailSendingDisabled, "Email sending is disabled.");
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, nameof(SendTestNotificationAsync));
-                return new FailedResponse((int)ResponseFailureCode.GeneralException)
-                {
-                    Exception = e,
-                    Message = e.Message
-                };
+                await EmailHelper.ApplyTemplate(MailMesageTypes.TestMail.ToString(), pipeline)
+                                 .SendMailAsync(AdminEmail);
             }
         }
 
-        public async Task SendNewCommentNotificationAsync(NewCommentNotificationRequest request)
+        public async Task SendNewCommentNotificationAsync(NewCommentPayload request)
         {
             if (IsEnabled)
             {
                 _logger.LogInformation("Sending NewCommentNotification mail");
 
-                EmailHelper.Settings.EmailDisplayName = request.EmailDisplayName;
-                EmailHelper.Settings.SenderName = request.EmailDisplayName;
+                SetEmailInfo();
 
                 var pipeline = new TemplatePipeline().Map(nameof(request.Username), request.Username)
                                                      .Map(nameof(request.Email), request.Email)
@@ -117,23 +102,17 @@ namespace Moonglade.Notification.Core
                                                      .Map(nameof(request.CommentContent), request.CommentContent);
 
                 await EmailHelper.ApplyTemplate(MailMesageTypes.NewCommentNotification.ToString(), pipeline)
-                                 .SendMailAsync(request.AdminEmail);
+                                 .SendMailAsync(AdminEmail);
             }
         }
 
-        public async Task SendCommentReplyNotificationAsync(CommentReplyNotificationRequest request)
+        public async Task SendCommentReplyNotificationAsync(CommentReplyPayload request)
         {
-            if (string.IsNullOrWhiteSpace(request.Email))
-            {
-                return;
-            }
-
             if (IsEnabled)
             {
                 _logger.LogInformation("Sending AdminReplyNotification mail");
 
-                EmailHelper.Settings.EmailDisplayName = request.EmailDisplayName;
-                EmailHelper.Settings.SenderName = request.EmailDisplayName;
+                SetEmailInfo();
 
                 var pipeline = new TemplatePipeline().Map(nameof(request.ReplyContent), request.ReplyContent)
                                                      .Map("RouteLink", request.PostLink)
@@ -145,14 +124,13 @@ namespace Moonglade.Notification.Core
             }
         }
 
-        public async Task SendPingNotificationAsync(PingNotificationRequest request)
+        public async Task SendPingNotificationAsync(PingPayload request)
         {
             if (IsEnabled)
             {
                 _logger.LogInformation($"Sending BeingPinged mail for post '{request.TargetPostTitle}'");
 
-                EmailHelper.Settings.EmailDisplayName = request.EmailDisplayName;
-                EmailHelper.Settings.SenderName = request.EmailDisplayName;
+                SetEmailInfo();
 
                 var pipeline = new TemplatePipeline().Map(nameof(request.TargetPostTitle), request.TargetPostTitle)
                                                      .Map(nameof(request.PingTimeUtc), request.PingTimeUtc)
@@ -162,8 +140,24 @@ namespace Moonglade.Notification.Core
                                                      .Map(nameof(request.SourceUrl), request.SourceUrl);
 
                 await EmailHelper.ApplyTemplate(MailMesageTypes.BeingPinged.ToString(), pipeline)
-                    .SendMailAsync(request.AdminEmail);
+                    .SendMailAsync(AdminEmail);
             }
+        }
+
+        private void SetEmailInfo()
+        {
+            if (string.IsNullOrWhiteSpace(EmailDisplayName))
+            {
+                throw new ArgumentNullException(nameof(EmailDisplayName));
+            }
+
+            if (string.IsNullOrWhiteSpace(AdminEmail))
+            {
+                throw new ArgumentNullException(nameof(AdminEmail));
+            }
+
+            EmailHelper.Settings.EmailDisplayName = EmailDisplayName;
+            EmailHelper.Settings.SenderName = EmailDisplayName;
         }
     }
 }

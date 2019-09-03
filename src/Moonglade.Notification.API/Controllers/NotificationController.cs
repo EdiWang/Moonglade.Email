@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Edi.Practice.RequestResponseModel;
 using Microsoft.AspNetCore.Authorization;
@@ -26,20 +26,6 @@ namespace Moonglade.Notification.API.Controllers
             _notification = notification;
         }
 
-        private Response TryExecute(Func<Response> func, [CallerMemberName] string callerMemberName = "", object keyParameter = null)
-        {
-            try
-            {
-                return func();
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, $"Error executing {callerMemberName}({keyParameter}). Requested by '{User.Identity.Name}'");
-                Response.StatusCode = StatusCodes.Status500InternalServerError;
-                return new FailedResponse((int)ResponseFailureCode.GeneralException, e.Message);
-            }
-        }
-
         [AllowAnonymous]
         [HttpGet]
         public string Get()
@@ -48,49 +34,49 @@ namespace Moonglade.Notification.API.Controllers
         }
 
         [HttpPost]
-        [Route("test")]
-        public async Task<Response> SendTestNotification(NotificationRequest request)
+        public async Task<Response> Post(NotificationRequest request)
         {
-            var result = await _notification.SendTestNotificationAsync(request);
-            if (!result.IsSuccess)
+            T GetModelFromPayload<T>() where T : class
             {
-                Response.StatusCode = StatusCodes.Status500InternalServerError;
+                var json = request.Payload.ToString();
+                return JsonSerializer.Deserialize<T>(json);
             }
 
-            return result;
-        }
-
-        [HttpPost]
-        [Route("newcomment")]
-        public Response SendNewCommentNotification(NewCommentNotificationRequest comment)
-        {
-            return TryExecute(() =>
+            try
             {
-                _ = Task.Run(async () => await _notification.SendNewCommentNotificationAsync(comment));
-                return new SuccessResponse();
-            });
-        }
+                _notification.AdminEmail = request.AdminEmail;
+                _notification.EmailDisplayName = request.EmailDisplayName;
+                switch (request.MessageType)
+                {
+                    case MailMesageTypes.TestMail:
+                        await _notification.SendTestNotificationAsync();
+                        return new SuccessResponse();
 
-        [HttpPost]
-        [Route("commentreply")]
-        public Response SendCommentReplyNotification(CommentReplyNotificationRequest commentReply)
-        {
-            return TryExecute(() =>
-            {
-                _ = Task.Run(async () => await _notification.SendCommentReplyNotificationAsync(commentReply));
-                return new SuccessResponse();
-            });
-        }
+                    case MailMesageTypes.NewCommentNotification:
+                        var commentPayload = GetModelFromPayload<NewCommentPayload>();
+                        _ = Task.Run(async () => await _notification.SendNewCommentNotificationAsync(commentPayload));
+                        return new SuccessResponse();
 
-        [HttpPost]
-        [Route("ping")]
-        public Response SendPingNotification(PingNotificationRequest receivedPingback)
-        {
-            return TryExecute(() =>
+                    case MailMesageTypes.AdminReplyNotification:
+                        var replyPayload = GetModelFromPayload<CommentReplyPayload>();
+                        _ = Task.Run(async () => await _notification.SendCommentReplyNotificationAsync(replyPayload));
+                        return new SuccessResponse();
+
+                    case MailMesageTypes.BeingPinged:
+                        var pingPayload = GetModelFromPayload<PingPayload>();
+                        _ = Task.Run(async () => await _notification.SendPingNotificationAsync(pingPayload));
+                        return new SuccessResponse();
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            catch (Exception e)
             {
-                _ = Task.Run(async () => await _notification.SendPingNotificationAsync(receivedPingback));
-                return new SuccessResponse();
-            });
+                _logger.LogError(e, $"Error sending notification for type '{request.MessageType}'. Requested by '{User.Identity.Name}'");
+                Response.StatusCode = StatusCodes.Status500InternalServerError;
+                return new FailedResponse((int)ResponseFailureCode.GeneralException, e.Message);
+            }
         }
     }
 }
