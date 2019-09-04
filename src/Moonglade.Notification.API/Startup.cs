@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -94,6 +95,14 @@ namespace Moonglade.Notification.API
             }
 
             app.UseIpRateLimiting();
+
+            app.MapWhen(context => context.Request.Path == "/", builder =>
+            {
+                builder.Run(async context =>
+                {
+                    await context.Response.WriteAsync("Moonglade.Notification.API Version: " + Utils.AppVersion, Encoding.UTF8);
+                });
+            });
 
             app.UseRouting();
 

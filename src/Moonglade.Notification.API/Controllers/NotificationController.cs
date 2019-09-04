@@ -27,13 +27,6 @@ namespace Moonglade.Notification.API.Controllers
             _notification = notification;
         }
 
-        [AllowAnonymous]
-        [HttpGet]
-        public string Get()
-        {
-            return $"Moonglade.Notification.API Version {Utils.AppVersion}";
-        }
-
         [HttpPost]
         public async Task<Response> Post(NotificationRequest request, CancellationToken ct)
         {
