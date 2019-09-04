@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moonglade.Notification.Core;
 using Moonglade.Notification.Models;
 
@@ -21,9 +22,15 @@ namespace Moonglade.Notification.API.Controllers
 
         private readonly IMoongladeNotification _notification;
 
-        public NotificationController(ILogger<NotificationController> logger, IMoongladeNotification notification)
+        public AppSettings Settings { get; set; }
+
+        public NotificationController(
+            ILogger<NotificationController> logger,
+            IOptions<AppSettings> settings,
+            IMoongladeNotification notification)
         {
             _logger = logger;
+            Settings = settings.Value;
             _notification = notification;
         }
 
@@ -38,6 +45,11 @@ namespace Moonglade.Notification.API.Controllers
 
             try
             {
+                if (!Settings.EnableEmailSending)
+                {
+                    return new FailedResponse((int)ResponseFailureCode.EmailSendingDisabled, "Email Sending is disabled.");
+                }
+
                 _notification.AdminEmail = request.AdminEmail;
                 _notification.EmailDisplayName = request.EmailDisplayName;
                 switch (request.MessageType)
