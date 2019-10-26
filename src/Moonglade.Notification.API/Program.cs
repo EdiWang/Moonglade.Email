@@ -36,7 +36,6 @@ namespace Moonglade.Notification.API
                                       new DefaultKeyVaultSecretManager());
                               })
                               .ConfigureKestrel(c => c.AddServerHeader = false)
-                              .UseIISIntegration()
                               .UseStartup<Startup>()
                               .ConfigureLogging(logging =>
                               {
