@@ -11,7 +11,7 @@
   
   <ItemGroup>
     <PackageReference Include="Edi.TemplateEmail" Version="2019.2.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.0.1" />
   </ItemGroup>
   
   <ItemGroup>
