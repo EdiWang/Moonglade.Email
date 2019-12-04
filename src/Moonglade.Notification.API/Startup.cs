@@ -82,7 +82,7 @@ namespace Moonglade.Notification.API
             {
                 builder.Run(async context =>
                 {
-                    await context.Response.WriteAsync("Moonglade.Notification.API Version: " + Utils.AppVersion, Encoding.UTF8);
+                    await context.Response.WriteAsync($"Moonglade.Notification.API Version: {Utils.AppVersion}, .NET Core {System.Environment.Version}", Encoding.UTF8);
                 });
             });
 
