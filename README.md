@@ -2,7 +2,7 @@
 
 [![Build status](https://dev.azure.com/ediwang/EdiWang-GitHub-Builds/_apis/build/status/Moonglade.Notification-CI)](https://dev.azure.com/ediwang/EdiWang-GitHub-Builds/_build/latest?definitionId=58)
 
-.NET Core 3.0 Notification API used by my blog (https://edi.wang), runs on Microsoft Azure.
+.NET Core 3.1 Notification API used by my blog (https://edi.wang), runs on Microsoft Azure.
 
 This API sets HTML template and send Email notifications to Blog administrator or users.
 
@@ -12,7 +12,7 @@ This API sets HTML template and send Email notifications to Blog administrator o
 
 Tools | Alternative
 --- | ---
-[.NET Core 3.0 SDK](http://dot.net) | N/A
+[.NET Core 3.1 SDK](http://dot.net) | N/A
 [Visual Studio 2019](https://visualstudio.microsoft.com/) | [Visual Studio Code](https://code.visualstudio.com/)
 [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/) | N/A
 
