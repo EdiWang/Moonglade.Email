@@ -16,7 +16,7 @@
     <ProjectReference Include="..\Moonglade.Notification.Models\Moonglade.Notification.Models.csproj" />
     <PackageReference Include="AspNetCoreRateLimit" Version="3.0.5" />
     <PackageReference Include="Edi.Practice.RequestResponseModel" Version="1.3.3" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.8.2" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.12.0" />
     <PackageReference Include="Microsoft.Azure.KeyVault" Version="3.0.4" />
     <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.3.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.AzureKeyVault" Version="3.1.0" />
