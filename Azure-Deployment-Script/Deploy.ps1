@@ -4,9 +4,12 @@
 # Author: Edi Wang
 # Update:
 # - 9/2/2019 Initial Version
+# - 2/23/2020 Add App Service Plan existance check
 # ---------------------------------------------------------------------------------------------------------
 # You need to install Azure CLI and login to Azure before running this script.
-# To install Azure CLI, please check https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest
+# To install Azure CLI, please run:
+# Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'
+# Reference: https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest
 
 # Replace with your own values
 $subscriptionName = "Microsoft MVP"
@@ -21,6 +24,9 @@ $adminEmail = "edi.test@outlook.com"
 $emailDisplayName = "Moonglade Notification Test"
 $smtpServer = "smtp.whatever.com"
 $smtpUserName = "admin"
+
+# login
+az login
 
 # Select Subscription
 az account set --subscription $subscriptionName
@@ -39,11 +45,18 @@ Write-Host "Preparing Key Vault" -ForegroundColor Green
 az keyvault create --name $keyVaultName --resource-group $rsgName --location $regionName
 az keyvault secret set --vault-name $keyVaultName --name $pwdKey --value $pwdValue
 
-# Create API App
+# Create App Service Plan
+Write-Host ""
+Write-Host "Preparing App Service Plan" -ForegroundColor Green
+$planCheck = az appservice plan list --query "[?name=='$aspName']" | ConvertFrom-Json
+$planExists = $planCheck.Length -gt 0
+if (!$planExists) {
+    az appservice plan create -n $aspName -g $rsgName --sku S1 --location $regionName
+}
+
+# Create App Service Plan
 Write-Host ""
 Write-Host "Preparing API App" -ForegroundColor Green
-# TODO: Reseach how to check if app service plan exists
-az appservice plan create -n $aspName -g $rsgName --sku S1 --location $regionName
 az webapp create -g $rsgName -p $aspName -n $apiAppName
 az webapp config set -g $rsgName -n $apiAppName --always-on true --use-32bit-worker-process false
 az webapp config appsettings set -g $rsgName -n $apiAppName --settings AppSettings:AdminEmail=$adminEmail
