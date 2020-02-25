@@ -54,8 +54,12 @@ if (!$planExists) {
 # Create API App
 Write-Host ""
 Write-Host "Preparing API App" -ForegroundColor Green
-az webapp create -g $rsgName -p $aspName -n $apiAppName
-az webapp config set -g $rsgName -n $apiAppName --always-on true --use-32bit-worker-process false
+$appCheck = az webapp list --query "[?name=='$apiAppName']" | ConvertFrom-Json
+$appExists = $appCheck.Length -gt 0
+if (!$appExists) {
+    az webapp create -g $rsgName -p $aspName -n $apiAppName
+    az webapp config set -g $rsgName -n $apiAppName --always-on true --use-32bit-worker-process false
+}
 az webapp config appsettings set -g $rsgName -n $apiAppName --settings AppSettings:AdminEmail=$adminEmail
 az webapp config appsettings set -g $rsgName -n $apiAppName --settings AppSettings:EmailDisplayName=$emailDisplayName
 az webapp config appsettings set -g $rsgName -n $apiAppName --settings AppSettings:SmtpServer=$smtpServer
