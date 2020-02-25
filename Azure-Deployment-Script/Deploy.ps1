@@ -25,9 +25,6 @@ $emailDisplayName = "Moonglade Notification Test"
 $smtpServer = "smtp.whatever.com"
 $smtpUserName = "admin"
 
-# login
-az login
-
 # Select Subscription
 az account set --subscription $subscriptionName
 
