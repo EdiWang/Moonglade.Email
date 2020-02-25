@@ -51,7 +51,7 @@ if (!$planExists) {
     az appservice plan create -n $aspName -g $rsgName --sku S1 --location $regionName
 }
 
-# Create App Service Plan
+# Create API App
 Write-Host ""
 Write-Host "Preparing API App" -ForegroundColor Green
 az webapp create -g $rsgName -p $aspName -n $apiAppName
