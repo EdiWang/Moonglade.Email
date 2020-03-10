@@ -1,15 +1,7 @@
 # ---------------------------------------------------------------------------------------------------------
 # Quick Start deployment script for running Moonglade.Notification API on Microsoft Azure
-# ---------------------------------------------------------------------------------------------------------
 # Author: Edi Wang
-# Update:
-# - 9/2/2019 Initial Version
-# - 2/23/2020 Add App Service Plan existance check
 # ---------------------------------------------------------------------------------------------------------
-# You need to install Azure CLI and login to Azure before running this script.
-# To install Azure CLI, please run:
-# Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'
-# Reference: https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest
 
 # Replace with your own values
 $subscriptionName = "Microsoft MVP"
@@ -25,8 +17,26 @@ $emailDisplayName = "Moonglade Notification Test"
 $smtpServer = "smtp.whatever.com"
 $smtpUserName = "admin"
 
+function Check-Command($cmdname) {
+    return [bool](Get-Command -Name $cmdname -ErrorAction SilentlyContinue)
+}
+
+if(Check-Command -cmdname 'az') {
+    Write-Host "Azure CLI is found on your machine. If something blow up, please check update for Azure CLI." -ForegroundColor Yellow
+    az --version
+}
+else {
+    Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'
+    az login
+}
+
+# Confirmation
+Write-Host "Your Moonglade.Notification will be deployed to [$rsgName] in [$regionName] under Azure subscription [$subscriptionName]. Please confirm before continue."
+Read-Host -Prompt "Press [ENTER] to continue"
+
 # Select Subscription
 az account set --subscription $subscriptionName
+Write-Host "Selected Azure Subscription: " $subscriptionName -ForegroundColor Cyan
 
 # Create Resource Group
 Write-Host ""
@@ -58,7 +68,7 @@ $appCheck = az webapp list --query "[?name=='$apiAppName']" | ConvertFrom-Json
 $appExists = $appCheck.Length -gt 0
 if (!$appExists) {
     az webapp create -g $rsgName -p $aspName -n $apiAppName
-    az webapp config set -g $rsgName -n $apiAppName --always-on true --use-32bit-worker-process false
+    az webapp config set -g $rsgName -n $apiAppName --always-on true --use-32bit-worker-process false --http20-enabled true
 }
 az webapp config appsettings set -g $rsgName -n $apiAppName --settings AppSettings:AdminEmail=$adminEmail
 az webapp config appsettings set -g $rsgName -n $apiAppName --settings AppSettings:EmailDisplayName=$emailDisplayName
