@@ -1,4 +1,4 @@
-# Moonglade.Notification (Preview)
+# Moonglade.Notification
 
 [![Build status](https://dev.azure.com/ediwang/EdiWang-GitHub-Builds/_apis/build/status/Moonglade.Notification-CI)](https://dev.azure.com/ediwang/EdiWang-GitHub-Builds/_build/latest?definitionId=58)
 
@@ -6,9 +6,9 @@
 
 This API sets HTML template and send Email notifications to Blog administrator or users.
 
-## Build and Run
+> Note: This notification API is just a simple toy. It doesn't use message queues or a database storage to ensure notification delivery, neither can this handle high amount of concurrent traffic. If you are looking for an enterprise level notification service, this is not what you should use.
 
-> The following tools are required for development.
+## Build and Run
 
 Tools | Alternative
 --- | ---
@@ -43,9 +43,9 @@ $smtpUserName = "admin"
 
 ### Build Source
 
-1. Create an "**appsettings.Development.json**" under "**src\Moonglade.Notification.API**", this file defines development time settings. It is by default ignored by git, so you will need to manange it on your own.
+Build and run **Moonglade.Notification.sln**
 
-2. Build and run **Moonglade.Notification.sln**
+For development, create "**appsettings.Development.json**" under "**src\Moonglade.Notification.API**", this file defines development time settings. It is by default ignored by git, so you will need to manange it on your own.
 
 ## Configuration
 
@@ -65,28 +65,15 @@ AppSettings section defines the email server configuration. Change the values as
 "SmtpUserName": "{AZURE-APPSVC-ENV}",
 ```
 
-You can use Azure CLI to setup these values for App Service:
-
-For example:
-
-```bash
-az webapp config appsettings set -g <Resource Group Name> -n <API App Name> --settings AppSettings:AdminEmail=<Admin Email>
-```
-
 ### ApiKeys
 
 You must assign owners and their API keys before you can call the API.
-
-Define owners, roles, and API keys in AppSettings:ApiKeys
-
-*Roles are currently not used, in the future, Administrators will have management APIs while users can only make notification requests.*
 
 ```json
 "ApiKeys": [
   {
     "Id": 1,
     "Owner": "https-edi.wang",
-    "Key": "{AZURE-APPSVC-ENV}",
-    "Roles": [ "Administrators" ]
+    "Key": "{AZURE-APPSVC-ENV}"
   }
 ```
