@@ -15,7 +15,7 @@ namespace Moonglade.Notification.Models
         public string Title { get; set; }
 
         [Required]
-        public string ReplyContent { get; set; }
+        public string ReplyContentHtml { get; set; }
 
         [Required]
         public string PostLink { get; set; }

@@ -68,7 +68,7 @@ IP: {IpAddress.Value}
   Your comment on "<i><a href="{RouteLink.Value}" target="_blank">{PostTitle.Value}</a></i>" has been replied by blog administrator:
 </p>
 <blockquote>
-  {ReplyContent.Value}
+  {ReplyContentHtml.Value}
 </blockquote>
 <p>
   Original Comment:

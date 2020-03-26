@@ -95,7 +95,7 @@ namespace Moonglade.Notification.Core
 
             SetEmailInfo();
 
-            var pipeline = new TemplatePipeline().Map(nameof(request.ReplyContent), request.ReplyContent)
+            var pipeline = new TemplatePipeline().Map(nameof(request.ReplyContentHtml), request.ReplyContentHtml)
                                                  .Map("RouteLink", request.PostLink)
                                                  .Map("PostTitle", request.Title)
                                                  .Map(nameof(request.CommentContent), request.CommentContent);
