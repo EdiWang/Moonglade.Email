@@ -1,6 +1,6 @@
 # Moonglade.Notification
 
-[![Build status](https://dev.azure.com/ediwang/EdiWang-GitHub-Builds/_apis/build/status/Moonglade.Notification-CI)](https://dev.azure.com/ediwang/EdiWang-GitHub-Builds/_build/latest?definitionId=58)
+[![Build Status](https://dev.azure.com/ediwang/Edi%20Wang%20Blog/_apis/build/status/EdiWang.Moonglade.Notification?branchName=master)](https://dev.azure.com/ediwang/Edi%20Wang%20Blog/_build/latest?definitionId=66&branchName=master)
 
 .NET Core 3.1 Notification API used by my blog (https://edi.wang), runs on Microsoft Azure.
 
