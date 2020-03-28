@@ -9,14 +9,17 @@ trigger:
 pool:
   vmImage: 'windows-latest'
 
-variables:
-  buildConfiguration: 'Release'
-  buildVerdsion: '10.2.$(Build.BuildId)'
-
 steps:
 - task: DotNetCoreCLI@2
   displayName: Build
   inputs:
     command: build
     projects: '**/*.sln'
-    arguments: '--configuration Release'
+    arguments: '--configuration Release -p:Version=10.2.$(Build.BuildId)'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: publish
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration) -p:Version=10.2.$(Build.BuildId) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: True
