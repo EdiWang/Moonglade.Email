@@ -21,11 +21,11 @@ steps:
   inputs:
     command: publish
     publishWebProjects: True
-    arguments: '--configuration $(BuildConfiguration) -p:Version=10.2.$(Build.BuildId) --output $(Build.ArtifactStagingDirectory)'
+    arguments: '--configuration Release -p:Version=10.2.$(Build.BuildId) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: True
 
 # this code takes all the files in $(Build.ArtifactStagingDirectory) and uploads them as an artifact of your build.
 - task: PublishBuildArtifacts@1
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
-    artifactName: 'Moonglade-Notification-Release'
+    artifactName: 'Drop'
