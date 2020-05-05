@@ -27,7 +27,7 @@ namespace Moonglade.Notification.Core
         {
             _logger = logger;
 
-            var configSource = $@"{AppDomain.CurrentDomain.GetData(Constants.AppBaseDirectory)}\mailConfiguration.xml";
+            var configSource = Path.Join($"{AppDomain.CurrentDomain.GetData(Constants.AppBaseDirectory)}", "mailConfiguration.xml");
             if (!File.Exists(configSource))
             {
                 throw new FileNotFoundException("Configuration file for EmailHelper is not present.", configSource);
