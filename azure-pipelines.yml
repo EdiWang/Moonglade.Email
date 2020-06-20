@@ -20,6 +20,7 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: publish
+    publishWebProjects: false
     arguments: '--configuration Release -p:Version=10.5.$(Build.BuildId) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: True
 
