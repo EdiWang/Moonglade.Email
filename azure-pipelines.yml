@@ -15,13 +15,13 @@ steps:
   inputs:
     command: build
     projects: '**/*.sln'
-    arguments: '--configuration Release -p:Version=10.2.$(Build.BuildId)'
+    arguments: '--configuration Release -p:Version=10.5.$(Build.BuildId)'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: publish
     publishWebProjects: True
-    arguments: '--configuration Release -p:Version=10.2.$(Build.BuildId) --output $(Build.ArtifactStagingDirectory)'
+    arguments: '--configuration Release -p:Version=10.5.$(Build.BuildId) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: True
 
 # this code takes all the files in $(Build.ArtifactStagingDirectory) and uploads them as an artifact of your build.
