@@ -18,6 +18,6 @@ namespace Moonglade.Notification.Models
         [Required]
         public MailMesageTypes MessageType { get; set; }
 
-        public JsonElement Payload { get; set; }
+        public object Payload { get; set; }
     }
 }
