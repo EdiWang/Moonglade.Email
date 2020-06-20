@@ -16,9 +16,9 @@ namespace Moonglade.Notification.Core
 
         public string AdminEmail { get; set; }
 
-        private readonly ILogger<EmailHandler> _logger;
+        private readonly ILogger _logger;
 
-        public EmailHandler(ILogger<EmailHandler> logger)
+        public EmailHandler(ILogger logger)
         {
             _logger = logger;
 
