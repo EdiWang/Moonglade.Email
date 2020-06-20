@@ -3,8 +3,8 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-## Sensitive data
-appsettings.Development.json
+# Azure Functions localsettings file
+local.settings.json
 
 # User-specific files
 *.rsuser
