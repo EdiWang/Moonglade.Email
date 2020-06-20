@@ -2,9 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using Edi.TemplateEmail;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using MimeKit;
 using Moonglade.Notification.Models;
 
@@ -20,10 +18,7 @@ namespace Moonglade.Notification.Core
 
         private readonly ILogger<EmailHandler> _logger;
 
-        public EmailHandler(
-            ILogger<EmailHandler> logger,
-            IOptions<AppSettings> settings,
-            IConfiguration configuration)
+        public EmailHandler(ILogger<EmailHandler> logger)
         {
             _logger = logger;
 
@@ -36,12 +31,12 @@ namespace Moonglade.Notification.Core
             if (EmailHelper == null)
             {
                 var emailSettings = new EmailSettings(
-                    settings.Value.SmtpServer,
-                    settings.Value.SmtpUserName,
-                    configuration[configuration["AzureKeyVault:SmtpPasswordKey"]],
-                    settings.Value.SmtpServerPort)
+                    Environment.GetEnvironmentVariable("SmtpServer"),
+                    Environment.GetEnvironmentVariable("SmtpUserName"),
+                    Environment.GetEnvironmentVariable("EmailAccountPassword", EnvironmentVariableTarget.Process),
+                    int.Parse(Environment.GetEnvironmentVariable("SmtpServerPort") ?? "587"))
                 {
-                    EnableSsl = settings.Value.EnableSsl
+                    EnableSsl = bool.Parse(Environment.GetEnvironmentVariable("EnableSsl") ?? "true")
                 };
 
                 EmailHelper = new EmailHelper(configSource, emailSettings);
