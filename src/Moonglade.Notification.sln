@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29215.179
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moonglade.Notification.API", "Moonglade.Notification.API\Moonglade.Notification.API.csproj", "{622268F6-291C-4B79-988A-A83464CDA820}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moonglade.Notification.Core", "Moonglade.Notification.Core\Moonglade.Notification.Core.csproj", "{73DD1EC7-153F-4022-933B-B2FCC7344FE2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moonglade.Notification.Models", "Moonglade.Notification.Models\Moonglade.Notification.Models.csproj", "{36406510-5D21-479D-AA09-D542B74CC9BD}"
@@ -31,10 +29,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{622268F6-291C-4B79-988A-A83464CDA820}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{622268F6-291C-4B79-988A-A83464CDA820}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{622268F6-291C-4B79-988A-A83464CDA820}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{622268F6-291C-4B79-988A-A83464CDA820}.Release|Any CPU.Build.0 = Release|Any CPU
 		{73DD1EC7-153F-4022-933B-B2FCC7344FE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{73DD1EC7-153F-4022-933B-B2FCC7344FE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73DD1EC7-153F-4022-933B-B2FCC7344FE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -52,7 +46,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{622268F6-291C-4B79-988A-A83464CDA820} = {0704A3C5-EEC6-432A-8AEE-58D57AAA2399}
 		{73DD1EC7-153F-4022-933B-B2FCC7344FE2} = {B57DEC74-91C2-49BA-8ECA-C7980B252FA4}
 		{36406510-5D21-479D-AA09-D542B74CC9BD} = {B57DEC74-91C2-49BA-8ECA-C7980B252FA4}
 		{552BE917-D539-4D01-B85C-20683E1B6D6E} = {0704A3C5-EEC6-432A-8AEE-58D57AAA2399}
