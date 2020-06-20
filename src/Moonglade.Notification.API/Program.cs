@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Azure.KeyVault;
-using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Configuration.AzureKeyVault;
 
 namespace Moonglade.Notification.API
 {
@@ -24,23 +21,8 @@ namespace Moonglade.Notification.API
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.CaptureStartupErrors(true)
-                              .ConfigureAppConfiguration((ctx, builder) =>
-                              {
-                                  var builtConfig = builder.Build();
-                                  var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                                  var keyVaultClient = new KeyVaultClient(
-                                      new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-                                  builder.AddAzureKeyVault(
-                                      $"https://{builtConfig["AzureKeyVault:Name"]}.vault.azure.net/", 
-                                      keyVaultClient, 
-                                      new DefaultKeyVaultSecretManager());
-                              })
                               .ConfigureKestrel(c => c.AddServerHeader = false)
-                              .UseStartup<Startup>()
-                              .ConfigureLogging(logging =>
-                              {
-                                  logging.AddAzureWebAppDiagnostics();
-                              });
+                              .UseStartup<Startup>();
                 });
     }
 }
