@@ -32,10 +32,12 @@ namespace Moonglade.Notification.AzFunc
                 AppDomain.CurrentDomain.SetData(Constants.AppBaseDirectory, configRootDirectory);
                 log.LogInformation($"Function App Directory: {configRootDirectory}");
 
-                IMoongladeNotification notification = new EmailHandler(log);
+                IMoongladeNotification notification = new EmailHandler(log)
+                {
+                    AdminEmail = request.AdminEmail,
+                    EmailDisplayName = request.EmailDisplayName
+                };
 
-                notification.AdminEmail = request.AdminEmail;
-                notification.EmailDisplayName = request.EmailDisplayName;
                 switch (request.MessageType)
                 {
                     case MailMesageTypes.TestMail:
