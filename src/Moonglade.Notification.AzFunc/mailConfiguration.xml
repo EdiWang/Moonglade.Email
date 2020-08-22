@@ -44,7 +44,7 @@
     </MessageBody>
   </MailMessage>
   <MailMessage MessageType="NewCommentNotification" IsHtml="true">
-    <MessageSubject>[edi.wang] New comment from {Username.Value}</MessageSubject>
+    <MessageSubject>[edi.wang] Comment on {PostTitle.Value}</MessageSubject>
     <MessageBody>
       <![CDATA[
 <p><strong>{Username.Value}</strong> commentted:</p>
