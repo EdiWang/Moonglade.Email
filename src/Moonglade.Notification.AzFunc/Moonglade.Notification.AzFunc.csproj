@@ -4,6 +4,12 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <AssemblyVersion>10.6.0.0</AssemblyVersion>
+    <FileVersion>10.6.0.0</FileVersion>
+    <RepositoryUrl>https://github.com/EdiWang/Moonglade.Notification</RepositoryUrl>
+    <PackageProjectUrl>https://edi.wang</PackageProjectUrl>
+    <Version>10.6.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
