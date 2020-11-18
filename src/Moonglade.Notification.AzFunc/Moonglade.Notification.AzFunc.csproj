@@ -21,7 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Moonglade.Notification.Core\Moonglade.Notification.Core.csproj" />
     <ProjectReference Include="..\Moonglade.Notification.Models\Moonglade.Notification.Models.csproj" />
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.9" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.11" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
