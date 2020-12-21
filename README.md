@@ -23,18 +23,18 @@ You need to setup Azure CLI and login to your Azure subscription first.
 
 Open **"\Azure-Deployment-Script\Deploy.ps1"**
 
-Replace these with your own values, and run the PowerShell script:
+Parameters example:
 
 ```powershell
-$subscriptionName = "Microsoft MVP"
-$rsgName = "Moonglade-Test-RSG"
-$regionName = "eastasia"
-$storageAccountName = "moongladeteststorage"
-$adminEmail = "edi.wang@outlook.com"
-$emailDisplayName = "Moonglade Notification Test"
-$smtpServer = "smtp.whatever.com"
-$smtpUserName = "admin@whatever.com"
-$pwdValue = "P@ssw0rd"
+-subscriptionName "Microsoft MVP"
+-regionName "eastasia"
+-rsgName "Moonglade-Test-RSG"
+-storageAccountName "moongladeteststorage"
+-adminEmail "edi.wang@outlook.com"
+-emailDisplayName "Moonglade Notification Test"
+-smtpServer "smtp.whatever.com"
+-smtpUserName "admin@whatever.com"
+-pwdValue "P@ssw0rd"
 ```
 
 ### 2. Build and Deploy
