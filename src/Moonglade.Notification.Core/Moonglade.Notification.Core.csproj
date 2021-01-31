@@ -6,7 +6,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Edi.TemplateEmail" Version="2020.3.1" />
+    <PackageReference Include="Edi.TemplateEmail" Version="2021.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.10" />
   </ItemGroup>
   
