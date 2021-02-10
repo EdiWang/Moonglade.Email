@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 
-namespace Moonglade.Notification.Models
+namespace Moonglade.Notification.Core
 {
     public class NewCommentPayload
     {

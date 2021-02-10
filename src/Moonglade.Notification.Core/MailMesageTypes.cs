@@ -1,4 +1,4 @@
-﻿namespace Moonglade.Notification.Models
+﻿namespace Moonglade.Notification.Core
 {
     public enum MailMesageTypes
     {

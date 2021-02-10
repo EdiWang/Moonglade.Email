@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Edi.TemplateEmail;
 using Microsoft.Extensions.Logging;
 using MimeKit;
-using Moonglade.Notification.Models;
 
 namespace Moonglade.Notification.Core
 {

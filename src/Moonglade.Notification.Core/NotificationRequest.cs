@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Moonglade.Notification.Models
+namespace Moonglade.Notification.Core
 {
     public class NotificationRequest
     {

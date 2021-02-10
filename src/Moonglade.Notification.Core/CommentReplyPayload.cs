@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Moonglade.Notification.Models
+namespace Moonglade.Notification.Core
 {
     public class CommentReplyPayload
     {

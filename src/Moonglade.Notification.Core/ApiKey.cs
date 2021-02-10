@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Moonglade.Notification.Models
+namespace Moonglade.Notification.Core
 {
     public class ApiKey
     {

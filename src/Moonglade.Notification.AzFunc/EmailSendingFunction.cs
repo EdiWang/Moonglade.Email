@@ -6,7 +6,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Moonglade.Notification.Core;
-using Moonglade.Notification.Models;
 
 namespace Moonglade.Notification.AzFunc
 {

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Moonglade.Notification.Models
+﻿namespace Moonglade.Notification.Core
 {
     public enum ResponseFailureCode
     {

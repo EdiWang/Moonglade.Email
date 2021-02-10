@@ -9,8 +9,4 @@
     <PackageReference Include="Edi.TemplateEmail" Version="2021.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.12" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\Moonglade.Notification.Models\Moonglade.Notification.Models.csproj" />
-  </ItemGroup>
 </Project>
