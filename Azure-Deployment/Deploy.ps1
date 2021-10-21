@@ -72,7 +72,7 @@ $funcAppName = "moonglade-ntfunc" + (Get-Random -Maximum 1000)
 $appCheck = az functionapp list --query "[?name=='$funcAppName']" | ConvertFrom-Json
 $appExists = $appCheck.Length -gt 0
 if (!$appExists) {
-    $echo = az functionapp create --functions-version 3 --consumption-plan-location $regionName --name $funcAppName --os-type Windows --resource-group $rsgName --runtime dotnet --storage-account $storageAccountName
+    $echo = az functionapp create --functions-version 4 --consumption-plan-location $regionName --name $funcAppName --os-type Windows --resource-group $rsgName --runtime dotnet --storage-account $storageAccountName
     $echo = az functionapp config set -g $rsgName -n $funcAppName --use-32bit-worker-process false --http20-enabled true
 }
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings AdminEmail=$adminEmail

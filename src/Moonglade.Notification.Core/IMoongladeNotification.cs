@@ -1,19 +1,18 @@
 ﻿using System.Threading.Tasks;
 
-namespace Moonglade.Notification.Core
+namespace Moonglade.Notification.Core;
+
+public interface IMoongladeNotification
 {
-    public interface IMoongladeNotification
-    {
-        string EmailDisplayName { get; set; }
+    string EmailDisplayName { get; set; }
 
-        string AdminEmail { get; set; }
+    string AdminEmail { get; set; }
 
-        Task SendTestNotificationAsync();
+    Task SendTestNotificationAsync();
 
-        Task SendNewCommentNotificationAsync(NewCommentPayload model);
+    Task SendNewCommentNotificationAsync(NewCommentPayload model);
 
-        Task SendCommentReplyNotificationAsync(CommentReplyPayload model);
+    Task SendCommentReplyNotificationAsync(CommentReplyPayload model);
 
-        Task SendPingNotificationAsync(PingPayload model);
-    }
+    Task SendPingNotificationAsync(PingPayload model);
 }
