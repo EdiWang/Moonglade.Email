@@ -1,8 +1,8 @@
-FROM mcr.microsoft.com/azure-functions/dotnet:3.0 AS base
+FROM mcr.microsoft.com/azure-functions/dotnet:6.0 AS base
 WORKDIR /home/site/wwwroot
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:6.0 AS build
 WORKDIR /src
 
 # Auto copy to prevent 996

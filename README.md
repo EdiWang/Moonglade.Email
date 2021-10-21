@@ -10,8 +10,8 @@ This Function sets HTML template and send email notifications to blog administra
 
 Tools | Alternative
 --- | ---
-[.NET Core 3.1 SDK](http://dot.net) | N/A
-[Visual Studio 2019](https://visualstudio.microsoft.com/) with Azure Development payload| [Visual Studio Code](https://code.visualstudio.com/)
+[.NET 6.0 SDK](http://dot.net) | N/A
+[Visual Studio 2022](https://visualstudio.microsoft.com/) with Azure Development payload| [Visual Studio Code](https://code.visualstudio.com/)
 [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/) | N/A
 [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest) | N/A
 
