@@ -7,6 +7,7 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<RepositoryUrl>https://github.com/EdiWang/Moonglade.Notification</RepositoryUrl>
 		<PackageProjectUrl>https://edi.wang</PackageProjectUrl>
+		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
 	<ItemGroup>
