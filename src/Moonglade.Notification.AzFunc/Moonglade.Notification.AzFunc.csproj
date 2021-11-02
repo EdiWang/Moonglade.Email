@@ -23,7 +23,7 @@
 		<ProjectReference Include="..\Moonglade.Notification.Core\Moonglade.Notification.Core.csproj" />
 		<PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.18.0" />
 		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ApplicationInsights" Version="1.0.0-preview4" />
-		<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.0.0" />
+		<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.0.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="host.json">
