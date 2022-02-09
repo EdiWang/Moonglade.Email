@@ -21,7 +21,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Moonglade.Notification.Core\Moonglade.Notification.Core.csproj" />
-		<PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.19.0" />
+		<PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.20.0" />
 		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ApplicationInsights" Version="1.0.0-preview4" />
 		<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.0.1" />
 	</ItemGroup>
