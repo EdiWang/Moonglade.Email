@@ -1,4 +1,4 @@
-name: Deploy DotNet project to Azure Function App
+name: Moonglade.Notification.AzFunc Build and Deploy
 
 on:
   [push]
