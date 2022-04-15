@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Moonglade.Notification.Core;
+namespace Moonglade.Notification.AzFunc;
 
 public class NotificationRequest
 {

@@ -1,4 +1,4 @@
-﻿namespace Moonglade.Notification.Core;
+﻿namespace Moonglade.Notification.AzFunc;
 
 public enum ResponseFailureCode
 {

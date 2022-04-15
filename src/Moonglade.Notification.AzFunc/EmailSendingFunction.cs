@@ -1,11 +1,8 @@
-using System;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Moonglade.Notification.Core;
 using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
 namespace Moonglade.Notification.AzFunc;
@@ -27,16 +24,11 @@ public class EmailSendingFunction
 
         try
         {
-
             var configRootDirectory = executionContext.FunctionAppDirectory;
             AppDomain.CurrentDomain.SetData(Constants.AppBaseDirectory, configRootDirectory);
             log.LogInformation($"Function App Directory: {configRootDirectory}");
 
-            IMoongladeNotification notification = new EmailHandler(log)
-            {
-                AdminEmail = request.AdminEmail,
-                EmailDisplayName = request.EmailDisplayName
-            };
+            var notification = new EmailHandler(log, request.AdminEmail, request.EmailDisplayName);
 
             switch (request.MessageType)
             {

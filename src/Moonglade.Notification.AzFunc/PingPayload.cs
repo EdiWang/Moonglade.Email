@@ -1,7 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Moonglade.Notification.Core;
+namespace Moonglade.Notification.AzFunc;
 
 public class PingPayload
 {

@@ -1,25 +1,24 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
-using Edi.TemplateEmail;
+﻿using Edi.TemplateEmail;
 using Microsoft.Extensions.Logging;
 using MimeKit;
 
-namespace Moonglade.Notification.Core;
+namespace Moonglade.Notification.AzFunc;
 
-public class EmailHandler : IMoongladeNotification
+public class EmailHandler
 {
     public IEmailHelper EmailHelper { get; }
 
-    public string EmailDisplayName { get; set; }
+    public string EmailDisplayName { get; private init; }
 
-    public string AdminEmail { get; set; }
+    public string AdminEmail { get; private init; }
 
     private readonly ILogger _logger;
 
-    public EmailHandler(ILogger logger)
+    public EmailHandler(ILogger logger, string emailDisplayName, string adminEmail)
     {
         _logger = logger;
+        EmailDisplayName = emailDisplayName;
+        AdminEmail = adminEmail;
 
         var configSource = Path.Join($"{AppDomain.CurrentDomain.GetData(Constants.AppBaseDirectory)}", "mailConfiguration.xml");
         if (!File.Exists(configSource))
@@ -27,26 +26,21 @@ public class EmailHandler : IMoongladeNotification
             throw new FileNotFoundException("Configuration file for EmailHelper is not present.", configSource);
         }
 
-        if (EmailHelper == null)
-        {
-            var emailSettings = new EmailSettings(
-                Environment.GetEnvironmentVariable("SmtpServer"),
-                Environment.GetEnvironmentVariable("SmtpUserName"),
-                Environment.GetEnvironmentVariable("EmailAccountPassword", EnvironmentVariableTarget.Process),
-                int.Parse(Environment.GetEnvironmentVariable("SmtpServerPort") ?? "587"))
-            {
-                EnableSsl = bool.Parse(Environment.GetEnvironmentVariable("EnableSsl") ?? "true")
-            };
+        EmailHelper = new EmailHelper(configSource,
+            Environment.GetEnvironmentVariable("SmtpServer"),
+            Environment.GetEnvironmentVariable("SmtpUserName"),
+            Environment.GetEnvironmentVariable("EmailAccountPassword", EnvironmentVariableTarget.Process),
+            int.Parse(Environment.GetEnvironmentVariable("SmtpServerPort") ?? "587"));
 
-            EmailHelper = new EmailHelper(configSource, emailSettings);
-            EmailHelper.EmailSent += (sender, eventArgs) =>
+        if (bool.Parse(Environment.GetEnvironmentVariable("EnableSsl") ?? "true")) EmailHelper.WithTls();
+
+        EmailHelper.EmailSent += (sender, eventArgs) =>
+        {
+            if (sender is MimeMessage msg)
             {
-                if (sender is MimeMessage msg)
-                {
-                    _logger.LogInformation($"Email {msg.Subject} is sent, Success: {eventArgs.IsSuccess}");
-                }
-            };
-        }
+                _logger.LogInformation($"Email {msg.Subject} is sent, Success: {eventArgs.IsSuccess}");
+            }
+        };
     }
 
     public async Task SendTestNotificationAsync()
@@ -60,7 +54,7 @@ public class EmailHandler : IMoongladeNotification
             .Map(nameof(EmailHelper.Settings.SmtpServerPort), EmailHelper.Settings.SmtpServerPort)
             .Map(nameof(EmailHelper.Settings.SmtpUserName), EmailHelper.Settings.SmtpUserName)
             .Map(nameof(EmailHelper.Settings.EmailDisplayName), EmailHelper.Settings.EmailDisplayName)
-            .Map(nameof(EmailHelper.Settings.EnableSsl), EmailHelper.Settings.EnableSsl);
+            .Map(nameof(EmailHelper.Settings.EnableTls), EmailHelper.Settings.EnableTls);
 
         await EmailHelper.ApplyTemplate(MailMesageTypes.TestMail.ToString(), pipeline)
             .SendMailAsync(AdminEmail);
@@ -127,7 +121,7 @@ public class EmailHandler : IMoongladeNotification
             throw new ArgumentNullException(nameof(AdminEmail));
         }
 
-        EmailHelper.Settings.EmailDisplayName = EmailDisplayName;
-        EmailHelper.Settings.SenderName = EmailDisplayName;
+        EmailHelper.WithDisplayName(EmailDisplayName);
+        EmailHelper.WithSenderName(EmailDisplayName);
     }
 }
