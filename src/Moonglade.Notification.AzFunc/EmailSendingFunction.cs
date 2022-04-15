@@ -46,36 +46,36 @@ public class EmailSendingFunction
                 }
             };
 
-            var notification = new EmailHandler(emailHelper, request.AdminEmail, request.EmailDisplayName);
+            var notification = new EmailHandler(emailHelper, request.EmailDisplayName, request.AdminEmail);
+            log.LogInformation($"Sending {request.MessageType} message");
 
             switch (request.MessageType)
             {
                 case MailMesageTypes.TestMail:
-                    log.LogInformation("Sending test mail");
                     await notification.SendTestNotificationAsync();
-                    return new OkObjectResult("TestMail Sent");
+                    break;
 
                 case MailMesageTypes.NewCommentNotification:
-                    log.LogInformation("Sending NewCommentNotification mail");
                     var commentPayload = GetModelFromPayload<NewCommentPayload>();
                     _ = Task.Run(async () => await notification.SendNewCommentNotificationAsync(commentPayload));
-                    return new OkObjectResult("NewCommentNotification Sent");
+                    break;
 
                 case MailMesageTypes.AdminReplyNotification:
-                    log.LogInformation("Sending AdminReplyNotification mail");
                     var replyPayload = GetModelFromPayload<CommentReplyPayload>();
                     _ = Task.Run(async () => await notification.SendCommentReplyNotificationAsync(replyPayload));
-                    return new OkObjectResult("AdminReplyNotification Sent");
+                    break;
 
                 case MailMesageTypes.BeingPinged:
-                    log.LogInformation($"Sending BeingPinged mail");
                     var pingPayload = GetModelFromPayload<PingPayload>();
                     _ = Task.Run(async () => await notification.SendPingNotificationAsync(pingPayload));
-                    return new OkObjectResult("BeingPinged Sent");
+                    break;
 
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            return new OkObjectResult($"{request.MessageType} Sent");
+
         }
         catch (Exception e)
         {
