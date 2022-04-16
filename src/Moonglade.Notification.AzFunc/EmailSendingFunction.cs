@@ -36,7 +36,7 @@ public class EmailSendingFunction
                 Environment.GetEnvironmentVariable("EmailAccountPassword", EnvironmentVariableTarget.Process),
                 int.Parse(Environment.GetEnvironmentVariable("SmtpServerPort") ?? "587"));
 
-            if (bool.Parse(Environment.GetEnvironmentVariable("EnableSsl") ?? "true")) emailHelper.WithTls();
+            if (bool.Parse(Environment.GetEnvironmentVariable("EnableTls") ?? "true")) emailHelper.WithTls();
 
             emailHelper.EmailSent += (sender, eventArgs) =>
             {
