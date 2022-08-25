@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<AzureFunctionsVersion>v4</AzureFunctionsVersion>
@@ -22,7 +22,7 @@
 		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ApplicationInsights" Version="1.0.0-preview4" />
 		<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.1" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.*" />
-		<PackageReference Include="Edi.TemplateEmail" Version="2022.4.0" />
+		<PackageReference Include="Edi.TemplateEmail" Version="2022.4.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="host.json">
