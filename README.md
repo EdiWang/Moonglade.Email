@@ -21,7 +21,7 @@ Tools | Alternative
 
 You need to setup Azure CLI and login to your Azure subscription first. 
 
-Open **"\Azure-Deployment-Script\Deploy.ps1"**
+Open **"\Azure-Deployment\Deploy.ps1"**
 
 Parameters example:
 
