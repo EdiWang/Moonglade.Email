@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Moonglade.Notification.AzFunc;
+namespace Moonglade.Notification.AzFunc.Payloads;
 
 public class CommentReplyPayload
 {

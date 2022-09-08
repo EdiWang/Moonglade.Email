@@ -1,10 +1,12 @@
-using System.Text.Json;
 using Dapper;
 using Edi.TemplateEmail;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using MimeKit;
+using Moonglade.Notification.AzFunc.Core;
+using Moonglade.Notification.AzFunc.Payloads;
+using System.Text.Json;
 
 namespace Moonglade.Notification.AzFunc;
 
@@ -107,8 +109,7 @@ public class NotificationV2
                 };
 
                 var dName = Environment.GetEnvironmentVariable("SenderDisplayName");
-                var adminEmail = Environment.GetEnvironmentVariable("AdminEmail");
-                var notification = new EmailHandler(emailHelper, dName, adminEmail);
+                var notification = new EmailHandler(emailHelper, dName);
                 log.LogInformation($"Sending {en.MessageType} message");
 
                 try
@@ -116,25 +117,23 @@ public class NotificationV2
                     switch (en.MessageType)
                     {
                         case "TestMail":
-                            await notification.SendTestNotificationAsync();
+                            await notification.SendTestNotificationAsync(en.DistributionList.Split(';'));
                             break;
 
                         case "NewCommentNotification":
                             var ncPayload = JsonSerializer.Deserialize<NewCommentPayload>(en.MessageBody);
-                            await notification.SendNewCommentNotificationAsync(ncPayload);
+                            await notification.SendNewCommentNotificationAsync(en.DistributionList.Split(';'), ncPayload);
                             break;
 
                         case "AdminReplyNotification":
                             var replyPayload = JsonSerializer.Deserialize<CommentReplyPayload>(en.MessageBody);
-                            await notification.SendCommentReplyNotificationAsync(replyPayload);
+                            await notification.SendCommentReplyNotificationAsync(en.DistributionList, replyPayload);
                             break;
 
                         case "BeingPinged":
                             var pingPayload = JsonSerializer.Deserialize<PingPayload>(en.MessageBody);
-                            await notification.SendPingNotificationAsync(pingPayload);
+                            await notification.SendPingNotificationAsync(en.DistributionList.Split(';'), pingPayload);
                             break;
-
-                        // TODO: Add others
 
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -162,4 +161,18 @@ public class NotificationV2
             throw;
         }
     }
+}
+
+public class EmailNotification
+{
+    public Guid Id { get; set; }
+
+    public string DistributionList { get; set; }
+    public string MessageType { get; set; }
+    public string MessageBody { get; set; }
+    public int SendingStatus { get; set; }
+    public DateTime CreateTimeUtc { get; set; }
+    public DateTime SentTimeUtc { get; set; }
+    public string TargetResponse { get; set; }
+    public int RetryCount { get; set; }
 }
