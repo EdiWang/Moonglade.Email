@@ -123,6 +123,17 @@ public class NotificationV2
                             var ncPayload = JsonSerializer.Deserialize<NewCommentPayload>(en.MessageBody);
                             await notification.SendNewCommentNotificationAsync(ncPayload);
                             break;
+
+                        case "AdminReplyNotification":
+                            var replyPayload = JsonSerializer.Deserialize<CommentReplyPayload>(en.MessageBody);
+                            await notification.SendCommentReplyNotificationAsync(replyPayload);
+                            break;
+
+                        case "BeingPinged":
+                            var pingPayload = JsonSerializer.Deserialize<PingPayload>(en.MessageBody);
+                            await notification.SendPingNotificationAsync(pingPayload);
+                            break;
+
                         // TODO: Add others
 
                         default:
