@@ -1,27 +1,22 @@
-using System.Text.Json;
 using Edi.TemplateEmail;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using MimeKit;
+using Moonglade.Notification.AzFunc.Core;
+using System.ComponentModel.DataAnnotations;
 using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
 namespace Moonglade.Notification.AzFunc;
 
-public class EmailSendingFunction
+public class TestEmail
 {
-    [FunctionName("EmailSending")]
+    [FunctionName("TestEmail")]
     public async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] NotificationRequest request,
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] TestEmailRequest request,
         ILogger log, ExecutionContext executionContext)
     {
-        T GetModelFromPayload<T>() where T : class
-        {
-            var json = request.Payload.ToString();
-            return JsonSerializer.Deserialize<T>(json);
-        }
-
         log.LogInformation("EmailSending HTTP trigger function processed a request.");
 
         try
@@ -46,35 +41,20 @@ public class EmailSendingFunction
                 }
             };
 
-            var notification = new EmailHandler(emailHelper, request.EmailDisplayName, request.AdminEmail);
-            log.LogInformation($"Sending {request.MessageType} message");
-
-            switch (request.MessageType)
+            emailHelper.EmailFailed += (sender, args) =>
             {
-                case MailMesageTypes.TestMail:
-                    await notification.SendTestNotificationAsync();
-                    break;
+                if (sender is MimeMessage msg)
+                {
+                    log.LogError($"Email '{msg.Subject}' failed: {args.ServerResponse}");
+                }
+            };
 
-                case MailMesageTypes.NewCommentNotification:
-                    var commentPayload = GetModelFromPayload<NewCommentPayload>();
-                    _ = Task.Run(async () => await notification.SendNewCommentNotificationAsync(commentPayload));
-                    break;
+            var notification = new EmailHandler(emailHelper, request.EmailDisplayName);
+            log.LogInformation($"Sending test message");
 
-                case MailMesageTypes.AdminReplyNotification:
-                    var replyPayload = GetModelFromPayload<CommentReplyPayload>();
-                    _ = Task.Run(async () => await notification.SendCommentReplyNotificationAsync(replyPayload));
-                    break;
+            await notification.SendTestNotificationAsync(request.ToAddresses);
 
-                case MailMesageTypes.BeingPinged:
-                    var pingPayload = GetModelFromPayload<PingPayload>();
-                    _ = Task.Run(async () => await notification.SendPingNotificationAsync(pingPayload));
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            return new OkObjectResult($"{request.MessageType} Sent");
+            return new OkObjectResult($"Test message sent");
 
         }
         catch (Exception e)
@@ -83,4 +63,15 @@ public class EmailSendingFunction
             return new ConflictObjectResult(e.Message);
         }
     }
+}
+
+public class TestEmailRequest
+{
+    [Required]
+    public string EmailDisplayName { get; set; }
+
+    [Required]
+    [MinLength(1)]
+    [MaxLength(20)]
+    public string[] ToAddresses { get; set; }
 }

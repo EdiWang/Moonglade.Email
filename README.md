@@ -4,7 +4,7 @@ The Azure Function used by my blog (https://edi.wang) to send notifications.
 
 This Function sets HTML template and send email notifications to blog administrator or users.
 
-> Note: This notification API is just a simple toy. It doesn't use message queues or a database storage to ensure notification delivery, neither can this handle high amount of concurrent traffic. If you are looking for an enterprise level notification service, this is NOT what you should use.
+> Note: This notification API is just a simple toy. It doesn't use standard message queues service or a database storage to ensure notification delivery, neither can this handle high amount of concurrent traffic. If you are looking for an enterprise level notification service, this is NOT what you should use.
 
 ## Get Started
 
@@ -26,7 +26,6 @@ Open **"\Azure-Deployment\Deploy.ps1"**
 Parameters example:
 
 ```powershell
--subscriptionName "Microsoft MVP"
 -regionName "eastasia"
 -rsgName "Moonglade-Test-RSG"
 -storageAccountName "moongladeteststorage"
@@ -34,7 +33,8 @@ Parameters example:
 -emailDisplayName "Moonglade Notification Test"
 -smtpServer "smtp.whatever.com"
 -smtpUserName "admin@whatever.com"
--pwdValue "P@ssw0rd"
+-pwdValue "P@ssw0rd",
+-dbConnectionString = "Server=(localdb)\MSSQLLocalDB;Database=Moonglade;Trusted_Connection=True;"
 ```
 
 ### 2. Build and Deploy
@@ -59,7 +59,8 @@ Sample ```local.settings.json``` file
     "EmailDisplayName": "Moonglade Notification Azure Function (local)",
     "SmtpServer": "smtp-mail.outlook.com",
     "SmtpUserName": "edi.wang@outlook.com",
-    "EmailAccountPassword": "**********" 
+    "EmailAccountPassword": "**********",
+    "moongladedb_connection": "Server=(localdb)\\MSSQLLocalDB;Database=Moonglade;Trusted_Connection=True;"
   }
 }
 ```

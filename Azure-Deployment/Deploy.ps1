@@ -4,7 +4,6 @@
 # ---------------------------------------------------------------------------------------------------------
 
 param(
-    $subscriptionName = "Microsoft MVP", 
     $regionName = "eastasia",
     $adminEmail = "edi.wang@outlook.com",
     $rsgName = "moongladegroup",
@@ -12,20 +11,25 @@ param(
     $emailDisplayName = "Moonglade Notification",
     $smtpServer = "smtp.whatever.com",
     $smtpUserName = "admin@whatever.com",
-    $smtpPassword = "P@ssw0rd"
+    $smtpPassword = "P@ssw0rd",
+    $dbConnectionString = "Server=(localdb)\MSSQLLocalDB;Database=Moonglade;Trusted_Connection=True;"
 )
 
-function Check-Command($cmdname) {
-    return [bool](Get-Command -Name $cmdname -ErrorAction SilentlyContinue)
-}
-
-if(Check-Command -cmdname 'az') {
-    Write-Host "Azure CLI is found..."
+[Console]::ResetColor()
+# az login --use-device-code
+$output = az account show -o json | ConvertFrom-Json
+$subscriptionList = az account list -o json | ConvertFrom-Json 
+$subscriptionList | Format-Table name, id, tenantId -AutoSize
+$subscriptionName = $output.name
+Write-Host "Currently logged in to subscription """$output.name.Trim()""" in tenant " $output.tenantId
+$subscriptionName = Read-Host "Enter subscription Id ("$output.id")"
+$subscriptionName = $subscriptionName.Trim()
+if ([string]::IsNullOrWhiteSpace($subscriptionName)) {
+    $subscriptionName = $output.id
 }
 else {
-    Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'
-    Write-Host "Please run 'az-login' and re-execute this script"
-    return
+    # az account set --subscription $subscriptionName
+    Write-Host "Changed to subscription ("$subscriptionName")"
 }
 
 # Confirmation
@@ -79,6 +83,8 @@ $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --sett
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings EmailDisplayName=$emailDisplayName
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings SmtpServer=$smtpServer
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings SmtpUserName=$smtpUserName
+$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings moongladedb_connection=$dbConnectionString
+
 
 # Azure CLI get buggy and I have to work around this truncating values issue, very 996
 # https://github.com/Azure/azure-cli/issues/10066
