@@ -13,7 +13,7 @@ namespace Moonglade.Notification.AzFunc;
 public class NotificationV2
 {
     [FunctionName("NotificationV2")]
-    public async Task Run([TimerTrigger("* * * * *")] TimerInfo myTimer,
+    public async Task Run([TimerTrigger("*/2 * * * *")] TimerInfo myTimer,
         ILogger log,
         Microsoft.Azure.WebJobs.ExecutionContext executionContext)
     {
