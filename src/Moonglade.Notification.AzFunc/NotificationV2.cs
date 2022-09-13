@@ -84,8 +84,8 @@ public class NotificationV2
                         {
                             // Set status to '4 - Sent'
                             await using var conn2 = new SqlConnection(str);
-                            var sqlUpdateSent = "UPDATE EmailNotification SET SendingStatus = 4 WHERE Id = @Id";
-                            await conn2.ExecuteAsync(sqlUpdateSent, new { en.Id });
+                            var sqlUpdateSent = "UPDATE EmailNotification SET SendingStatus = 4, SentTimeUtc = @SentTimeUtc WHERE Id = @Id";
+                            await conn2.ExecuteAsync(sqlUpdateSent, new { en.Id, SentTimeUtc = DateTime.UtcNow });
                             log.LogInformation($"Set message: {en.Id} to '4 - Sent'");
                         }
                         else
