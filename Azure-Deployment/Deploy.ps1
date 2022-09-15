@@ -83,8 +83,8 @@ $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --sett
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings EmailDisplayName=$emailDisplayName
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings SmtpServer=$smtpServer
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings SmtpUserName=$smtpUserName
-$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings moongladedb_connection=$dbConnectionString
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings NotificationV2CRON="*/2 * * * *"
+$echo = az webapp config connection-string set -g $rsgName -n $funcAppName -t SQLAzure --settings MoongladeDB=$dbConnectionString
 
 # Azure CLI get buggy and I have to work around this truncating values issue, very 996
 # https://github.com/Azure/azure-cli/issues/10066

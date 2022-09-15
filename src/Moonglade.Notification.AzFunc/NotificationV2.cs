@@ -13,18 +13,23 @@ namespace Moonglade.Notification.AzFunc;
 public class NotificationV2
 {
     [FunctionName("NotificationV2")]
-    public async Task Run([TimerTrigger("%NotificationV2CRON%")] TimerInfo myTimer,
+    public async Task Run([TimerTrigger("%NotificationV2CRON%", RunOnStartup = true)] TimerInfo myTimer,
         ILogger log,
         Microsoft.Azure.WebJobs.ExecutionContext executionContext)
     {
         log.LogInformation($"NotificationV2 Timer trigger function executed at UTC: {DateTime.UtcNow}");
 
-        var str = Environment.GetEnvironmentVariable("moongladedb_connection");
+        var str = Environment.GetEnvironmentVariable("ConnectionStrings:MoongladeDB");
         if (string.IsNullOrWhiteSpace(str))
         {
-            var message = "Failed to get `moongladedb_connection`.";
+            str = Environment.GetEnvironmentVariable("SQLAZURECONNSTR_MoongladeDB");
+        }
+
+        if (string.IsNullOrWhiteSpace(str))
+        {
+            var message = "Failed to get `MoongladeDB`.";
             log.LogError(message);
-            throw new ArgumentNullException("moongladedb_connection", message);
+            throw new ArgumentNullException("MoongladeDB", message);
         }
 
         await using var conn = new SqlConnection(str);
