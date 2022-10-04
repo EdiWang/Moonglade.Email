@@ -19,7 +19,4 @@ public class NewCommentPayload
 
     [Required]
     public string CommentContent { get; set; }
-
-    [Required]
-    public DateTime CreateOnUtc { get; set; }
 }

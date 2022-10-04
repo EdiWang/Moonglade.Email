@@ -53,7 +53,6 @@
 </div>
 <div>
 <i>{PostTitle.Value}</i> <br />
-Time (UTC): {CreateOnUtc.Value} <br />
 Email: {Email.Value} <br />
 IP: {IpAddress.Value}
 </div>
@@ -88,7 +87,6 @@ IP: {IpAddress.Value}
 <strong>Url:</strong> <a href="{SourceUrl.Value}">{SourceUrl.Value}</a> <br />
 <strong>Title:</strong> {SourceTitle.Value}  <br />
 <strong>Ip:</strong> {SourceIp.Value}  <br />
-<strong>Time (UTC):</strong> {PingTimeUtc.Value}
       ]]>
     </MessageBody>
   </MailMessage>

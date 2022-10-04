@@ -33,7 +33,6 @@ public class EmailHandler
                           .Map(nameof(request.Username), request.Username)
                           .Map(nameof(request.Email), request.Email)
                           .Map(nameof(request.IpAddress), request.IpAddress)
-                          .Map(nameof(request.CreateOnUtc), request.CreateOnUtc.ToString("MM/dd/yyyy HH:mm"))
                           .Map(nameof(request.PostTitle), request.PostTitle)
                           .Map(nameof(request.CommentContent), request.CommentContent)
                           .SendAsync(toAddresses);
@@ -53,7 +52,6 @@ public class EmailHandler
     {
         await _emailHelper.ForType("BeingPinged")
                           .Map(nameof(request.TargetPostTitle), request.TargetPostTitle)
-                          .Map(nameof(request.PingTimeUtc), request.PingTimeUtc)
                           .Map(nameof(request.Domain), request.Domain)
                           .Map(nameof(request.SourceIp), request.SourceIp)
                           .Map(nameof(request.SourceTitle), request.SourceTitle)

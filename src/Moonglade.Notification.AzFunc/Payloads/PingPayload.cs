@@ -8,9 +8,6 @@ public class PingPayload
     public string TargetPostTitle { get; set; }
 
     [Required]
-    public DateTime PingTimeUtc { get; set; }
-
-    [Required]
     public string Domain { get; set; }
 
     [Required]
