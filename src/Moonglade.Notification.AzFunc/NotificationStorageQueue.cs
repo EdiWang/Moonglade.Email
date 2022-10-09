@@ -1,5 +1,4 @@
 using Azure.Storage.Queues.Models;
-using Edi.TemplateEmail;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using MimeKit;
@@ -9,9 +8,9 @@ using System.Text.Json;
 
 namespace Moonglade.Notification.AzFunc;
 
-public class NotificationV3
+public class NotificationStorageQueue
 {
-    [FunctionName("NotificationV3")]
+    [FunctionName("NotificationStorageQueue")]
     public async Task Run(
         [QueueTrigger("moongladeemailqueue", Connection = "moongladestorage")] QueueMessage queueMessage,
         ILogger log,
@@ -39,18 +38,7 @@ public class NotificationV3
                     return;
                 }
 
-                var configSource = Path.Join(executionContext.FunctionAppDirectory, "mailConfiguration.xml");
-                if (!File.Exists(configSource))
-                    throw new FileNotFoundException("Configuration file for EmailHelper is not present.", configSource);
-
-                var emailHelper = new EmailHelper(
-                    configSource,
-                    Environment.GetEnvironmentVariable("SmtpServer"),
-                    Environment.GetEnvironmentVariable("SmtpUserName"),
-                    Environment.GetEnvironmentVariable("EmailAccountPassword", EnvironmentVariableTarget.Process),
-                    int.Parse(Environment.GetEnvironmentVariable("SmtpServerPort") ?? "587"));
-
-                if (bool.Parse(Environment.GetEnvironmentVariable("EnableTls") ?? "true")) emailHelper.WithTls();
+                var emailHelper = Helper.GetEmailHelper(executionContext.FunctionAppDirectory);
 
                 emailHelper.EmailSent += async (sender, eventArgs) =>
                 {

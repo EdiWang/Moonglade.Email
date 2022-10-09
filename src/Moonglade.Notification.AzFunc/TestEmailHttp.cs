@@ -1,4 +1,3 @@
-using Edi.TemplateEmail;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -10,9 +9,9 @@ using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
 namespace Moonglade.Notification.AzFunc;
 
-public class TestEmail
+public class TestEmailHttp
 {
-    [FunctionName("TestEmail")]
+    [FunctionName("TestEmailHttp")]
     public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] TestEmailRequest request,
         ILogger log, ExecutionContext executionContext)
@@ -21,17 +20,7 @@ public class TestEmail
 
         try
         {
-            var configSource = Path.Join(executionContext.FunctionAppDirectory, "mailConfiguration.xml");
-            if (!File.Exists(configSource)) throw new FileNotFoundException("Configuration file for EmailHelper is not present.", configSource);
-
-            var emailHelper = new EmailHelper(
-                configSource,
-                Environment.GetEnvironmentVariable("SmtpServer"),
-                Environment.GetEnvironmentVariable("SmtpUserName"),
-                Environment.GetEnvironmentVariable("EmailAccountPassword", EnvironmentVariableTarget.Process),
-                int.Parse(Environment.GetEnvironmentVariable("SmtpServerPort") ?? "587"));
-
-            if (bool.Parse(Environment.GetEnvironmentVariable("EnableTls") ?? "true")) emailHelper.WithTls();
+            var emailHelper = Helper.GetEmailHelper(executionContext.FunctionAppDirectory);
 
             emailHelper.EmailSent += (sender, eventArgs) =>
             {

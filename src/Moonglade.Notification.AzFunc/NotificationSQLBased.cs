@@ -1,5 +1,4 @@
 using Dapper;
-using Edi.TemplateEmail;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
@@ -10,14 +9,14 @@ using System.Text.Json;
 
 namespace Moonglade.Notification.AzFunc;
 
-public class NotificationV2
+public class NotificationSQLBased
 {
-    [FunctionName("NotificationV2")]
+    [FunctionName("NotificationSQLBased")]
     public async Task Run([TimerTrigger("%NotificationV2CRON%", RunOnStartup = true)] TimerInfo myTimer,
         ILogger log,
         Microsoft.Azure.WebJobs.ExecutionContext executionContext)
     {
-        log.LogInformation($"NotificationV2 Timer trigger function executed at UTC: {DateTime.UtcNow}");
+        log.LogInformation($"NotificationSQLBased Timer trigger function executed at UTC: {DateTime.UtcNow}");
 
         var str = Environment.GetEnvironmentVariable("ConnectionStrings:MoongladeDB");
         if (string.IsNullOrWhiteSpace(str))
@@ -66,18 +65,7 @@ public class NotificationV2
                 await conn.ExecuteAsync(sqlUpdateInProgress, new { en.Id });
                 log.LogInformation($"Set message: {en.Id} to '2 - InProgress'");
 
-                var configSource = Path.Join(executionContext.FunctionAppDirectory, "mailConfiguration.xml");
-                if (!File.Exists(configSource))
-                    throw new FileNotFoundException("Configuration file for EmailHelper is not present.", configSource);
-
-                var emailHelper = new EmailHelper(
-                    configSource,
-                    Environment.GetEnvironmentVariable("SmtpServer"),
-                    Environment.GetEnvironmentVariable("SmtpUserName"),
-                    Environment.GetEnvironmentVariable("EmailAccountPassword", EnvironmentVariableTarget.Process),
-                    int.Parse(Environment.GetEnvironmentVariable("SmtpServerPort") ?? "587"));
-
-                if (bool.Parse(Environment.GetEnvironmentVariable("EnableTls") ?? "true")) emailHelper.WithTls();
+                var emailHelper = Helper.GetEmailHelper(executionContext.FunctionAppDirectory);
 
                 emailHelper.EmailSent += async (sender, eventArgs) =>
                 {
