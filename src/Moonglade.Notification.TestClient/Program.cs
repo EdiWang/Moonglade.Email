@@ -30,16 +30,19 @@ internal class Program
 
         await InsertMessageAsync(queue, testEmail);
 
-        Console.WriteLine("Press any key to retrive next message");
-        Console.ReadLine();
-        var message = await RetrieveNextMessageAsync(queue);
+        Console.WriteLine("Retrive next message? (Y/N)");
+        var yn = Console.ReadLine();
+        if (yn.ToUpper() == "Y")
+        {
+            var message = await RetrieveNextMessageAsync(queue);
 
-        var json = JsonSerializer.Serialize(message, new JsonSerializerOptions { WriteIndented = true });
-        Console.WriteLine(json);
+            var json = JsonSerializer.Serialize(message, new JsonSerializerOptions { WriteIndented = true });
+            Console.WriteLine(json);
 
-        Console.WriteLine("Press any key to delete this message");
-        Console.ReadLine();
-        await DeleteMessage(queue, message);
+            Console.WriteLine("Press any key to delete this message");
+            Console.ReadLine();
+            await DeleteMessage(queue, message);
+        }
     }
 
     static async Task InsertMessageAsync(QueueClient theQueue, EmailNotification emailNotification)
