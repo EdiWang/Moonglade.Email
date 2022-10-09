@@ -1,7 +1,7 @@
-﻿using System.Text;
-using System.Text.Json;
-using Azure.Storage.Queues;
+﻿using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
+using System.Text;
+using System.Text.Json;
 
 namespace Moonglade.Notification.TestClient;
 
@@ -56,7 +56,7 @@ internal class Program
         var json = JsonSerializer.Serialize(emailNotification);
         var bytes = Encoding.UTF8.GetBytes(json);
         var base64Json = Convert.ToBase64String(bytes);
-        
+
         await theQueue.SendMessageAsync(base64Json);
 
         Console.WriteLine($"Inserted message: {json}, base64: {base64Json}");

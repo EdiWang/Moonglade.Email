@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Azure.Storage.Queues.Models;
 using Edi.TemplateEmail;
 using Microsoft.Azure.WebJobs;
@@ -6,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using MimeKit;
 using Moonglade.Notification.AzFunc.Core;
 using Moonglade.Notification.AzFunc.Payloads;
+using System.Text.Json;
 
 namespace Moonglade.Notification.AzFunc;
 
