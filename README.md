@@ -4,8 +4,6 @@ The Azure Function used by my blog (https://edi.wang) to send notifications.
 
 This Function sets HTML template and send email notifications to blog administrator or users.
 
-> Note: This notification API is just a simple toy. It doesn't use standard message queues service or a database storage to ensure notification delivery, neither can this handle high amount of concurrent traffic. If you are looking for an enterprise level notification service, this is NOT what you should use.
-
 ## Get Started
 
 Tools | Alternative
