@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Text;
+using System.Text.Json;
 using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
 
@@ -53,9 +54,12 @@ internal class Program
         }
 
         var json = JsonSerializer.Serialize(emailNotification);
-        await theQueue.SendMessageAsync(json);
+        var bytes = Encoding.UTF8.GetBytes(json);
+        var base64Json = Convert.ToBase64String(bytes);
+        
+        await theQueue.SendMessageAsync(base64Json);
 
-        Console.WriteLine($"Inserted message: {json}");
+        Console.WriteLine($"Inserted message: {json}, base64: {base64Json}");
     }
 
     static async Task<QueueMessage> RetrieveNextMessageAsync(QueueClient theQueue)
