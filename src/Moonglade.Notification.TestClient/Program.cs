@@ -24,9 +24,7 @@ internal class Program
         {
             DistributionList = dl,
             MessageBody = string.Empty,
-            MessageType = "TestMail",
-            RetryCount = 0,
-            SendingStatus = 1
+            MessageType = "TestMail"
         };
 
         await InsertMessageAsync(queue, testEmail);
@@ -91,8 +89,4 @@ public class EmailNotification
     public string DistributionList { get; set; }
     public string MessageType { get; set; }
     public string MessageBody { get; set; }
-    public int SendingStatus { get; set; }
-    public DateTime? SentTimeUtc { get; set; }
-    public string TargetResponse { get; set; }
-    public int RetryCount { get; set; }
 }

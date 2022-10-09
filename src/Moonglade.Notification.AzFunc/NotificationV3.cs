@@ -112,7 +112,4 @@ public class EmailNotificationV3
     public string DistributionList { get; set; }
     public string MessageType { get; set; }
     public string MessageBody { get; set; }
-    public int SendingStatus { get; set; }
-    public DateTime? SentTimeUtc { get; set; }
-    public string TargetResponse { get; set; }
 }
