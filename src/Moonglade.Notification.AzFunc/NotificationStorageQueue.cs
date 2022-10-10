@@ -40,7 +40,7 @@ public class NotificationStorageQueue
 
                 var emailHelper = Helper.GetEmailHelper(executionContext.FunctionAppDirectory);
 
-                emailHelper.EmailSent += async (sender, eventArgs) =>
+                emailHelper.EmailSent += (sender, eventArgs) =>
                 {
                     if (sender is MimeMessage msg)
                     {
