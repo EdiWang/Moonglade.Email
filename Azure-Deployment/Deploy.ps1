@@ -11,8 +11,7 @@ param(
     $emailDisplayName = "Moonglade Notification",
     $smtpServer = "smtp.whatever.com",
     $smtpUserName = "admin@whatever.com",
-    $smtpPassword = "P@ssw0rd",
-    $dbConnectionString = "Server=(localdb)\MSSQLLocalDB;Database=Moonglade;Trusted_Connection=True;"
+    $smtpPassword = "P@ssw0rd"
 )
 
 [Console]::ResetColor()
@@ -83,8 +82,6 @@ $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --sett
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings EmailDisplayName=$emailDisplayName
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings SmtpServer=$smtpServer
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings SmtpUserName=$smtpUserName
-$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings NotificationV2CRON="*/2 * * * *"
-$echo = az webapp config connection-string set -g $rsgName -n $funcAppName -t SQLAzure --settings MoongladeDB=$dbConnectionString
 
 # Azure CLI get buggy and I have to work around this truncating values issue, very 996
 # https://github.com/Azure/azure-cli/issues/10066
