@@ -31,8 +31,7 @@ Parameters example:
 -emailDisplayName "Moonglade Notification Test"
 -smtpServer "smtp.whatever.com"
 -smtpUserName "admin@whatever.com"
--pwdValue "P@ssw0rd",
--dbConnectionString = "Server=(localdb)\MSSQLLocalDB;Database=Moonglade;Trusted_Connection=True;"
+-pwdValue "P@ssw0rd"
 ```
 
 ### 2. Build and Deploy
@@ -57,8 +56,7 @@ Sample ```local.settings.json``` file
     "EmailDisplayName": "Moonglade Notification Azure Function (local)",
     "SmtpServer": "smtp-mail.outlook.com",
     "SmtpUserName": "edi.wang@outlook.com",
-    "EmailAccountPassword": "**********",
-    "moongladedb_connection": "Server=(localdb)\\MSSQLLocalDB;Database=Moonglade;Trusted_Connection=True;"
+    "EmailAccountPassword": "**********"
   }
 }
 ```
