@@ -76,8 +76,6 @@ public class NotificationStorageQueue
                 switch (en.MessageType)
                 {
                     case "TestMail":
-                        await notification.SendTestNotificationAsync(en.DistributionList.Split(';'));
-
                         await SendByMode(sendingMode, en, async (x) =>
                         {
                             await notification.SendTestNotificationAsync(x);
@@ -131,11 +129,11 @@ public class NotificationStorageQueue
     {
         var dl = en.DistributionList.Split(';');
 
-        log.LogInformation($"Send to '{en.DistributionList}' using sendingMode '{sendingMode}'");
-
         switch (sendingMode)
         {
             case 1:
+                log.LogInformation($"Sending to '{en.DistributionList}' using sendingMode '1'");
+
                 await sendingAction(dl);
                 break;
             case 2:
