@@ -38,7 +38,7 @@ public class EmailHandler
                           .SendAsync(toAddresses);
     }
 
-    public async Task SendCommentReplyNotificationAsync(string toAddress, CommentReplyPayload request)
+    public async Task SendCommentReplyNotificationAsync(string[] toAddress, CommentReplyPayload request)
     {
         await _emailHelper.ForType("AdminReplyNotification")
                           .Map(nameof(request.ReplyContentHtml), request.ReplyContentHtml)

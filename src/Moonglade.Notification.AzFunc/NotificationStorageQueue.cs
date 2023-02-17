@@ -1,4 +1,5 @@
 using Azure.Storage.Queues.Models;
+using MailKit.Net.Smtp;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using MimeKit;
@@ -61,25 +62,57 @@ public class NotificationStorageQueue
                 var notification = new EmailHandler(emailHelper, dName);
                 log.LogInformation($"Sending {en.MessageType} message");
 
+                var sendingMode = 1;
+                var envSendingMode = Environment.GetEnvironmentVariable("DistributionListSendingMode");
+                if (!string.IsNullOrWhiteSpace(envSendingMode))
+                {
+                    bool isParsed = int.TryParse(envSendingMode, out sendingMode);
+                    if (!isParsed)
+                    {
+                        log.LogWarning("Failed to parse 'DistributionListSendingMode', falling back to '1', please check settings.");
+                    }
+                }
+
                 switch (en.MessageType)
                 {
                     case "TestMail":
                         await notification.SendTestNotificationAsync(en.DistributionList.Split(';'));
+
+                        await SendByMode(sendingMode, en, async (x) =>
+                        {
+                            await notification.SendTestNotificationAsync(x);
+                        }, log);
+
                         break;
 
                     case "NewCommentNotification":
                         var ncPayload = JsonSerializer.Deserialize<NewCommentPayload>(en.MessageBody);
-                        await notification.SendNewCommentNotificationAsync(en.DistributionList.Split(';'), ncPayload);
+
+                        await SendByMode(sendingMode, en, async (x) =>
+                        {
+                            await notification.SendNewCommentNotificationAsync(x, ncPayload);
+                        }, log);
+
                         break;
 
                     case "AdminReplyNotification":
                         var replyPayload = JsonSerializer.Deserialize<CommentReplyPayload>(en.MessageBody);
-                        await notification.SendCommentReplyNotificationAsync(en.DistributionList, replyPayload);
+
+                        await SendByMode(sendingMode, en, async (x) =>
+                        {
+                            await notification.SendCommentReplyNotificationAsync(x, replyPayload);
+                        }, log);
+
                         break;
 
                     case "BeingPinged":
                         var pingPayload = JsonSerializer.Deserialize<PingPayload>(en.MessageBody);
-                        await notification.SendPingNotificationAsync(en.DistributionList.Split(';'), pingPayload);
+
+                        await SendByMode(sendingMode, en, async (x) =>
+                        {
+                            await notification.SendPingNotificationAsync(x, pingPayload);
+                        }, log);
+
                         break;
 
                     default:
@@ -91,6 +124,55 @@ public class NotificationStorageQueue
         {
             log.LogError(e.Message);
             throw;
+        }
+    }
+
+    private async Task SendByMode(int sendingMode, EmailNotificationV3 en, Func<string[], Task> sendingAction, ILogger log)
+    {
+        var dl = en.DistributionList.Split(';');
+
+        log.LogInformation($"Send to '{en.DistributionList}' using sendingMode '{sendingMode}'");
+
+        switch (sendingMode)
+        {
+            case 1:
+                await sendingAction(dl);
+                break;
+            case 2:
+                {
+                    // Workaround for error when sending to multiple recipients in case a part of them failed
+                    // which result in other recipients also not receiving email 
+                    // Fix:
+                    // - Send email one by one
+                    // - Log SmtpCommandException only instead of failing
+                    // - Fail fast only when ALL recipients blow up
+
+                    var exceptions = new List<SmtpCommandException>();
+                    foreach (var recipient in dl)
+                    {
+                        try
+                        {
+                            log.LogInformation($"Sending to '{recipient}' using sendingMode '2'");
+
+                            await sendingAction(new[] { recipient });
+                        }
+                        catch (SmtpCommandException e)
+                        {
+                            exceptions.Add(e);
+                            log.LogError(exception: e, message: $"Error sending to '{recipient}': '{e.Message}'");
+                        }
+                    }
+
+                    if (exceptions.Count == dl.Length)
+                    {
+                        log.LogError("Sending email all failed in sendingMode '2'");
+
+                        // All blow up, notify Azure to retry or put message into poison queue for developers to work 996
+                        throw new AggregateException("Error sending 'OpenCard' email, all messages failed with exceptions.", innerExceptions: exceptions);
+                    }
+
+                    break;
+                }
         }
     }
 }
