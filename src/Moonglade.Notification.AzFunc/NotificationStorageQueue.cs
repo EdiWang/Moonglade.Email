@@ -150,9 +150,11 @@ public class NotificationStorageQueue
                     {
                         try
                         {
-                            log.LogInformation($"Sending to '{recipient}' using sendingMode '2'");
-
-                            await sendingAction(new[] { recipient });
+                            if (!string.IsNullOrWhiteSpace(recipient))
+                            {
+                                log.LogInformation($"Sending to '{recipient}' using sendingMode '2'");
+                                await sendingAction(new[] { recipient });
+                            }
                         }
                         catch (SmtpCommandException e)
                         {
