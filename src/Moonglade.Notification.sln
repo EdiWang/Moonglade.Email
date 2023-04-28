@@ -18,7 +18,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moonglade.Notification.AzFunc", "Moonglade.Notification.AzFunc\Moonglade.Notification.AzFunc.csproj", "{552BE917-D539-4D01-B85C-20683E1B6D6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moonglade.Notification.TestClient", "Moonglade.Notification.TestClient\Moonglade.Notification.TestClient.csproj", "{91ED797F-8DED-49A8-BD67-432FBDFA9727}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moonglade.Notification.TestClient", "Moonglade.Notification.TestClient\Moonglade.Notification.TestClient.csproj", "{91ED797F-8DED-49A8-BD67-432FBDFA9727}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Moonglade.Notification", "Moonglade.Notification\Moonglade.Notification.csproj", "{A6B5E4BE-FEC9-4E0D-AC9A-95D5EA8CC1DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +36,10 @@ Global
 		{91ED797F-8DED-49A8-BD67-432FBDFA9727}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91ED797F-8DED-49A8-BD67-432FBDFA9727}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91ED797F-8DED-49A8-BD67-432FBDFA9727}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6B5E4BE-FEC9-4E0D-AC9A-95D5EA8CC1DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6B5E4BE-FEC9-4E0D-AC9A-95D5EA8CC1DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6B5E4BE-FEC9-4E0D-AC9A-95D5EA8CC1DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6B5E4BE-FEC9-4E0D-AC9A-95D5EA8CC1DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
