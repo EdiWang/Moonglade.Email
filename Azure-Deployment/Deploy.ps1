@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------------------------------------
-# Quick Start deployment script for running Moonglade.Notification Azure Function
+# Quick Start deployment script for running Moonglade.Email Azure Function
 # Author: Edi Wang
 # ---------------------------------------------------------------------------------------------------------
 
@@ -8,7 +8,7 @@ param(
     $adminEmail = "edi.wang@outlook.com",
     $rsgName = "moongladegroup",
     $storageAccountName = "moongladestorage",
-    $emailDisplayName = "Moonglade Notification",
+    $emailDisplayName = "Moonglade Email",
     $smtpServer = "smtp.whatever.com",
     $smtpUserName = "admin@whatever.com",
     $smtpPassword = "P@ssw0rd"
@@ -33,7 +33,7 @@ else {
 
 # Confirmation
 Clear-Host
-Write-Host "Your Moonglade.Notification will be deployed to [$rsgName] in [$regionName] under Azure subscription [$subscriptionName]. Please confirm before continue." -ForegroundColor Green
+Write-Host "Your Moonglade.Email will be deployed to [$rsgName] in [$regionName] under Azure subscription [$subscriptionName]. Please confirm before continue." -ForegroundColor Green
 Read-Host -Prompt "Press [ENTER] to continue, [CTRL + C] to cancel"
 
 # Select Subscription
@@ -62,7 +62,7 @@ if (!$storageAccountExists) {
 Write-Host ""
 Write-Host "Preparing Key Vault" -ForegroundColor Green
 $keyVaultName = "moonglade-kvt" + (Get-Random -Maximum 1000)
-$pwdKey = "Notification-Email-Password"
+$pwdKey = "Moonglade-Email-Password"
 $echo = az keyvault create --name $keyVaultName --resource-group $rsgName --location $regionName
 $echo = az keyvault secret set --vault-name $keyVaultName --name $pwdKey --value $smtpPassword
 $pwdSecret = az keyvault secret show --vault-name $keyVaultName --name $pwdKey | ConvertFrom-Json
