@@ -1,9 +1,9 @@
-﻿using Azure.Storage.Queues;
-using Azure.Storage.Queues.Models;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
+using Azure.Storage.Queues;
+using Azure.Storage.Queues.Models;
 
-namespace Moonglade.Notification.TestClient;
+namespace TestClient;
 
 internal class Program
 {
