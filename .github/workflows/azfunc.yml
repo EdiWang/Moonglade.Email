@@ -1,4 +1,4 @@
-name: Moonglade.Notification.AzFunc Build and Deploy
+name: Moonglade.Function.Email Build and Deploy
 
 on:
   [push]

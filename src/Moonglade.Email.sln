@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moonglade.Function.Email", "Moonglade.Notification.AzFunc\Moonglade.Function.Email.csproj", "{552BE917-D539-4D01-B85C-20683E1B6D6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Moonglade.Function.Email", "Moonglade.Function.Email\Moonglade.Function.Email.csproj", "{552BE917-D539-4D01-B85C-20683E1B6D6E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestClient", "TestClient\TestClient.csproj", "{91ED797F-8DED-49A8-BD67-432FBDFA9727}"
 EndProject

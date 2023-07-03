@@ -40,7 +40,7 @@ Build and deploy **Moonglade.Notification.sln** to the Azure Function that creat
 
 ### 3. Local Development and Debugging
 
-For development, create ```local.settings.json``` under "**./src/Moonglade.Notification.AzFunc**", this file defines development time settings. It is by default ignored by git, so you will need to manange it on your own.
+For development, create ```local.settings.json``` under "**./src/Moonglade.Function.Email**", this file defines development time settings. It is by default ignored by git, so you will need to manange it on your own.
 
 Sample ```local.settings.json``` file
 

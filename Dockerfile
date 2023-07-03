@@ -9,13 +9,13 @@ WORKDIR /src
 COPY ./src/**/*.csproj ./
 RUN for file in $(ls *.csproj); do mkdir -p ./${file%.*}/ && mv $file ./${file%.*}/; done
 
-RUN dotnet restore "Moonglade.Notification.AzFunc/Moonglade.Notification.AzFunc.csproj"
+RUN dotnet restore "Moonglade.Function.Email/Moonglade.Function.Email.csproj"
 COPY ./src .
-WORKDIR "/src/Moonglade.Notification.AzFunc"
-RUN dotnet build "Moonglade.Notification.AzFunc.csproj" -c Release -o /app/build
+WORKDIR "/src/Moonglade.Function.Email"
+RUN dotnet build "Moonglade.Function.Email.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Moonglade.Notification.AzFunc.csproj" -c Release -o /app/publish
+RUN dotnet publish "Moonglade.Function.Email.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /home/site/wwwroot
