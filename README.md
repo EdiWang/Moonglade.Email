@@ -1,4 +1,4 @@
-# Moonglade.Notification
+# Moonglade.Email
 
 The Azure Function used by my blog (https://edi.wang) to send notifications.
 
