@@ -1,13 +1,13 @@
+using System.Text.Json;
 using Azure.Storage.Queues.Models;
 using MailKit.Net.Smtp;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using MimeKit;
-using Moonglade.Notification.AzFunc.Core;
-using Moonglade.Notification.AzFunc.Payloads;
-using System.Text.Json;
+using Moonglade.Function.Email.Core;
+using Moonglade.Function.Email.Payloads;
 
-namespace Moonglade.Notification.AzFunc;
+namespace Moonglade.Function.Email;
 
 public class NotificationStorageQueue
 {

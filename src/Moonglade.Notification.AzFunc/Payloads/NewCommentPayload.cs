@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Moonglade.Notification.AzFunc.Payloads;
+namespace Moonglade.Function.Email.Payloads;
 
 public class NewCommentPayload
 {

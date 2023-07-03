@@ -1,6 +1,6 @@
 ﻿using Edi.TemplateEmail;
 
-namespace Moonglade.Notification.AzFunc;
+namespace Moonglade.Function.Email;
 
 public class Helper
 {

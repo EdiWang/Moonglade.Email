@@ -1,7 +1,7 @@
 ﻿using Edi.TemplateEmail;
-using Moonglade.Notification.AzFunc.Payloads;
+using Moonglade.Function.Email.Payloads;
 
-namespace Moonglade.Notification.AzFunc.Core;
+namespace Moonglade.Function.Email.Core;
 
 public class EmailHandler
 {
