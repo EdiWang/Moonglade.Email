@@ -23,7 +23,7 @@
 		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ApplicationInsights" Version="1.0.0-preview4" />
 		<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.2.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.*" />
-		<PackageReference Include="Edi.TemplateEmail" Version="2023.3.0" />
+		<PackageReference Include="Edi.TemplateEmail" Version="2023.4.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="host.json">
