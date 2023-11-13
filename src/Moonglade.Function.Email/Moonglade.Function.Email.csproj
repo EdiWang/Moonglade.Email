@@ -1,40 +1,41 @@
-<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
-		<AzureFunctionsVersion>v4</AzureFunctionsVersion>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<RepositoryUrl>https://github.com/EdiWang/Moonglade.Notification</RepositoryUrl>
-		<PackageProjectUrl>https://edi.wang</PackageProjectUrl>
-		<ImplicitUsings>enable</ImplicitUsings>
-	</PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <AzureFunctionsVersion>v4</AzureFunctionsVersion>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/EdiWang/Moonglade.Notification</RepositoryUrl>
+        <PackageProjectUrl>https://edi.wang</PackageProjectUrl>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Version>4.0</Version>
+    </PropertyGroup>
 
-	<ItemGroup>
-		<None Remove="mailConfiguration.xml" />
-	</ItemGroup>
+    <ItemGroup>
+        <None Remove="mailConfiguration.xml" />
+    </ItemGroup>
 
-	<ItemGroup>
-		<Content Include="mailConfiguration.xml">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="5.2.1" />
-		<PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
-		<PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ApplicationInsights" Version="1.0.0-preview4" />
-		<PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.2.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.*" />
-		<PackageReference Include="Edi.TemplateEmail" Version="2023.4.0" />
-	</ItemGroup>
-	<ItemGroup>
-		<None Update="host.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="local.settings.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
-		</None>
-		<None Update="mailConfiguration.xml">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
+    <ItemGroup>
+        <Content Include="mailConfiguration.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="5.2.1" />
+        <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.21.0" />
+        <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ApplicationInsights" Version="1.0.0-preview4" />
+        <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.2.0" />
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+        <PackageReference Include="Edi.TemplateEmail" Version="2023.4.1" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="host.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="local.settings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+        </None>
+        <None Update="mailConfiguration.xml">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>
