@@ -9,9 +9,9 @@ using Moonglade.Function.Email.Payloads;
 
 namespace Moonglade.Function.Email;
 
-public class NotificationStorageQueue
+public class QueueProcessor
 {
-    [FunctionName("NotificationStorageQueue")]
+    [FunctionName("QueueProcessor")]
     public async Task Run(
         [QueueTrigger("moongladeemailqueue", Connection = "moongladestorage")] QueueMessage queueMessage,
         ILogger log,

@@ -9,9 +9,9 @@ using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
 
 namespace Moonglade.Function.Email;
 
-public class TestEmailHttp
+public class TestEmail
 {
-    [FunctionName("TestEmailHttp")]
+    [FunctionName("TestEmail")]
     public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] TestEmailRequest request,
         ILogger log, ExecutionContext executionContext)
