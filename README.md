@@ -38,6 +38,17 @@ Parameters example:
 
 Build and deploy **Moonglade.Notification.sln** to the Azure Function that created via ```Deploy.ps1```
 
+### 3. Configure Moonglade
+
+Open **appsettings.json** under your Moonglade instance, add the following settings:
+
+```json
+"Email": {
+  "ApiEndpoint": "https://yourfunctionappurl",
+  "ApiKey": "<your function key>"
+}
+```
+
 ### 3. Local Development and Debugging
 
 For development, create ```local.settings.json``` under "**./src/Moonglade.Function.Email**", this file defines development time settings. It is by default ignored by git, so you will need to manange it on your own.
