@@ -14,7 +14,7 @@ public static class Enqueue
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] EnqueueRequest req,
         ILogger log)
     {
-        log.LogInformation("C# HTTP trigger function `Enqueue` processed a request.");
+        log.LogInformation($"C# HTTP trigger function `Enqueue` processed a request. OriginAspNetRequestId={req.OriginAspNetRequestId}");
 
         var conn = Environment.GetEnvironmentVariable("moongladestorage");
         var queue = new QueueClient(conn, "moongladeemailqueue");
@@ -51,4 +51,5 @@ public class EnqueueRequest
     public string Type { get; set; }
     public string[] Receipts { get; set; }
     public object Payload { get; set; }
+    public string OriginAspNetRequestId { get; set; }
 }
