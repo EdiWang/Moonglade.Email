@@ -4,7 +4,7 @@
 # ---------------------------------------------------------------------------------------------------------
 
 param(
-    $regionName = "eastasia",
+    $regionName = "westus",
     $adminEmail = "edi.wang@outlook.com",
     $rsgName = "moongladegroup",
     $storageAccountName = "moongladestorage",
@@ -71,7 +71,7 @@ $pwdSecretId = $pwdSecret.id
 # Create Function App
 Write-Host ""
 Write-Host "Preparing Azure Function App" -ForegroundColor Green
-$funcAppName = "moonglade-ntfunc" + (Get-Random -Maximum 1000)
+$funcAppName = "moonglade-email" + (Get-Random -Maximum 1000)
 $appCheck = az functionapp list --query "[?name=='$funcAppName']" | ConvertFrom-Json
 $appExists = $appCheck.Length -gt 0
 if (!$appExists) {
