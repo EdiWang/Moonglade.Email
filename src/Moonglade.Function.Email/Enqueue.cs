@@ -4,6 +4,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Azure.Storage.Queues;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Moonglade.Function.Email;
 
@@ -23,7 +24,9 @@ public static class Enqueue
         {
             DistributionList = string.Join(';', req.Receipts),
             MessageType = req.Type,
-            MessageBody = System.Text.Json.JsonSerializer.Serialize(req.Payload, MoongladeJsonSerializerOptions.Default),
+
+            // System.Text.Json doesn't work here because Azure Function model binding is already using Newtonsoft.Json, wtf..
+            MessageBody = JsonConvert.SerializeObject(req.Payload)
         };
 
         await InsertMessageAsync(queue, en, log);
@@ -38,7 +41,7 @@ public static class Enqueue
             logger.LogInformation($"Azure Storage Queue '{queue.Name}' was created.");
         }
 
-        var json = System.Text.Json.JsonSerializer.Serialize(emailNotification);
+        var json = JsonConvert.SerializeObject(emailNotification);
         var bytes = Encoding.UTF8.GetBytes(json);
         var base64Json = Convert.ToBase64String(bytes);
 
