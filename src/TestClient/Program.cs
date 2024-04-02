@@ -1,7 +1,7 @@
-﻿using System.Text;
-using System.Text.Json;
-using Azure.Storage.Queues;
+﻿using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
+using System.Text;
+using System.Text.Json;
 
 namespace TestClient;
 

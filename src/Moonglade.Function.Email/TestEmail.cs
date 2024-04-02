@@ -1,32 +1,34 @@
-using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using MimeKit;
 using Moonglade.Function.Email.Core;
-using ExecutionContext = Microsoft.Azure.WebJobs.ExecutionContext;
+using System.ComponentModel.DataAnnotations;
+using FromBodyAttribute = Microsoft.Azure.Functions.Worker.Http.FromBodyAttribute;
 
 namespace Moonglade.Function.Email;
 
-public class TestEmail
+public class TestEmail(ILogger<TestEmail> logger)
 {
-    [FunctionName("TestEmail")]
+    [Function("TestEmail")]
     public async Task<IActionResult> Run(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] TestEmailRequest request,
-        ILogger log, ExecutionContext executionContext)
+        [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+        [FromBody] TestEmailRequest payload,
+        Microsoft.Azure.WebJobs.ExecutionContext executionContext)
     {
-        log.LogInformation("EmailSending HTTP trigger function processed a request.");
+        logger.LogInformation("EmailSending HTTP trigger function processed a request.");
 
         try
         {
-            var emailHelper = Helper.GetEmailHelper(executionContext.FunctionAppDirectory);
+            var runningDirectory = Environment.CurrentDirectory;
+            var emailHelper = Helper.GetEmailHelper(runningDirectory);
 
             emailHelper.EmailSent += (sender, eventArgs) =>
             {
                 if (sender is MimeMessage msg)
                 {
-                    log.LogInformation($"Email '{msg.Subject}' is sent. Success: {eventArgs.IsSuccess}");
+                    logger.LogInformation($"Email '{msg.Subject}' is sent. Success: {eventArgs.IsSuccess}");
                 }
             };
 
@@ -34,21 +36,21 @@ public class TestEmail
             {
                 if (sender is MimeMessage msg)
                 {
-                    log.LogError($"Email '{msg.Subject}' failed: {args.ServerResponse}");
+                    logger.LogError($"Email '{msg.Subject}' failed: {args.ServerResponse}");
                 }
             };
 
-            var notification = new EmailHandler(emailHelper, request.EmailDisplayName);
-            log.LogInformation($"Sending test message");
+            var notification = new EmailHandler(emailHelper, payload.EmailDisplayName);
+            logger.LogInformation($"Sending test message");
 
-            await notification.SendTestNotificationAsync(request.ToAddresses);
+            await notification.SendTestNotificationAsync(payload.ToAddresses);
 
             return new OkObjectResult($"Test message sent");
 
         }
         catch (Exception e)
         {
-            log.LogError(e, e.Message);
+            logger.LogError(e, e.Message);
             return new ConflictObjectResult(e.Message);
         }
     }
