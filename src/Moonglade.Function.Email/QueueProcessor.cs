@@ -13,8 +13,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
 {
     [Function("QueueProcessor")]
     public async Task Run(
-        [QueueTrigger("moongladeemailqueue", Connection = "moongladestorage")] QueueMessage queueMessage,
-        Microsoft.Azure.WebJobs.ExecutionContext executionContext)
+        [QueueTrigger("moongladeemailqueue", Connection = "moongladestorage")] QueueMessage queueMessage)
     {
         logger.LogInformation($"C# Queue trigger function processed: {queueMessage.MessageId}");
 
@@ -38,7 +37,8 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
                     return;
                 }
 
-                var emailHelper = Helper.GetEmailHelper(executionContext.FunctionAppDirectory);
+                var runningDirectory = Environment.CurrentDirectory;
+                var emailHelper = Helper.GetEmailHelper(runningDirectory);
 
                 emailHelper.EmailSent += (sender, eventArgs) =>
                 {

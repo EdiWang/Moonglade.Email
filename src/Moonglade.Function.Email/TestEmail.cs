@@ -21,7 +21,8 @@ public class TestEmail(ILogger<TestEmail> logger)
 
         try
         {
-            var emailHelper = Helper.GetEmailHelper(executionContext.FunctionAppDirectory);
+            var runningDirectory = Environment.CurrentDirectory;
+            var emailHelper = Helper.GetEmailHelper(runningDirectory);
 
             emailHelper.EmailSent += (sender, eventArgs) =>
             {
