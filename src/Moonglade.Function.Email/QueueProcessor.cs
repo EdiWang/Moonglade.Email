@@ -1,23 +1,22 @@
-using System.Text.Json;
 using Azure.Storage.Queues.Models;
 using MailKit.Net.Smtp;
-using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using MimeKit;
 using Moonglade.Function.Email.Core;
 using Moonglade.Function.Email.Payloads;
+using System.Text.Json;
 
 namespace Moonglade.Function.Email;
 
-public class QueueProcessor
+public class QueueProcessor(ILogger<QueueProcessor> logger)
 {
-    [FunctionName("QueueProcessor")]
+    [Function("QueueProcessor")]
     public async Task Run(
         [QueueTrigger("moongladeemailqueue", Connection = "moongladestorage")] QueueMessage queueMessage,
-        ILogger log,
         Microsoft.Azure.WebJobs.ExecutionContext executionContext)
     {
-        log.LogInformation($"C# Queue trigger function processed: {queueMessage.MessageId}");
+        logger.LogInformation($"C# Queue trigger function processed: {queueMessage.MessageId}");
 
         try
         {
@@ -25,17 +24,17 @@ public class QueueProcessor
 
             if (en != null)
             {
-                log.LogInformation($"Found message: {queueMessage.MessageId}");
+                logger.LogInformation($"Found message: {queueMessage.MessageId}");
 
                 if (string.IsNullOrWhiteSpace(en.DistributionList))
                 {
-                    log.LogError($"Message Id '{queueMessage.MessageId}' has no DistributionList, operation aborted.");
+                    logger.LogError($"Message Id '{queueMessage.MessageId}' has no DistributionList, operation aborted.");
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(en.MessageType))
                 {
-                    log.LogError($"Message Id '{queueMessage.MessageId}' has no MessageType, operation aborted.");
+                    logger.LogError($"Message Id '{queueMessage.MessageId}' has no MessageType, operation aborted.");
                     return;
                 }
 
@@ -45,7 +44,7 @@ public class QueueProcessor
                 {
                     if (sender is MimeMessage msg)
                     {
-                        log.LogInformation($"Email '{msg.Subject}' is sent. Success: {eventArgs.IsSuccess}");
+                        logger.LogInformation($"Email '{msg.Subject}' is sent. Success: {eventArgs.IsSuccess}");
                     }
                 };
 
@@ -53,14 +52,14 @@ public class QueueProcessor
                 {
                     if (sender is MimeMessage msg)
                     {
-                        log.LogError($"Email '{msg.Subject}' failed: {args.ServerResponse}");
+                        logger.LogError($"Email '{msg.Subject}' failed: {args.ServerResponse}");
                         throw new(args.ServerResponse);
                     }
                 };
 
                 var dName = Environment.GetEnvironmentVariable("SenderDisplayName");
                 var notification = new EmailHandler(emailHelper, dName);
-                log.LogInformation($"Sending {en.MessageType} message");
+                logger.LogInformation($"Sending {en.MessageType} message");
 
                 var sendingMode = 1;
                 var envSendingMode = Environment.GetEnvironmentVariable("DistributionListSendingMode");
@@ -69,7 +68,7 @@ public class QueueProcessor
                     bool isParsed = int.TryParse(envSendingMode, out sendingMode);
                     if (!isParsed)
                     {
-                        log.LogWarning("Failed to parse 'DistributionListSendingMode', falling back to '1', please check settings.");
+                        logger.LogWarning("Failed to parse 'DistributionListSendingMode', falling back to '1', please check settings.");
                     }
                 }
 
@@ -79,7 +78,7 @@ public class QueueProcessor
                         await SendByMode(sendingMode, en, async (x) =>
                         {
                             await notification.SendTestNotificationAsync(x);
-                        }, log);
+                        });
 
                         break;
 
@@ -89,7 +88,7 @@ public class QueueProcessor
                         await SendByMode(sendingMode, en, async (x) =>
                         {
                             await notification.SendNewCommentNotificationAsync(x, ncPayload);
-                        }, log);
+                        });
 
                         break;
 
@@ -99,7 +98,7 @@ public class QueueProcessor
                         await SendByMode(sendingMode, en, async (x) =>
                         {
                             await notification.SendCommentReplyNotificationAsync(x, replyPayload);
-                        }, log);
+                        });
 
                         break;
 
@@ -109,7 +108,7 @@ public class QueueProcessor
                         await SendByMode(sendingMode, en, async (x) =>
                         {
                             await notification.SendPingNotificationAsync(x, pingPayload);
-                        }, log);
+                        });
 
                         break;
 
@@ -120,19 +119,19 @@ public class QueueProcessor
         }
         catch (Exception e)
         {
-            log.LogError(e.Message);
+            logger.LogError(e.Message);
             throw;
         }
     }
 
-    private async Task SendByMode(int sendingMode, EmailNotificationV3 en, Func<string[], Task> sendingAction, ILogger log)
+    private async Task SendByMode(int sendingMode, EmailNotificationV3 en, Func<string[], Task> sendingAction)
     {
         var dl = en.DistributionList.Split(';');
 
         switch (sendingMode)
         {
             case 1:
-                log.LogInformation($"Sending to '{en.DistributionList}' using sendingMode '1'");
+                logger.LogInformation($"Sending to '{en.DistributionList}' using sendingMode '1'");
 
                 await sendingAction(dl);
                 break;
@@ -152,20 +151,20 @@ public class QueueProcessor
                         {
                             if (!string.IsNullOrWhiteSpace(recipient))
                             {
-                                log.LogInformation($"Sending to '{recipient}' using sendingMode '2'");
+                                logger.LogInformation($"Sending to '{recipient}' using sendingMode '2'");
                                 await sendingAction(new[] { recipient });
                             }
                         }
                         catch (SmtpCommandException e)
                         {
                             exceptions.Add(e);
-                            log.LogError(exception: e, message: $"Error sending to '{recipient}': '{e.Message}'");
+                            logger.LogError(exception: e, message: $"Error sending to '{recipient}': '{e.Message}'");
                         }
                     }
 
                     if (exceptions.Count == dl.Length)
                     {
-                        log.LogError("Sending email all failed in sendingMode '2'");
+                        logger.LogError("Sending email all failed in sendingMode '2'");
 
                         // All blow up, notify Azure to retry or put message into poison queue for developers to work 996
                         throw new AggregateException("Error sending 'OpenCard' email, all messages failed with exceptions.", innerExceptions: exceptions);
