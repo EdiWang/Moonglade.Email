@@ -61,13 +61,14 @@ Sample ```local.settings.json``` file
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "moongladestorage": "<storage account connection string>",
     "EnableSsl": true,
     "SmtpServerPort": 587,
     "AdminEmail": "edi.wang@outlook.com",
     "EmailDisplayName": "Moonglade Notification Azure Function (local)",
     "SmtpServer": "smtp-mail.outlook.com",
     "SmtpUserName": "edi.wang@outlook.com",
-    "EmailAccountPassword": "**********"
+    "EmailAccountPassword": "<smtp password>"
   }
 }
 ```
