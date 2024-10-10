@@ -1,8 +1,8 @@
+using Edi.TemplateEmail;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using MimeKit;
 using Moonglade.Function.Email.Core;
 using System.ComponentModel.DataAnnotations;
 using FromBodyAttribute = Microsoft.Azure.Functions.Worker.Http.FromBodyAttribute;
@@ -24,29 +24,13 @@ public class TestEmail(ILogger<TestEmail> logger)
             var runningDirectory = Environment.CurrentDirectory;
             var emailHelper = Helper.GetEmailHelper(runningDirectory);
 
-            emailHelper.EmailSent += (sender, eventArgs) =>
-            {
-                if (sender is MimeMessage msg)
-                {
-                    logger.LogInformation($"Email '{msg.Subject}' is sent. Success: {eventArgs.IsSuccess}");
-                }
-            };
-
-            emailHelper.EmailFailed += (sender, args) =>
-            {
-                if (sender is MimeMessage msg)
-                {
-                    logger.LogError($"Email '{msg.Subject}' failed: {args.ServerResponse}");
-                }
-            };
-
-            var notification = new EmailHandler(emailHelper, payload.EmailDisplayName);
+            var builder = new MessageBuilder(emailHelper);
             logger.LogInformation($"Sending test message");
 
-            await notification.SendTestNotificationAsync(payload.ToAddresses);
+            var message = builder.BuildTestNotification(payload.ToAddresses);
+            await message.SendAsync();
 
             return new OkObjectResult($"Test message sent");
-
         }
         catch (Exception e)
         {

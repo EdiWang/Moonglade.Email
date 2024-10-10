@@ -1,8 +1,8 @@
 using Azure.Storage.Queues.Models;
+using Edi.TemplateEmail;
 using MailKit.Net.Smtp;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using MimeKit;
 using Moonglade.Function.Email.Core;
 using Moonglade.Function.Email.Payloads;
 using System.Text.Json;
@@ -40,25 +40,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
                 var runningDirectory = Environment.CurrentDirectory;
                 var emailHelper = Helper.GetEmailHelper(runningDirectory);
 
-                emailHelper.EmailSent += (sender, eventArgs) =>
-                {
-                    if (sender is MimeMessage msg)
-                    {
-                        logger.LogInformation($"Email '{msg.Subject}' is sent. Success: {eventArgs.IsSuccess}");
-                    }
-                };
-
-                emailHelper.EmailFailed += (sender, args) =>
-                {
-                    if (sender is MimeMessage msg)
-                    {
-                        logger.LogError($"Email '{msg.Subject}' failed: {args.ServerResponse}");
-                        throw new(args.ServerResponse);
-                    }
-                };
-
-                var dName = Environment.GetEnvironmentVariable("SenderDisplayName");
-                var notification = new EmailHandler(emailHelper, dName);
+                var messageBuilder = new MessageBuilder(emailHelper);
                 logger.LogInformation($"Sending {en.MessageType} message");
 
                 var sendingMode = 1;
@@ -72,49 +54,9 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
                     }
                 }
 
-                switch (en.MessageType)
-                {
-                    case "TestMail":
-                        await SendByMode(sendingMode, en, async (x) =>
-                        {
-                            await notification.SendTestNotificationAsync(x);
-                        });
+                await SendMessage(sendingMode, en, messageBuilder);
 
-                        break;
-
-                    case "NewCommentNotification":
-                        var ncPayload = JsonSerializer.Deserialize<NewCommentPayload>(en.MessageBody);
-
-                        await SendByMode(sendingMode, en, async (x) =>
-                        {
-                            await notification.SendNewCommentNotificationAsync(x, ncPayload);
-                        });
-
-                        break;
-
-                    case "AdminReplyNotification":
-                        var replyPayload = JsonSerializer.Deserialize<CommentReplyPayload>(en.MessageBody);
-
-                        await SendByMode(sendingMode, en, async (x) =>
-                        {
-                            await notification.SendCommentReplyNotificationAsync(x, replyPayload);
-                        });
-
-                        break;
-
-                    case "BeingPinged":
-                        var pingPayload = JsonSerializer.Deserialize<PingPayload>(en.MessageBody);
-
-                        await SendByMode(sendingMode, en, async (x) =>
-                        {
-                            await notification.SendPingNotificationAsync(x, pingPayload);
-                        });
-
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                logger.LogInformation($"Message '{queueMessage.MessageId}' processed successfully.");
             }
         }
         catch (Exception e)
@@ -124,7 +66,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
         }
     }
 
-    private async Task SendByMode(int sendingMode, EmailNotificationV3 en, Func<string[], Task> sendingAction)
+    private async Task SendMessage(int sendingMode, EmailNotificationV3 en, MessageBuilder builder)
     {
         var dl = en.DistributionList.Split(';');
 
@@ -132,8 +74,9 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
         {
             case 1:
                 logger.LogInformation($"Sending to '{en.DistributionList}' using sendingMode '1'");
+                var message1 = GetMessage(en.MessageType, dl, en.MessageBody, builder);
+                await message1.SendAsync();
 
-                await sendingAction(dl);
                 break;
             case 2:
                 {
@@ -152,7 +95,9 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
                             if (!string.IsNullOrWhiteSpace(recipient))
                             {
                                 logger.LogInformation($"Sending to '{recipient}' using sendingMode '2'");
-                                await sendingAction(new[] { recipient });
+
+                                var message2 = GetMessage(en.MessageType, [recipient], en.MessageBody, builder);
+                                await message2.SendAsync();
                             }
                         }
                         catch (SmtpCommandException e)
@@ -172,6 +117,31 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
 
                     break;
                 }
+        }
+    }
+
+    private MimeMessageWithSettings GetMessage(string messageType, string[] recipients, string messageBody,
+        MessageBuilder builder)
+    {
+        switch (messageType)
+        {
+            case "TestMail":
+                return builder.BuildTestNotification(recipients);
+
+            case "NewCommentNotification":
+                var ncPayload = JsonSerializer.Deserialize<NewCommentPayload>(messageBody);
+                return builder.BuildNewCommentNotification(recipients, ncPayload);
+
+            case "AdminReplyNotification":
+                var replyPayload = JsonSerializer.Deserialize<CommentReplyPayload>(messageBody);
+                return builder.BuildCommentReplyNotification(recipients, replyPayload);
+
+            case "BeingPinged":
+                var pingPayload = JsonSerializer.Deserialize<PingPayload>(messageBody);
+                return builder.BuildPingNotification(recipients, pingPayload);
+
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 }
