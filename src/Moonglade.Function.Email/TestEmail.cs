@@ -43,9 +43,6 @@ public class TestEmail(ILogger<TestEmail> logger)
 public class TestEmailRequest
 {
     [Required]
-    public string EmailDisplayName { get; set; }
-
-    [Required]
     [MinLength(1)]
     [MaxLength(20)]
     public string[] ToAddresses { get; set; }
