@@ -9,11 +9,11 @@ public class MessageBuilder(IEmailHelper emailHelper)
     {
         var message = emailHelper.ForType("TestMail")
                           .Map(nameof(Environment.MachineName), Environment.MachineName)
-                          .Map(nameof(EmailHelper.Settings.SmtpServer), emailHelper.Settings.SmtpServer)
-                          .Map(nameof(EmailHelper.Settings.SmtpServerPort), emailHelper.Settings.SmtpServerPort)
-                          .Map(nameof(EmailHelper.Settings.SmtpUserName), emailHelper.Settings.SmtpUserName)
+                          .Map(nameof(EmailHelper.Settings.SmtpSettings.SmtpServer), emailHelper.Settings.SmtpSettings.SmtpServer)
+                          .Map(nameof(EmailHelper.Settings.SmtpSettings.SmtpServerPort), emailHelper.Settings.SmtpSettings.SmtpServerPort)
+                          .Map(nameof(EmailHelper.Settings.SmtpSettings.SmtpUserName), emailHelper.Settings.SmtpSettings.SmtpUserName)
                           .Map(nameof(EmailHelper.Settings.EmailDisplayName), emailHelper.Settings.EmailDisplayName)
-                          .Map(nameof(EmailHelper.Settings.EnableTls), emailHelper.Settings.EnableTls)
+                          .Map(nameof(EmailHelper.Settings.SmtpSettings.EnableTls), emailHelper.Settings.SmtpSettings.EnableTls)
                           .BuildMessage(toAddresses);
         return message;
     }
