@@ -5,7 +5,7 @@ namespace Moonglade.Function.Email.Core;
 
 public class MessageBuilder(IEmailHelper emailHelper)
 {
-    public MimeMessageWithSettings BuildTestNotification(string[] toAddresses)
+    public CommonMailMessage BuildTestNotification(string[] toAddresses)
     {
         var message = emailHelper.ForType("TestMail")
                           .Map(nameof(Environment.MachineName), Environment.MachineName)
@@ -18,7 +18,7 @@ public class MessageBuilder(IEmailHelper emailHelper)
         return message;
     }
 
-    public MimeMessageWithSettings BuildNewCommentNotification(string[] toAddresses, NewCommentPayload request)
+    public CommonMailMessage BuildNewCommentNotification(string[] toAddresses, NewCommentPayload request)
     {
         var message = emailHelper.ForType("NewCommentNotification")
                           .Map(nameof(request.Username), request.Username)
@@ -30,7 +30,7 @@ public class MessageBuilder(IEmailHelper emailHelper)
         return message;
     }
 
-    public MimeMessageWithSettings BuildCommentReplyNotification(string[] toAddress, CommentReplyPayload request)
+    public CommonMailMessage BuildCommentReplyNotification(string[] toAddress, CommentReplyPayload request)
     {
         var message = emailHelper.ForType("AdminReplyNotification")
                           .Map(nameof(request.ReplyContentHtml), request.ReplyContentHtml)
@@ -41,7 +41,7 @@ public class MessageBuilder(IEmailHelper emailHelper)
         return message;
     }
 
-    public MimeMessageWithSettings BuildPingNotification(string[] toAddresses, PingPayload request)
+    public CommonMailMessage BuildPingNotification(string[] toAddresses, PingPayload request)
     {
         var message = emailHelper.ForType("BeingPinged")
                           .Map(nameof(request.TargetPostTitle), request.TargetPostTitle)

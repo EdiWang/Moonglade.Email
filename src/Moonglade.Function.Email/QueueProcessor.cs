@@ -120,7 +120,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
         }
     }
 
-    private MimeMessageWithSettings GetMessage(string messageType, string[] recipients, string messageBody,
+    private CommonMailMessage GetMessage(string messageType, string[] recipients, string messageBody,
         MessageBuilder builder)
     {
         switch (messageType)
