@@ -19,7 +19,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
 
         try
         {
-            var en = JsonSerializer.Deserialize<EmailNotificationV3>(queueMessage.MessageText);
+            var en = JsonSerializer.Deserialize<EmailNotification>(queueMessage.MessageText);
 
             if (en != null)
             {
@@ -66,7 +66,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
         }
     }
 
-    private async Task SendMessage(int sendingMode, EmailNotificationV3 en, MessageBuilder builder)
+    private async Task SendMessage(int sendingMode, EmailNotification en, MessageBuilder builder)
     {
         var dl = en.DistributionList.Split(';');
 
@@ -144,11 +144,4 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
                 throw new ArgumentOutOfRangeException();
         }
     }
-}
-
-public class EmailNotificationV3
-{
-    public string DistributionList { get; set; }
-    public string MessageType { get; set; }
-    public string MessageBody { get; set; }
 }
