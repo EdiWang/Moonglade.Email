@@ -1,4 +1,4 @@
-﻿namespace Moonglade.Function.Email;
+﻿namespace Moonglade.Function.Email.Core;
 
 internal record EmailNotification
 {

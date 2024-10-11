@@ -2,7 +2,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Unicode;
 
-namespace Moonglade.Function.Email;
+namespace Moonglade.Function.Email.Core;
 
 public static class MoongladeJsonSerializerOptions
 {
