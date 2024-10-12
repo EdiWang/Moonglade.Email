@@ -53,7 +53,7 @@ Open **appsettings.json** under your Moonglade instance, add the following setti
 
 For development, create ```local.settings.json``` under "**./src/Moonglade.Function.Email**", this file defines development time settings. It is by default ignored by git, so you will need to manange it on your own.
 
-Sample ```local.settings.json``` file
+Sample ```local.settings.json``` file (SMTP)
 
 ```json
 {
@@ -62,10 +62,11 @@ Sample ```local.settings.json``` file
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
     "moongladestorage": "<storage account connection string>",
-    "EnableSsl": true,
-    "SmtpServerPort": 587,
     "AdminEmail": "edi.wang@outlook.com",
     "EmailDisplayName": "Moonglade Notification Azure Function (local)",
+    "Sender": "smtp",
+    "EnableSsl": true,
+    "SmtpServerPort": 587,
     "SmtpServer": "smtp-mail.outlook.com",
     "SmtpUserName": "edi.wang@outlook.com",
     "EmailAccountPassword": "<smtp password>"
