@@ -28,7 +28,25 @@ public class TestEmail(ILogger<TestEmail> logger)
             logger.LogInformation($"Sending test message");
 
             var message = builder.BuildTestNotification(payload.ToAddresses);
-            await message.SendAsync();
+
+            string sender = "smtp";
+            var envSender = Environment.GetEnvironmentVariable("Sender");
+            if (!string.IsNullOrWhiteSpace(envSender))
+            {
+                sender = envSender.ToLower();
+            }
+
+            switch (sender)
+            {
+                case "smtp":
+                    await message.SendAsync();
+                    break;
+                case "azurecommunication":
+                    await message.SendAzureCommunicationAsync();
+                    break;
+                default:
+                    throw new InvalidOperationException("Sender not supported");
+            }
 
             return new OkObjectResult($"Test message sent");
         }
