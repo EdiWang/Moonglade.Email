@@ -12,8 +12,8 @@ public class Helper
 
         var smtpSettings = new SmtpSettings(EnvHelper.Get<string>("SmtpServer"),
             EnvHelper.Get<string>("SmtpUserName"),
-            EnvHelper.Get<string>("EmailAccountPassword", EnvironmentVariableTarget.Process),
-            EnvHelper.Get<int>("SmtpServerPort"));
+            EnvHelper.Get<string>("EmailAccountPassword", target: EnvironmentVariableTarget.Process),
+            EnvHelper.Get("SmtpServerPort", 25));
 
         if (EnvHelper.Get<bool>("EnableTls"))
         {
