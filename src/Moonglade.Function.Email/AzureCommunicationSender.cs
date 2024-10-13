@@ -34,9 +34,9 @@ public class AzureCommunicationSender
 
 public static class CommonMailMessageExtensions
 {
-    public static async Task SendAzureCommunicationAsync(this CommonMailMessage message)
+    public static Task<EmailSendOperation> SendAzureCommunicationAsync(this CommonMailMessage message)
     {
         var sender = new AzureCommunicationSender();
-        await sender.SendAsync(message);
+        return sender.SendAsync(message);
     }
 }

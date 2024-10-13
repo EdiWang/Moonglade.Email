@@ -41,9 +41,12 @@ public class TestEmail(ILogger<TestEmail> logger)
                 case "smtp":
                     await message.SendAsync();
                     break;
+
                 case "azurecommunication":
-                    await message.SendAzureCommunicationAsync();
+                    var result = await message.SendAzureCommunicationAsync();
+                    logger.LogInformation($"AzureCommunication operation ID: {result.Id}");
                     break;
+
                 default:
                     throw new InvalidOperationException("Sender not supported");
             }
