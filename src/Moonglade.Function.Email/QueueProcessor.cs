@@ -44,15 +44,8 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
                 logger.LogInformation($"Sending {en.MessageType} message");
 
                 var sendingMode = 1;
-                var envSendingMode = Environment.GetEnvironmentVariable("DistributionListSendingMode");
-                if (!string.IsNullOrWhiteSpace(envSendingMode))
-                {
-                    bool isParsed = int.TryParse(envSendingMode, out sendingMode);
-                    if (!isParsed)
-                    {
-                        logger.LogWarning("Failed to parse 'DistributionListSendingMode', falling back to '1', please check settings.");
-                    }
-                }
+                var envSendingMode = EnvHelper.Get<int>("DistributionListSendingMode");
+                if (envSendingMode != 0) sendingMode = envSendingMode;
 
                 await SendMessage(sendingMode, en, messageBuilder);
 

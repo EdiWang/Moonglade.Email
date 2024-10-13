@@ -30,7 +30,7 @@ public class TestEmail(ILogger<TestEmail> logger)
             var message = builder.BuildTestNotification(payload.ToAddresses);
 
             string sender = "smtp";
-            var envSender = Environment.GetEnvironmentVariable("Sender");
+            var envSender = EnvHelper.Get<string>("Sender");
             if (!string.IsNullOrWhiteSpace(envSender))
             {
                 sender = envSender.ToLower();

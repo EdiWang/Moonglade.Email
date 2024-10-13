@@ -19,7 +19,7 @@ public class Enqueue(ILogger<Enqueue> logger)
     {
         logger.LogInformation($"C# HTTP trigger function `Enqueue` processed a request. OriginAspNetRequestId={payload.OriginAspNetRequestId}");
 
-        var conn = Environment.GetEnvironmentVariable("moongladestorage");
+        var conn = EnvHelper.Get<string>("moongladestorage");
         var queue = new QueueClient(conn, "moongladeemailqueue");
 
         var en = new EmailNotification

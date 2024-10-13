@@ -10,12 +10,12 @@ public class Helper
         if (!File.Exists(configSource))
             throw new FileNotFoundException("Configuration file for EmailHelper is not present.", configSource);
 
-        var smtpSettings = new SmtpSettings(Environment.GetEnvironmentVariable("SmtpServer"),
-            Environment.GetEnvironmentVariable("SmtpUserName"),
-            Environment.GetEnvironmentVariable("EmailAccountPassword", EnvironmentVariableTarget.Process),
-            int.Parse(Environment.GetEnvironmentVariable("SmtpServerPort") ?? "25"));
+        var smtpSettings = new SmtpSettings(EnvHelper.Get<string>("SmtpServer"),
+            EnvHelper.Get<string>("SmtpUserName"),
+            EnvHelper.Get<string>("EmailAccountPassword", EnvironmentVariableTarget.Process),
+            EnvHelper.Get<int>("SmtpServerPort"));
 
-        if (bool.Parse(Environment.GetEnvironmentVariable("EnableTls") ?? "true"))
+        if (EnvHelper.Get<bool>("EnableTls"))
         {
             smtpSettings.EnableTls = true;
         }
@@ -25,7 +25,7 @@ public class Helper
             SmtpSettings = smtpSettings
         };
 
-        var dName = Environment.GetEnvironmentVariable("SenderDisplayName");
+        var dName = EnvHelper.Get<string>("SenderDisplayName");
         if (!string.IsNullOrWhiteSpace(dName)) settings.EmailDisplayName = dName;
 
         var emailHelper = new EmailHelper(configSource, settings);
