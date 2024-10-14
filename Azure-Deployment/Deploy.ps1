@@ -5,12 +5,12 @@
 
 param(
     $regionName = "westus",
-    $adminEmail = "edi.wang@outlook.com",
+    $adminEmail = "admin@example.com",
     $rsgName = "moongladegroup",
     $storageAccountName = "moongladestorage",
     $emailDisplayName = "Moonglade Email",
-    $smtpServer = "smtp.whatever.com",
-    $smtpUserName = "admin@whatever.com",
+    $smtpServer = "smtp.example.com",
+    $smtpUserName = "admin@example.com",
     $smtpPassword = "P@ssw0rd"
 )
 
