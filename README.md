@@ -24,13 +24,13 @@ Open **"\Azure-Deployment\Deploy.ps1"**
 Parameters example:
 
 ```powershell
--regionName "eastasia"
--rsgName "Moonglade-Test-RSG"
+-regionName "westus"
+-rsgName "moonglade-test-group"
 -storageAccountName "moongladeteststorage"
--adminEmail "edi.wang@outlook.com"
+-adminEmail "admin@example.com"
 -emailDisplayName "Moonglade Notification Test"
--smtpServer "smtp.whatever.com"
--smtpUserName "admin@whatever.com"
+-smtpServer "smtp.example.com"
+-smtpUserName "admin@example.com"
 -pwdValue "P@ssw0rd"
 ```
 
@@ -62,13 +62,13 @@ Sample ```local.settings.json``` file (SMTP)
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
     "moongladestorage": "<storage account connection string>",
-    "AdminEmail": "edi.wang@outlook.com",
+    "AdminEmail": "admin@example.com",
     "EmailDisplayName": "Moonglade Notification Azure Function (local)",
     "Sender": "smtp",
     "EnableSsl": true,
-    "SmtpServerPort": 587,
-    "SmtpServer": "smtp-mail.outlook.com",
-    "SmtpUserName": "edi.wang@outlook.com",
+    "SmtpServerPort": 25,
+    "SmtpServer": "smtp.example.com",
+    "SmtpUserName": "admin@example.com",
     "EmailAccountPassword": "<smtp password>"
   }
 }
@@ -76,6 +76,6 @@ Sample ```local.settings.json``` file (SMTP)
 
 ## 免责申明
 
-对于中国用户，我们有一份特定的免责申明。请确保你已经阅读并理解其内容：
+对于中国访客，我们有一份特定的免责申明。请确保你已经阅读并理解其内容：
 
-- [免责申明（仅限中国用户）](./DISCLAIMER_CN.md)
+- [免责申明（仅限中国访客）](./DISCLAIMER_CN.md)
