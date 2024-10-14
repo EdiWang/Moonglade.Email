@@ -23,11 +23,8 @@ You can choose to send email by SMTP or Azure Communication Service.
 
 ### 1. Setup Azure Key Vault and Azure Function App
 
-> This Function needs a pre-configured email account to send emaills. The account name and server infomations can be configured from environment variables. However, the password must be stored in Azure Key Vault to ensure security. Thus, you have to create an Azure Key Vault first.
-
-You need to setup Azure CLI and login to your Azure subscription first. 
-
-Run **"\Azure-Deployment\Deploy.ps1"** to setup the Azure Function App and Azure Key Vault.
+- Setup Azure CLI and login to your Azure subscription first. 
+- Run **"\Azure-Deployment\Deploy.ps1"** to setup the Azure Function App and Azure Key Vault.
 
 Parameters example:
 
@@ -41,11 +38,9 @@ Parameters example:
 -pwdValue "P@ssw0rd"
 ```
 
-### 2. Build and Deploy
+- Build and deploy **Moonglade.Notification.sln** to the Azure Function.
 
-Build and deploy **Moonglade.Notification.sln** to the Azure Function that created via ```Deploy.ps1```
-
-### 3. Configure Moonglade
+## Configure Moonglade
 
 Open **appsettings.json** under your Moonglade instance, add the following settings:
 
@@ -56,7 +51,7 @@ Open **appsettings.json** under your Moonglade instance, add the following setti
 }
 ```
 
-### 3. Local Development and Debugging
+## Local Development and Debugging
 
 For development, create ```local.settings.json``` under "**./src/Moonglade.Function.Email**", this file defines development time settings. It is by default ignored by git, so you will need to manange it on your own.
 
