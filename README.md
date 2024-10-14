@@ -4,8 +4,6 @@ The Azure Function used by my blog (https://edi.wang) to send notifications.
 
 This Function sets HTML template and send email notifications to blog administrator or users.
 
-## Get Started
-
 Tools | Alternative
 --- | ---
 [.NET 8.0 SDK](http://dot.net) | N/A
@@ -13,13 +11,23 @@ Tools | Alternative
 [Azure Key Vault](https://azure.microsoft.com/en-us/services/key-vault/) | N/A
 [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest) | N/A
 
+You can choose to send email by SMTP or Azure Communication Service. 
+
+## Send by Azure Communication Service
+
+// TODO
+
+## Send by SMTP
+
+> Please note, only basic authentication is supported in this mode. Microsoft 365 has disabled basic authentication, so this won't work with your Microsoft 365 enterprise or personal account.
+
 ### 1. Setup Azure Key Vault and Azure Function App
 
 > This Function needs a pre-configured email account to send emaills. The account name and server infomations can be configured from environment variables. However, the password must be stored in Azure Key Vault to ensure security. Thus, you have to create an Azure Key Vault first.
 
 You need to setup Azure CLI and login to your Azure subscription first. 
 
-Open **"\Azure-Deployment\Deploy.ps1"**
+Run **"\Azure-Deployment\Deploy.ps1"** to setup the Azure Function App and Azure Key Vault.
 
 Parameters example:
 
