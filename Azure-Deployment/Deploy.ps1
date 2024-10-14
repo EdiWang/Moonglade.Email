@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------------------------------------
-# Quick Start deployment script for running Moonglade.Email Azure Function
+# Quick Start deployment script for running Moonglade.Email Azure Function (SMTP)
 # Author: Edi Wang
 # ---------------------------------------------------------------------------------------------------------
 
