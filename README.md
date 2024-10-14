@@ -83,6 +83,23 @@ Sample ```local.settings.json``` file (SMTP)
 }
 ```
 
+Sample ```local.settings.json``` file (Azure Communication)
+
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "moongladestorage": "<storage account connection string>",
+    "EmailDisplayName": "Moonglade Notification Azure Function (local)",
+    "Sender": "AzureCommunication",
+    "AzureCommunicationConnection": "<your connection string>",
+    "AzureCommunicationSenderAddress": "<your sender address>"
+  }
+}
+```
+
 ## 免责申明
 
 对于中国访客，我们有一份特定的免责申明。请确保你已经阅读并理解其内容：
