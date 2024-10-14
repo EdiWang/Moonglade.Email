@@ -27,7 +27,6 @@ Parameters example:
 -regionName "westus"
 -rsgName "moonglade-test-group"
 -storageAccountName "moongladeteststorage"
--adminEmail "admin@example.com"
 -emailDisplayName "Moonglade Notification Test"
 -smtpServer "smtp.example.com"
 -smtpUserName "admin@example.com"
@@ -62,7 +61,6 @@ Sample ```local.settings.json``` file (SMTP)
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
     "moongladestorage": "<storage account connection string>",
-    "AdminEmail": "admin@example.com",
     "EmailDisplayName": "Moonglade Notification Azure Function (local)",
     "Sender": "smtp",
     "EnableSsl": true,
