@@ -15,6 +15,11 @@ You can choose to send email by SMTP or Azure Communication Service.
 
 ## Send by Azure Communication Service
 
+> This option is in preview and may subject to change.
+
+- Setup Azure CLI and login to your Azure subscription first. 
+- Run **"\Deployment\DeployACS.ps1"** to setup the Azure Function App and Azure Key Vault.
+
 // TODO
 
 ## Send by SMTP
@@ -24,7 +29,7 @@ You can choose to send email by SMTP or Azure Communication Service.
 ### 1. Setup Azure Key Vault and Azure Function App
 
 - Setup Azure CLI and login to your Azure subscription first. 
-- Run **"\Azure-Deployment\Deploy.ps1"** to setup the Azure Function App and Azure Key Vault.
+- Run **"\Deployment\DeploySMTP.ps1"** to setup the Azure Function App and Azure Key Vault.
 
 Parameters example:
 
