@@ -21,15 +21,22 @@ You can choose to send email by SMTP or Azure Communication Service.
 - Create an Azure Communication Service resource with Email service enabled in Azure Portal.
 - Run **"\Deployment\DeployACS.ps1"** to setup the Azure Function App.
 
-// TODO
+Parameters example:
+
+```powershell
+-regionName "westus"
+-rsgName "moonglade-test-group"
+-storageAccountName "moongladeteststorage"
+-emailDisplayName "Moonglade Notification Test"
+-azureCommunicationConnection "<your connection string>"
+-azureCommunicationSenderAddress "<your sender address>"
+```
 
 - Build and deploy **Moonglade.Notification.sln** to the Azure Function.
 
 ## Send by SMTP
 
 > Please note, only basic authentication is supported in this mode. Microsoft 365 has disabled basic authentication, so this won't work with your Microsoft 365 enterprise or personal account.
-
-### 1. Setup Azure Key Vault and Azure Function App
 
 - Setup Azure CLI and login to your Azure subscription first. 
 - Run **"\Deployment\DeploySMTP.ps1"** to setup the Azure Function App and Azure Key Vault.
