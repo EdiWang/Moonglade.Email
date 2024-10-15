@@ -7,7 +7,9 @@ param(
     $regionName = "westus",
     $rsgName = "moongladegroup",
     $storageAccountName = "moongladestorage",
-    $emailDisplayName = "Moonglade Email"
+    $emailDisplayName = "Moonglade Email",
+    $azureCommunicationConnection = "<your connection string>",
+    $azureCommunicationSenderAddress = "<your sender address>"
 )
 
 [Console]::ResetColor()
@@ -65,5 +67,8 @@ if (!$appExists) {
     $echo = az functionapp config set -g $rsgName -n $funcAppName --use-32bit-worker-process false --http20-enabled true
 }
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings EmailDisplayName=$emailDisplayName
+$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings Sender="AzureCommunication"
+$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings AzureCommunicationConnection=$azureCommunicationConnection
+$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings AzureCommunicationSenderAddress=$azureCommunicationSenderAddress
 
 Read-Host -Prompt "Setup is done, you can now deploy the code and assign function keys, press [ENTER] to exit."
