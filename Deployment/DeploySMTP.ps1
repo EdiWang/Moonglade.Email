@@ -78,6 +78,7 @@ if (!$appExists) {
     $echo = az functionapp config set -g $rsgName -n $funcAppName --use-32bit-worker-process false --http20-enabled true
 }
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings EmailDisplayName=$emailDisplayName
+$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings Sender="smtp"
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings SmtpServer=$smtpServer
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings SmtpUserName=$smtpUserName
 
