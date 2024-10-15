@@ -68,48 +68,72 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
             case 1:
                 logger.LogInformation($"Sending to '{en.DistributionList}' using sendingMode '1'");
                 var message1 = GetMessage(en.MessageType, dl, en.MessageBody, builder);
-                await message1.SendAsync();
+                await SendMessageInternal(message1);
 
                 break;
             case 2:
+                // Workaround for error when sending to multiple recipients in case a part of them failed
+                // which result in other recipients also not receiving email 
+                // Fix:
+                // - Send email one by one
+                // - Log SmtpCommandException only instead of failing
+                // - Fail fast only when ALL recipients blow up
+
+                var exceptions = new List<SmtpCommandException>();
+                foreach (var recipient in dl)
                 {
-                    // Workaround for error when sending to multiple recipients in case a part of them failed
-                    // which result in other recipients also not receiving email 
-                    // Fix:
-                    // - Send email one by one
-                    // - Log SmtpCommandException only instead of failing
-                    // - Fail fast only when ALL recipients blow up
-
-                    var exceptions = new List<SmtpCommandException>();
-                    foreach (var recipient in dl)
+                    try
                     {
-                        try
+                        if (!string.IsNullOrWhiteSpace(recipient))
                         {
-                            if (!string.IsNullOrWhiteSpace(recipient))
-                            {
-                                logger.LogInformation($"Sending to '{recipient}' using sendingMode '2'");
+                            logger.LogInformation($"Sending to '{recipient}' using sendingMode '2'");
 
-                                var message2 = GetMessage(en.MessageType, [recipient], en.MessageBody, builder);
-                                await message2.SendAsync();
-                            }
-                        }
-                        catch (SmtpCommandException e)
-                        {
-                            exceptions.Add(e);
-                            logger.LogError(exception: e, message: $"Error sending to '{recipient}': '{e.Message}'");
+                            var message2 = GetMessage(en.MessageType, [recipient], en.MessageBody, builder);
+                            await SendMessageInternal(message2);
                         }
                     }
-
-                    if (exceptions.Count == dl.Length)
+                    catch (SmtpCommandException e)
                     {
-                        logger.LogError("Sending email all failed in sendingMode '2'");
-
-                        // All blow up, notify Azure to retry or put message into poison queue for developers to work 996
-                        throw new AggregateException("Error sending 'OpenCard' email, all messages failed with exceptions.", innerExceptions: exceptions);
+                        exceptions.Add(e);
+                        logger.LogError(exception: e, message: $"Error sending to '{recipient}': '{e.Message}'");
                     }
-
-                    break;
                 }
+
+                if (exceptions.Count == dl.Length)
+                {
+                    logger.LogError("Sending email all failed in sendingMode '2'");
+
+                    // All blow up, notify Azure to retry or put message into poison queue for developers to work 996
+                    throw new AggregateException("Error sending 'OpenCard' email, all messages failed with exceptions.", innerExceptions: exceptions);
+                }
+
+                break;
+        }
+    }
+
+    private async Task SendMessageInternal(CommonMailMessage message)
+    {
+        string sender = "smtp";
+        var envSender = EnvHelper.Get<string>("Sender");
+        if (!string.IsNullOrWhiteSpace(envSender))
+        {
+            sender = envSender.ToLower();
+        }
+
+        switch (sender)
+        {
+            case "smtp":
+                var response = await message.SendAsync();
+                logger.LogInformation($"SMTP response: {response}");
+                break;
+
+            case "azurecommunication":
+                var result = await message.SendAzureCommunicationAsync();
+                logger.LogInformation($"AzureCommunication operation ID: {result.Id}");
+                break;
+
+            default:
+                throw new InvalidOperationException("Sender not supported");
         }
     }
 
