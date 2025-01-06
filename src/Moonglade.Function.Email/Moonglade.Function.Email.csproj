@@ -30,7 +30,7 @@
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
     <PackageReference Include="Azure.Communication.Email" Version="1.0.1" />
-    <PackageReference Include="Edi.TemplateEmail" Version="2024.6.0" />
+    <PackageReference Include="Edi.TemplateEmail" Version="2025.1.0" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">
