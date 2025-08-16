@@ -146,19 +146,24 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
                 return builder.BuildTestNotification(recipients);
 
             case "NewCommentNotification":
-                var ncPayload = JsonSerializer.Deserialize<NewCommentPayload>(messageBody);
+                var ncPayload = JsonSerializer.Deserialize<NewCommentPayload>(messageBody, options);
                 return builder.BuildNewCommentNotification(recipients, ncPayload);
 
             case "AdminReplyNotification":
-                var replyPayload = JsonSerializer.Deserialize<CommentReplyPayload>(messageBody);
+                var replyPayload = JsonSerializer.Deserialize<CommentReplyPayload>(messageBody, options);
                 return builder.BuildCommentReplyNotification(recipients, replyPayload);
 
             case "BeingPinged":
-                var pingPayload = JsonSerializer.Deserialize<PingPayload>(messageBody);
+                var pingPayload = JsonSerializer.Deserialize<PingPayload>(messageBody, options);
                 return builder.BuildPingNotification(recipients, pingPayload);
 
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
+
+    private readonly JsonSerializerOptions options = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
 }
