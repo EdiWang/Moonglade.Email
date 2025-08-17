@@ -78,7 +78,7 @@ Sample ```local.settings.json``` file (SMTP)
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "moongladestorage": "<storage account connection string>",
+    "StorageAccountConnection": "<storage account connection string>",
     "EmailDisplayName": "Moonglade Notification Azure Function (local)",
     "Sender": "smtp",
     "EnableSsl": true,
@@ -98,7 +98,7 @@ Sample ```local.settings.json``` file (Azure Communication)
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "moongladestorage": "<storage account connection string>",
+    "StorageAccountConnection": "<storage account connection string>",
     "EmailDisplayName": "Moonglade Notification Azure Function (local)",
     "Sender": "AzureCommunication",
     "AzureCommunicationConnection": "<your connection string>",
