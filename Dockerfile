@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/azure-functions/dotnet:4 AS base
 WORKDIR /home/site/wwwroot
 EXPOSE 80
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Auto copy to prevent 996

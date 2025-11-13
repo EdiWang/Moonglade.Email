@@ -82,7 +82,7 @@ internal class Program
         }
     }
 
-    static string PromptUser(string message)
+    static string? PromptUser(string message)
     {
         Console.WriteLine(message);
         return Console.ReadLine()?.Trim();
