@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../.gitattributes" />
+    <File Path="../.github/workflows/azfunc.yml" />
+    <File Path="../.github/workflows/docker.yml" />
+    <File Path="../.gitignore" />
+    <File Path="../Dockerfile" />
+    <File Path="../LICENSE" />
+    <File Path="../README.md" />
+    <File Path="Directory.Build.props" />
+  </Folder>
+  <Project Path="Moonglade.Function.Email/Moonglade.Function.Email.csproj" />
+  <Project Path="TestClient/TestClient.csproj" />
+</Solution>
