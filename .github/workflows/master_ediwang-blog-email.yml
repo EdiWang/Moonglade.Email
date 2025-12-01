@@ -31,6 +31,7 @@ jobs:
 
       - name: 'Resolve Project Dependencies Using Dotnet'
         shell: bash
+        working-directory: ./src
         run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
           dotnet build --configuration Release --output ./output
@@ -49,5 +50,5 @@ jobs:
         with:
           app-name: 'ediwang-blog-email'
           slot-name: 'Production'
-          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/output'
+          package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/src/output'
           
