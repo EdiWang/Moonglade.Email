@@ -15,7 +15,7 @@ public class Helper
             EnvHelper.Get<string>("EmailAccountPassword", target: EnvironmentVariableTarget.Process),
             EnvHelper.Get("SmtpServerPort", 25));
 
-        if (EnvHelper.Get<bool>("EnableTls"))
+        if (EnvHelper.Get<bool>("MOONGLADE_EMAIL_SSL"))
         {
             smtpSettings.EnableTls = true;
         }
