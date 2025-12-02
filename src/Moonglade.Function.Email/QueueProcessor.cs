@@ -43,11 +43,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
                 var messageBuilder = new MessageBuilder(emailHelper);
                 logger.LogInformation($"Sending {en.MessageType} message");
 
-                var sendingMode = 1;
-                var envSendingMode = EnvHelper.Get<int>("DistributionListSendingMode");
-                if (envSendingMode != 0) sendingMode = envSendingMode;
-
-                await SendMessage(sendingMode, en, messageBuilder);
+                await SendMessage(en, messageBuilder);
 
                 logger.LogInformation($"Message '{queueMessage.MessageId}' processed successfully.");
             }
@@ -59,55 +55,43 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
         }
     }
 
-    private async Task SendMessage(int sendingMode, EmailNotification en, MessageBuilder builder)
+    private async Task SendMessage(EmailNotification en, MessageBuilder builder)
     {
         var dl = en.DistributionList.Split(';');
 
-        switch (sendingMode)
+        // Workaround for error when sending to multiple recipients in case a part of them failed
+        // which result in other recipients also not receiving email 
+        // Fix:
+        // - Send email one by one
+        // - Log SmtpCommandException only instead of failing
+        // - Fail fast only when ALL recipients blow up
+
+        var exceptions = new List<SmtpCommandException>();
+        foreach (var recipient in dl)
         {
-            case 1:
-                logger.LogInformation($"Sending to '{en.DistributionList}' using sendingMode '1'");
-                var message1 = GetMessage(en.MessageType, dl, en.MessageBody, builder);
-                await SendMessageInternal(message1);
-
-                break;
-            case 2:
-                // Workaround for error when sending to multiple recipients in case a part of them failed
-                // which result in other recipients also not receiving email 
-                // Fix:
-                // - Send email one by one
-                // - Log SmtpCommandException only instead of failing
-                // - Fail fast only when ALL recipients blow up
-
-                var exceptions = new List<SmtpCommandException>();
-                foreach (var recipient in dl)
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(recipient))
                 {
-                    try
-                    {
-                        if (!string.IsNullOrWhiteSpace(recipient))
-                        {
-                            logger.LogInformation($"Sending to '{recipient}' using sendingMode '2'");
+                    logger.LogInformation($"Sending to '{recipient}'");
 
-                            var message2 = GetMessage(en.MessageType, [recipient], en.MessageBody, builder);
-                            await SendMessageInternal(message2);
-                        }
-                    }
-                    catch (SmtpCommandException e)
-                    {
-                        exceptions.Add(e);
-                        logger.LogError(exception: e, message: $"Error sending to '{recipient}': '{e.Message}'");
-                    }
+                    var message = GetMessage(en.MessageType, [recipient], en.MessageBody, builder);
+                    await SendMessageInternal(message);
                 }
+            }
+            catch (SmtpCommandException e)
+            {
+                exceptions.Add(e);
+                logger.LogError(exception: e, message: $"Error sending to '{recipient}': '{e.Message}'");
+            }
+        }
 
-                if (exceptions.Count == dl.Length)
-                {
-                    logger.LogError("Sending email all failed in sendingMode '2'");
+        if (exceptions.Count == dl.Length)
+        {
+            logger.LogError("Sending email all failed");
 
-                    // All blow up, notify Azure to retry or put message into poison queue for developers to work 996
-                    throw new AggregateException("Error sending 'OpenCard' email, all messages failed with exceptions.", innerExceptions: exceptions);
-                }
-
-                break;
+            // All blow up, notify Azure to retry or put message into poison queue for developers to work 996
+            throw new AggregateException("Error sending 'OpenCard' email, all messages failed with exceptions.", innerExceptions: exceptions);
         }
     }
 
