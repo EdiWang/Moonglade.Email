@@ -10,10 +10,10 @@ public class Helper
         if (!File.Exists(configSource))
             throw new FileNotFoundException("Configuration file for EmailHelper is not present.", configSource);
 
-        var smtpSettings = new SmtpSettings(EnvHelper.Get<string>("SmtpServer"),
-            EnvHelper.Get<string>("SmtpUserName"),
-            EnvHelper.Get<string>("EmailAccountPassword", target: EnvironmentVariableTarget.Process),
-            EnvHelper.Get("SmtpServerPort", 25));
+        var smtpSettings = new SmtpSettings(EnvHelper.Get<string>("MOONGLADE_EMAIL_SMTP_SERVER"),
+            EnvHelper.Get<string>("MOONGLADE_EMAIL_SMTP_USER"),
+            EnvHelper.Get<string>("MOONGLADE_EMAIL_SMTP_PASS", target: EnvironmentVariableTarget.Process),
+            EnvHelper.Get("MOONGLADE_EMAIL_SMTP_PORT", 25));
 
         if (EnvHelper.Get<bool>("MOONGLADE_EMAIL_SSL"))
         {

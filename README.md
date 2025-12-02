@@ -83,10 +83,10 @@ Sample ```local.settings.json``` file (SMTP)
     "MOONGLADE_EMAIL_SENDER_NAME": "Moonglade Notification Azure Function (local)",
     "MOONGLADE_EMAIL_PROVIDER": "smtp",
     "MOONGLADE_EMAIL_SSL": true,
-    "SmtpServerPort": 25,
-    "SmtpServer": "smtp.example.com",
-    "SmtpUserName": "admin@example.com",
-    "EmailAccountPassword": "<smtp password>"
+    "MOONGLADE_EMAIL_SMTP_PORT": 25,
+    "MOONGLADE_EMAIL_SMTP_SERVER": "smtp.example.com",
+    "MOONGLADE_EMAIL_SMTP_USER": "admin@example.com",
+    "MOONGLADE_EMAIL_SMTP_PASS": "<smtp password>"
   }
 }
 ```
