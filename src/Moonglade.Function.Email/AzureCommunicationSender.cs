@@ -6,7 +6,7 @@ namespace Moonglade.Function.Email;
 
 public class AzureCommunicationSender
 {
-    public async Task<EmailSendOperation> SendAsync(CommonMailMessage message)
+    public static async Task<EmailSendOperation> SendAsync(CommonMailMessage message)
     {
         var connectionString = EnvHelper.Get<string>("MOONGLADE_EMAIL_ACS_CONN");
         var senderAddress = EnvHelper.Get<string>("MOONGLADE_EMAIL_ACS_ADDR");
@@ -36,7 +36,6 @@ public static class CommonMailMessageExtensions
 {
     public static Task<EmailSendOperation> SendAzureCommunicationAsync(this CommonMailMessage message)
     {
-        var sender = new AzureCommunicationSender();
-        return sender.SendAsync(message);
+        return AzureCommunicationSender.SendAsync(message);
     }
 }
