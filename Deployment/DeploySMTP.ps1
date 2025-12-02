@@ -77,8 +77,8 @@ if (!$appExists) {
     $echo = az functionapp create --functions-version 4 --consumption-plan-location $regionName --name $funcAppName --os-type Windows --resource-group $rsgName --runtime dotnet --storage-account $storageAccountName
     $echo = az functionapp config set -g $rsgName -n $funcAppName --use-32bit-worker-process false --http20-enabled true
 }
-$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings EmailDisplayName=$emailDisplayName
-$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings Sender="smtp"
+$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings MOONGLADE_EMAIL_SENDER_NAME=$emailDisplayName
+$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings MOONGLADE_EMAIL_PROVIDER="smtp"
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings SmtpServer=$smtpServer
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings SmtpUserName=$smtpUserName
 

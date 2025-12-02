@@ -114,7 +114,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
     private async Task SendMessageInternal(CommonMailMessage message)
     {
         string sender = "smtp";
-        var envSender = EnvHelper.Get<string>("Sender");
+        var envSender = EnvHelper.Get<string>("MOONGLADE_EMAIL_PROVIDER");
         if (!string.IsNullOrWhiteSpace(envSender))
         {
             sender = envSender.ToLower();

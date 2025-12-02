@@ -66,9 +66,9 @@ if (!$appExists) {
     $echo = az functionapp create --functions-version 4 --consumption-plan-location $regionName --name $funcAppName --os-type Windows --resource-group $rsgName --runtime dotnet --storage-account $storageAccountName
     $echo = az functionapp config set -g $rsgName -n $funcAppName --use-32bit-worker-process false --http20-enabled true
 }
-$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings EmailDisplayName=$emailDisplayName
-$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings Sender="AzureCommunication"
-$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings AzureCommunicationConnection=$azureCommunicationConnection
-$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings AzureCommunicationSenderAddress=$azureCommunicationSenderAddress
+$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings MOONGLADE_EMAIL_SENDER_NAME=$emailDisplayName
+$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings MOONGLADE_EMAIL_PROVIDER="AzureCommunication"
+$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings MOONGLADE_EMAIL_ACS_CONN=$azureCommunicationConnection
+$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings MOONGLADE_EMAIL_ACS_ADDR=$azureCommunicationSenderAddress
 
 Read-Host -Prompt "Setup is done, you can now deploy the code and assign function keys, press [ENTER] to exit."

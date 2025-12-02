@@ -8,8 +8,8 @@ public class AzureCommunicationSender
 {
     public async Task<EmailSendOperation> SendAsync(CommonMailMessage message)
     {
-        var connectionString = EnvHelper.Get<string>("AzureCommunicationConnection");
-        var senderAddress = EnvHelper.Get<string>("AzureCommunicationSenderAddress");
+        var connectionString = EnvHelper.Get<string>("MOONGLADE_EMAIL_ACS_CONN");
+        var senderAddress = EnvHelper.Get<string>("MOONGLADE_EMAIL_ACS_ADDR");
 
         var emailClient = new EmailClient(connectionString);
 

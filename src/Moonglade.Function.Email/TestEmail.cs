@@ -30,7 +30,7 @@ public class TestEmail(ILogger<TestEmail> logger)
             var message = builder.BuildTestNotification(payload.ToAddresses);
 
             string sender = "smtp";
-            var envSender = EnvHelper.Get<string>("Sender");
+            var envSender = EnvHelper.Get<string>("MOONGLADE_EMAIL_PROVIDER");
             if (!string.IsNullOrWhiteSpace(envSender))
             {
                 sender = envSender.ToLower();

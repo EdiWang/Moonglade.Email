@@ -25,7 +25,7 @@ public class Helper
             SmtpSettings = smtpSettings
         };
 
-        var dName = EnvHelper.Get<string>("SenderDisplayName");
+        var dName = EnvHelper.Get<string>("MOONGLADE_EMAIL_SENDER_NAME");
         if (!string.IsNullOrWhiteSpace(dName)) settings.EmailDisplayName = dName;
 
         var emailHelper = new EmailHelper(configSource, settings);

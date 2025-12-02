@@ -41,7 +41,7 @@ public class Enqueue(ILogger<Enqueue> logger)
                 return new BadRequestObjectResult(new { Errors = errors });
             }
 
-            var connectionString = EnvHelper.Get<string>("StorageAccountConnection");
+            var connectionString = EnvHelper.Get<string>("MOONGLADE_EMAIL_STORAGE");
             if (string.IsNullOrEmpty(connectionString))
             {
                 logger.LogError("Storage connection string not configured");

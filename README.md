@@ -78,9 +78,9 @@ Sample ```local.settings.json``` file (SMTP)
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "StorageAccountConnection": "<storage account connection string>",
-    "EmailDisplayName": "Moonglade Notification Azure Function (local)",
-    "Sender": "smtp",
+    "MOONGLADE_EMAIL_STORAGE": "<storage account connection string>",
+    "MOONGLADE_EMAIL_SENDER_NAME": "Moonglade Notification Azure Function (local)",
+    "MOONGLADE_EMAIL_PROVIDER": "smtp",
     "EnableSsl": true,
     "SmtpServerPort": 25,
     "SmtpServer": "smtp.example.com",
@@ -98,11 +98,11 @@ Sample ```local.settings.json``` file (Azure Communication)
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "StorageAccountConnection": "<storage account connection string>",
-    "EmailDisplayName": "Moonglade Notification Azure Function (local)",
-    "Sender": "AzureCommunication",
-    "AzureCommunicationConnection": "<your connection string>",
-    "AzureCommunicationSenderAddress": "<your sender address>"
+    "MOONGLADE_EMAIL_STORAGE": "<storage account connection string>",
+    "MOONGLADE_EMAIL_SENDER_NAME": "Moonglade Notification Azure Function (local)",
+    "MOONGLADE_EMAIL_PROVIDER": "AzureCommunication",
+    "MOONGLADE_EMAIL_ACS_CONN": "<your connection string>",
+    "MOONGLADE_EMAIL_ACS_ADDR": "<your sender address>"
   }
 }
 ```
