@@ -13,7 +13,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
 {
     [Function("QueueProcessor")]
     public async Task Run(
-        [QueueTrigger("moongladeemailqueue", Connection = "StorageAccountConnection")] QueueMessage queueMessage)
+        [QueueTrigger("moongladeemailqueue", Connection = "MOONGLADE_EMAIL_STORAGE")] QueueMessage queueMessage)
     {
         logger.LogInformation($"C# Queue trigger function processed: {queueMessage.MessageId}");
 
