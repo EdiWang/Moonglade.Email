@@ -17,7 +17,7 @@ public class TestEmail(ILogger<TestEmail> logger)
         [FromBody] TestEmailRequest payload,
         Microsoft.Azure.WebJobs.ExecutionContext executionContext)
     {
-        logger.LogInformation("EmailSending HTTP trigger function processed a request.");
+        logger.LogInformation("TestEmail HTTP trigger function processed a request.");
 
         try
         {
