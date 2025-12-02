@@ -62,7 +62,8 @@ Open **appsettings.json** under your Moonglade instance, add the following setti
 ```json
 "Email": {
   "ApiEndpoint": "https://yourfunctionappurl",
-  "ApiKey": "<your function key>"
+  "ApiKey": "<your function key>",
+  "ApiKeyHeader": "x-functions-key"
 }
 ```
 
