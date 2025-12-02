@@ -79,12 +79,12 @@ if (!$appExists) {
 }
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings MOONGLADE_EMAIL_SENDER_NAME=$emailDisplayName
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings MOONGLADE_EMAIL_PROVIDER="smtp"
-$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings SmtpServer=$smtpServer
-$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings SmtpUserName=$smtpUserName
+$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings MOONGLADE_EMAIL_SMTP_SERVER=$smtpServer
+$echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings MOONGLADE_EMAIL_SMTP_USER=$smtpUserName
 
 # Azure CLI get buggy and I have to work around this truncating values issue, very 996
 # https://github.com/Azure/azure-cli/issues/10066
-$tempSettings = "EmailAccountPassword=@Microsoft.KeyVault(SecretUri=$pwdSecretId)"
+$tempSettings = "MOONGLADE_EMAIL_SMTP_PASS=@Microsoft.KeyVault(SecretUri=$pwdSecretId)"
 $echo = az functionapp config appsettings set -g $rsgName -n $funcAppName --settings `"$tempSettings`"
 
 Write-Host ""
