@@ -14,8 +14,7 @@ public class TestEmail(ILogger<TestEmail> logger)
     [Function("TestEmail")]
     public async Task<IActionResult> Run(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
-        [FromBody] TestEmailRequest payload,
-        Microsoft.Azure.WebJobs.ExecutionContext executionContext)
+        [FromBody] TestEmailRequest payload)
     {
         logger.LogInformation("TestEmail HTTP trigger function processed a request.");
 
