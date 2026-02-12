@@ -109,9 +109,9 @@ internal class Program
             }
 
             var json = JsonSerializer.Serialize(emailNotification);
-            
+
             var response = await queue.SendMessageAsync(json);
-            
+
             Console.WriteLine($"Message inserted successfully. MessageId: {response.Value.MessageId}");
         }
         catch (Exception ex)
@@ -160,7 +160,7 @@ internal class Program
         try
         {
             var messageText = message.MessageText;
-            
+
             // Try to deserialize directly first (if using Base64 encoding option)
             try
             {

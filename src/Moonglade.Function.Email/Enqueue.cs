@@ -22,7 +22,7 @@ public class Enqueue(ILogger<Enqueue> logger)
     {
         try
         {
-            logger.LogInformation("Processing email enqueue request. OriginAspNetRequestId={OriginAspNetRequestId}", 
+            logger.LogInformation("Processing email enqueue request. OriginAspNetRequestId={OriginAspNetRequestId}",
                 payload?.OriginAspNetRequestId);
 
             // Validate payload
@@ -59,7 +59,7 @@ public class Enqueue(ILogger<Enqueue> logger)
 
             await InsertMessageAsync(queue, emailNotification);
 
-            logger.LogInformation("Email notification enqueued successfully. Type={Type}, Recipients={RecipientCount}", 
+            logger.LogInformation("Email notification enqueued successfully. Type={Type}, Recipients={RecipientCount}",
                 payload.Type, payload.Receipts.Length);
 
             return new AcceptedResult();
@@ -90,8 +90,8 @@ public class Enqueue(ILogger<Enqueue> logger)
             var base64Json = Convert.ToBase64String(bytes);
 
             await queue.SendMessageAsync(base64Json);
-            
-            logger.LogDebug("Message sent to queue successfully. MessageType={MessageType}", 
+
+            logger.LogDebug("Message sent to queue successfully. MessageType={MessageType}",
                 emailNotification.MessageType);
         }
         catch (Exception ex)

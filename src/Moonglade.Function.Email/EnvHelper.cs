@@ -49,7 +49,7 @@ public static class EnvHelper
             // Handle nullable types
             var targetType = typeof(T);
             var underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
-            
+
             var convertedValue = Convert.ChangeType(value, underlyingType, CultureInfo.InvariantCulture);
             return (T)convertedValue;
         }
