@@ -1,5 +1,6 @@
 using Azure.Storage.Queues.Models;
 using Edi.TemplateEmail;
+using Edi.TemplateEmail.Smtp;
 using MailKit.Net.Smtp;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -43,7 +44,8 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
                 var messageBuilder = new MessageBuilder(emailHelper);
                 logger.LogInformation($"Sending {en.MessageType} message");
 
-                await SendMessage(en, messageBuilder);
+                var smtpSettings = IsSmtpProvider() ? Helper.GetSmtpSettings() : null;
+                await SendMessage(en, messageBuilder, smtpSettings);
 
                 logger.LogInformation($"Message '{queueMessage.MessageId}' processed successfully.");
             }
@@ -55,7 +57,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
         }
     }
 
-    private async Task SendMessage(EmailNotification en, MessageBuilder builder)
+    private async Task SendMessage(EmailNotification en, MessageBuilder builder, EmailSettings smtpSettings)
     {
         var dl = en.DistributionList.Split(';');
 
@@ -75,8 +77,8 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
                 {
                     logger.LogInformation($"Sending to '{recipient}'");
 
-                    var message = GetMessage(en.MessageType, [recipient], en.MessageBody, builder);
-                    await SendMessageInternal(message);
+                    var message = GetMessage(en.MessageType, [recipient], en.MessageBody, builder, smtpSettings);
+                    await SendMessageInternal(message, smtpSettings);
                 }
             }
             catch (SmtpCommandException e)
@@ -95,7 +97,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
         }
     }
 
-    private async Task SendMessageInternal(CommonMailMessage message)
+    private async Task SendMessageInternal(CommonMailMessage message, EmailSettings smtpSettings)
     {
         string sender = "smtp";
         var envSender = EnvHelper.Get<string>("MOONGLADE_EMAIL_PROVIDER");
@@ -107,7 +109,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
         switch (sender)
         {
             case "smtp":
-                var response = await message.SendAsync();
+                var response = await message.SendAsync(smtpSettings);
                 logger.LogInformation($"SMTP response: {response}");
                 break;
 
@@ -122,12 +124,12 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
     }
 
     private CommonMailMessage GetMessage(string messageType, string[] recipients, string messageBody,
-        MessageBuilder builder)
+        MessageBuilder builder, EmailSettings smtpSettings)
     {
         switch (messageType)
         {
             case "TestMail":
-                return builder.BuildTestNotification(recipients);
+                return builder.BuildTestNotification(recipients, smtpSettings);
 
             case "NewCommentNotification":
                 var ncPayload = JsonSerializer.Deserialize<NewCommentPayload>(messageBody, options);
@@ -150,4 +152,10 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
     {
         PropertyNameCaseInsensitive = true
     };
+
+    private static bool IsSmtpProvider()
+    {
+        var envSender = EnvHelper.Get<string>("MOONGLADE_EMAIL_PROVIDER");
+        return string.IsNullOrWhiteSpace(envSender) || envSender.Equals("smtp", StringComparison.OrdinalIgnoreCase);
+    }
 }

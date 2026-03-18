@@ -1,4 +1,5 @@
 using Edi.TemplateEmail;
+using Edi.TemplateEmail.Smtp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
@@ -26,8 +27,6 @@ public class TestEmail(ILogger<TestEmail> logger)
             var builder = new MessageBuilder(emailHelper);
             logger.LogInformation($"Sending test message");
 
-            var message = builder.BuildTestNotification(payload.ToAddresses);
-
             string sender = "smtp";
             var envSender = EnvHelper.Get<string>("MOONGLADE_EMAIL_PROVIDER");
             if (!string.IsNullOrWhiteSpace(envSender))
@@ -35,10 +34,13 @@ public class TestEmail(ILogger<TestEmail> logger)
                 sender = envSender.ToLower();
             }
 
+            var smtpSettings = sender == "smtp" ? Helper.GetSmtpSettings() : null;
+            var message = builder.BuildTestNotification(payload.ToAddresses, smtpSettings);
+
             switch (sender)
             {
                 case "smtp":
-                    await message.SendAsync();
+                    await message.SendAsync(smtpSettings);
                     break;
 
                 case "azurecommunication":

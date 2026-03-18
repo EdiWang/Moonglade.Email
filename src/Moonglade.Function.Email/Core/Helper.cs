@@ -1,4 +1,5 @@
 ﻿using Edi.TemplateEmail;
+using Edi.TemplateEmail.Smtp;
 
 namespace Moonglade.Function.Email.Core;
 
@@ -10,6 +11,11 @@ public class Helper
         if (!File.Exists(configSource))
             throw new FileNotFoundException("Configuration file for EmailHelper is not present.", configSource);
 
+        return new EmailHelper(configSource);
+    }
+
+    public static EmailSettings GetSmtpSettings()
+    {
         var smtpSettings = new SmtpSettings(EnvHelper.Get<string>("MOONGLADE_EMAIL_SMTP_SERVER"),
             EnvHelper.Get<string>("MOONGLADE_EMAIL_SMTP_USER"),
             EnvHelper.Get<string>("MOONGLADE_EMAIL_SMTP_PASS", target: EnvironmentVariableTarget.Process),
@@ -28,7 +34,6 @@ public class Helper
         var dName = EnvHelper.Get<string>("MOONGLADE_EMAIL_SENDER_NAME");
         if (!string.IsNullOrWhiteSpace(dName)) settings.EmailDisplayName = dName;
 
-        var emailHelper = new EmailHelper(configSource, settings);
-        return emailHelper;
+        return settings;
     }
 }

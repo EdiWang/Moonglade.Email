@@ -1,19 +1,20 @@
 ﻿using Edi.TemplateEmail;
+using Edi.TemplateEmail.Smtp;
 using Moonglade.Function.Email.Payloads;
 
 namespace Moonglade.Function.Email.Core;
 
 public class MessageBuilder(IEmailHelper emailHelper)
 {
-    public CommonMailMessage BuildTestNotification(string[] toAddresses)
+    public CommonMailMessage BuildTestNotification(string[] toAddresses, EmailSettings smtpSettings)
     {
         var message = emailHelper.ForType("TestMail")
                           .Map(nameof(Environment.MachineName), Environment.MachineName)
-                          .Map(nameof(EmailHelper.Settings.SmtpSettings.SmtpServer), emailHelper.Settings.SmtpSettings.SmtpServer)
-                          .Map(nameof(EmailHelper.Settings.SmtpSettings.SmtpServerPort), emailHelper.Settings.SmtpSettings.SmtpServerPort)
-                          .Map(nameof(EmailHelper.Settings.SmtpSettings.SmtpUserName), emailHelper.Settings.SmtpSettings.SmtpUserName)
-                          .Map(nameof(EmailHelper.Settings.EmailDisplayName), emailHelper.Settings.EmailDisplayName)
-                          .Map(nameof(EmailHelper.Settings.SmtpSettings.EnableTls), emailHelper.Settings.SmtpSettings.EnableTls)
+                          .Map(nameof(SmtpSettings.SmtpServer), smtpSettings.SmtpSettings.SmtpServer)
+                          .Map(nameof(SmtpSettings.SmtpServerPort), smtpSettings.SmtpSettings.SmtpServerPort)
+                          .Map(nameof(SmtpSettings.SmtpUserName), smtpSettings.SmtpSettings.SmtpUserName)
+                          .Map(nameof(EmailSettings.EmailDisplayName), smtpSettings.EmailDisplayName)
+                          .Map(nameof(SmtpSettings.EnableTls), smtpSettings.SmtpSettings.EnableTls)
                           .BuildMessage(toAddresses);
         return message;
     }
