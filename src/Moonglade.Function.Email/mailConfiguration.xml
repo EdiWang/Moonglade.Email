@@ -47,7 +47,7 @@
     <MessageSubject>[edi.wang] Comment on {PostTitle.Value}</MessageSubject>
     <MessageBody>
       <![CDATA[
-<p><strong>{Username.Value}</strong> commentted:</p>
+<p><strong>{Username.Value}</strong> commented:</p>
 <div style="border: 1px solid #CECECE; padding: 10px;">
   {CommentContent.Value}
 </div>
@@ -64,7 +64,7 @@ IP: {IpAddress.Value}
     <MessageBody>
       <![CDATA[
 <p>      
-  Your comment on "<i><a href="{RouteLink.Value}" target="_blank">{PostTitle.Value}</a></i>" has been replied by blog administrator:
+  Your comment on "<i><a href="{PostLink.Value}" target="_blank">{Title.Value}</a></i>" has been replied by blog administrator:
 </p>
 <blockquote>
   {ReplyContentHtml.Value}

@@ -35,8 +35,8 @@ public class MessageBuilder(IEmailHelper emailHelper)
     {
         var message = emailHelper.ForType(MessageTypes.AdminReplyNotification)
                           .Map(nameof(request.ReplyContentHtml), request.ReplyContentHtml)
-                          .Map("RouteLink", request.PostLink)
-                          .Map("PostTitle", request.Title)
+                          .Map(nameof(request.PostLink), request.PostLink)
+                          .Map(nameof(request.Title), request.Title)
                           .Map(nameof(request.CommentContent), request.CommentContent)
                           .BuildMessage(toAddress);
         return message;
