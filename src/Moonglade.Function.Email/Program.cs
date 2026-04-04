@@ -37,8 +37,10 @@ var host = new HostBuilder()
         services.AddSingleton(sp =>
         {
             var opts = sp.GetRequiredService<IOptions<EmailServiceOptions>>().Value;
-            var smtpSettings = new SmtpSettings(opts.SmtpServer, opts.SmtpUserName, opts.SmtpPassword, opts.SmtpPort);
-            smtpSettings.EnableTls = opts.EnableSsl;
+            var smtpSettings = new SmtpSettings(opts.SmtpServer, opts.SmtpUserName, opts.SmtpPassword, opts.SmtpPort)
+            {
+                EnableTls = opts.EnableSsl
+            };
             var settings = new EmailSettings { SmtpSettings = smtpSettings };
             if (!string.IsNullOrWhiteSpace(opts.SenderDisplayName))
                 settings.EmailDisplayName = opts.SenderDisplayName;
