@@ -1,3 +1,4 @@
+using Azure;
 using Azure.Storage.Queues.Models;
 using Edi.TemplateEmail;
 using Edi.TemplateEmail.Smtp;
@@ -22,28 +23,31 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
         {
             var en = JsonSerializer.Deserialize<EmailNotification>(queueMessage.MessageText);
 
-            if (en != null)
+            if (en == null)
             {
-                logger.LogInformation("Found message: {MessageId}", queueMessage.MessageId);
-
-                if (string.IsNullOrWhiteSpace(en.DistributionList))
-                {
-                    logger.LogError("Message {MessageId} has no DistributionList, operation aborted.", queueMessage.MessageId);
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(en.MessageType))
-                {
-                    logger.LogError("Message {MessageId} has no MessageType, operation aborted.", queueMessage.MessageId);
-                    return;
-                }
-
-                logger.LogInformation("Sending {MessageType} message", en.MessageType);
-
-                await SendMessage(en);
-
-                logger.LogInformation("Message {MessageId} processed successfully.", queueMessage.MessageId);
+                logger.LogWarning("Message {MessageId} could not be deserialized, skipping.", queueMessage.MessageId);
+                return;
             }
+
+            logger.LogInformation("Found message: {MessageId}", queueMessage.MessageId);
+
+            if (string.IsNullOrWhiteSpace(en.DistributionList))
+            {
+                logger.LogError("Message {MessageId} has no DistributionList, operation aborted.", queueMessage.MessageId);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(en.MessageType))
+            {
+                logger.LogError("Message {MessageId} has no MessageType, operation aborted.", queueMessage.MessageId);
+                return;
+            }
+
+            logger.LogInformation("Sending {MessageType} message", en.MessageType);
+
+            await SendMessage(en);
+
+            logger.LogInformation("Message {MessageId} processed successfully.", queueMessage.MessageId);
         }
         catch (Exception e)
         {
@@ -63,7 +67,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
         // - Log SmtpCommandException only instead of failing
         // - Fail fast only when ALL recipients blow up
 
-        var exceptions = new List<SmtpCommandException>();
+        var exceptions = new List<Exception>();
         foreach (var recipient in recipients)
         {
             try
@@ -73,7 +77,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
                 var message = GetMessage(en.MessageType, [recipient], en.MessageBody);
                 await dispatcher.SendAsync(message);
             }
-            catch (SmtpCommandException e)
+            catch (Exception e) when (e is SmtpCommandException or RequestFailedException)
             {
                 exceptions.Add(e);
                 logger.LogError(e, "Error sending to {Recipient}", recipient);
