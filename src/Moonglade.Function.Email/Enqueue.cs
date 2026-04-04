@@ -52,7 +52,7 @@ public class Enqueue(ILogger<Enqueue> logger)
 
             var emailNotification = new EmailNotification
             {
-                DistributionList = string.Join(';', payload.Receipts),
+                DistributionList = string.Join(';', payload.Recipients),
                 MessageType = payload.Type,
                 MessageBody = JsonSerializer.Serialize(payload.Payload, MoongladeJsonSerializerOptions.Default)
             };
@@ -60,7 +60,7 @@ public class Enqueue(ILogger<Enqueue> logger)
             await InsertMessageAsync(queue, emailNotification);
 
             logger.LogInformation("Email notification enqueued successfully. Type={Type}, Recipients={RecipientCount}",
-                payload.Type, payload.Receipts.Length);
+                payload.Type, payload.Recipients.Length);
 
             return new AcceptedResult();
         }
@@ -108,9 +108,9 @@ public class EnqueueRequest
     [StringLength(100, ErrorMessage = "Type must not exceed 100 characters")]
     public string Type { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "At least one receipt is required")]
-    [MinLength(1, ErrorMessage = "At least one receipt is required")]
-    public string[] Receipts { get; set; } = Array.Empty<string>();
+    [Required(ErrorMessage = "At least one recipient is required")]
+    [MinLength(1, ErrorMessage = "At least one recipient is required")]
+    public string[] Recipients { get; set; } = Array.Empty<string>();
 
     [Required(ErrorMessage = "Payload is required")]
     public object Payload { get; set; } = new();
