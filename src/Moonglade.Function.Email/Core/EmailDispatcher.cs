@@ -8,12 +8,14 @@ namespace Moonglade.Function.Email.Core;
 public class EmailDispatcher(
     EmailSettings smtpSettings,
     IOptions<EmailServiceOptions> options,
+    AzureCommunicationSender acsSender,
     ILogger<EmailDispatcher> logger) : IEmailDispatcher
 {
     public async Task SendAsync(CommonMailMessage message)
     {
-        var opts = options.Value;
-        var sender = string.IsNullOrWhiteSpace(opts.Provider) ? "smtp" : opts.Provider.ToLowerInvariant();
+        var sender = string.IsNullOrWhiteSpace(options.Value.Provider)
+            ? "smtp"
+            : options.Value.Provider.ToLowerInvariant();
 
         switch (sender)
         {
@@ -23,10 +25,7 @@ public class EmailDispatcher(
                 break;
 
             case "azurecommunication":
-                var result = await AzureCommunicationSender.SendAsync(
-                    message,
-                    opts.AcsConnectionString,
-                    opts.AcsSenderAddress);
+                var result = await acsSender.SendAsync(message);
                 logger.LogInformation("AzureCommunication operation ID: {OperationId}", result.Id);
                 break;
 
