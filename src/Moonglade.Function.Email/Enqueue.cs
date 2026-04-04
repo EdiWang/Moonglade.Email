@@ -71,11 +71,6 @@ public class Enqueue(ILogger<Enqueue> logger, QueueClient queue)
     {
         try
         {
-            if (await queue.CreateIfNotExistsAsync() != null)
-            {
-                logger.LogInformation("Azure Storage Queue '{QueueName}' was created", queue.Name);
-            }
-
             var json = JsonSerializer.Serialize(emailNotification, MoongladeJsonSerializerOptions.Default);
             var bytes = Encoding.UTF8.GetBytes(json);
             var base64Json = Convert.ToBase64String(bytes);

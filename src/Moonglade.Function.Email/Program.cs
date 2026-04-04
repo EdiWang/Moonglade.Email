@@ -56,4 +56,7 @@ var host = new HostBuilder()
     })
     .Build();
 
-host.Run();
+var queueClient = host.Services.GetRequiredService<QueueClient>();
+await queueClient.CreateIfNotExistsAsync();
+
+await host.RunAsync();
