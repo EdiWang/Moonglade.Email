@@ -25,7 +25,7 @@ public class TestEmail(ILogger<TestEmail> logger)
             var emailHelper = Helper.GetEmailHelper(runningDirectory);
 
             var builder = new MessageBuilder(emailHelper);
-            logger.LogInformation($"Sending test message");
+            logger.LogInformation("Sending test message");
 
             string sender = "smtp";
             var envSender = EnvHelper.Get<string>("MOONGLADE_EMAIL_PROVIDER");
@@ -45,18 +45,18 @@ public class TestEmail(ILogger<TestEmail> logger)
 
                 case "azurecommunication":
                     var result = await message.SendAzureCommunicationAsync();
-                    logger.LogInformation($"AzureCommunication operation ID: {result.Id}");
+                    logger.LogInformation("AzureCommunication operation ID: {OperationId}", result.Id);
                     break;
 
                 default:
                     throw new InvalidOperationException("Sender not supported");
             }
 
-            return new OkObjectResult($"Test message sent");
+            return new OkObjectResult("Test message sent");
         }
         catch (Exception e)
         {
-            logger.LogError(e, e.Message);
+            logger.LogError(e, "Failed to send test email");
             return new ConflictObjectResult(e.Message);
         }
     }

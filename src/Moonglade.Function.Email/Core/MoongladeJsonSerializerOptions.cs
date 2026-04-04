@@ -6,7 +6,7 @@ namespace Moonglade.Function.Email.Core;
 
 public static class MoongladeJsonSerializerOptions
 {
-    public static JsonSerializerOptions Default => new()
+    public static readonly JsonSerializerOptions Default = new()
     {
         // https://en.wikipedia.org/wiki/CJK_Unified_Ideographs_(Unicode_block)
         Encoder = JavaScriptEncoder.Create(

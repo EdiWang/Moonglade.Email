@@ -16,7 +16,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
     public async Task Run(
         [QueueTrigger("moongladeemailqueue", Connection = "MOONGLADE_EMAIL_STORAGE")] QueueMessage queueMessage)
     {
-        logger.LogInformation($"C# Queue trigger function processed: {queueMessage.MessageId}");
+        logger.LogInformation("Queue trigger function processed: {MessageId}", queueMessage.MessageId);
 
         try
         {
@@ -24,17 +24,17 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
 
             if (en != null)
             {
-                logger.LogInformation($"Found message: {queueMessage.MessageId}");
+                logger.LogInformation("Found message: {MessageId}", queueMessage.MessageId);
 
                 if (string.IsNullOrWhiteSpace(en.DistributionList))
                 {
-                    logger.LogError($"Message Id '{queueMessage.MessageId}' has no DistributionList, operation aborted.");
+                    logger.LogError("Message {MessageId} has no DistributionList, operation aborted.", queueMessage.MessageId);
                     return;
                 }
 
                 if (string.IsNullOrWhiteSpace(en.MessageType))
                 {
-                    logger.LogError($"Message Id '{queueMessage.MessageId}' has no MessageType, operation aborted.");
+                    logger.LogError("Message {MessageId} has no MessageType, operation aborted.", queueMessage.MessageId);
                     return;
                 }
 
@@ -42,17 +42,17 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
                 var emailHelper = Helper.GetEmailHelper(runningDirectory);
 
                 var messageBuilder = new MessageBuilder(emailHelper);
-                logger.LogInformation($"Sending {en.MessageType} message");
+                logger.LogInformation("Sending {MessageType} message", en.MessageType);
 
                 var smtpSettings = IsSmtpProvider() ? Helper.GetSmtpSettings() : null;
                 await SendMessage(en, messageBuilder, smtpSettings);
 
-                logger.LogInformation($"Message '{queueMessage.MessageId}' processed successfully.");
+                logger.LogInformation("Message {MessageId} processed successfully.", queueMessage.MessageId);
             }
         }
         catch (Exception e)
         {
-            logger.LogError(e.Message);
+            logger.LogError(e, "Error processing queue message {MessageId}", queueMessage.MessageId);
             throw;
         }
     }
@@ -75,7 +75,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
             {
                 if (!string.IsNullOrWhiteSpace(recipient))
                 {
-                    logger.LogInformation($"Sending to '{recipient}'");
+                    logger.LogInformation("Sending to {Recipient}", recipient);
 
                     var message = GetMessage(en.MessageType, [recipient], en.MessageBody, builder, smtpSettings);
                     await SendMessageInternal(message, smtpSettings);
@@ -84,7 +84,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
             catch (SmtpCommandException e)
             {
                 exceptions.Add(e);
-                logger.LogError(exception: e, message: $"Error sending to '{recipient}': '{e.Message}'");
+                logger.LogError(e, "Error sending to {Recipient}", recipient);
             }
         }
 
@@ -93,7 +93,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
             logger.LogError("Sending email all failed");
 
             // All blow up, notify Azure to retry or put message into poison queue for developers to work 996
-            throw new AggregateException("Error sending 'OpenCard' email, all messages failed with exceptions.", innerExceptions: exceptions);
+            throw new AggregateException("All email recipients failed to receive the message.", innerExceptions: exceptions);
         }
     }
 
@@ -110,12 +110,12 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
         {
             case "smtp":
                 var response = await message.SendAsync(smtpSettings);
-                logger.LogInformation($"SMTP response: {response}");
+                logger.LogInformation("SMTP response: {Response}", response);
                 break;
 
             case "azurecommunication":
                 var result = await message.SendAzureCommunicationAsync();
-                logger.LogInformation($"AzureCommunication operation ID: {result.Id}");
+                logger.LogInformation("AzureCommunication operation ID: {OperationId}", result.Id);
                 break;
 
             default:
