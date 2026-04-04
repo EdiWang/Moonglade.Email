@@ -43,6 +43,7 @@ var host = new HostBuilder()
         });
 
         services.AddSingleton<MessageBuilder>();
+        services.AddSingleton<IEmailDispatcher, EmailDispatcher>();
 
         services.AddSingleton(_ =>
         {

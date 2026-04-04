@@ -9,7 +9,7 @@ using FromBodyAttribute = Microsoft.Azure.Functions.Worker.Http.FromBodyAttribut
 
 namespace Moonglade.Function.Email;
 
-public class TestEmail(ILogger<TestEmail> logger, MessageBuilder messageBuilder, EmailSettings smtpSettings)
+public class TestEmail(ILogger<TestEmail> logger, MessageBuilder messageBuilder, EmailSettings smtpSettings, IEmailDispatcher dispatcher)
 {
     [Function("TestEmail")]
     public async Task<IActionResult> Run(
@@ -22,29 +22,8 @@ public class TestEmail(ILogger<TestEmail> logger, MessageBuilder messageBuilder,
         {
             logger.LogInformation("Sending test message");
 
-            string sender = "smtp";
-            var envSender = EnvHelper.Get<string>("MOONGLADE_EMAIL_PROVIDER");
-            if (!string.IsNullOrWhiteSpace(envSender))
-            {
-                sender = envSender.ToLower();
-            }
-
             var message = messageBuilder.BuildTestNotification(payload.ToAddresses, smtpSettings);
-
-            switch (sender)
-            {
-                case "smtp":
-                    await message.SendAsync(smtpSettings);
-                    break;
-
-                case "azurecommunication":
-                    var result = await message.SendAzureCommunicationAsync();
-                    logger.LogInformation("AzureCommunication operation ID: {OperationId}", result.Id);
-                    break;
-
-                default:
-                    throw new InvalidOperationException("Sender not supported");
-            }
+            await dispatcher.SendAsync(message);
 
             return new OkObjectResult("Test message sent");
         }

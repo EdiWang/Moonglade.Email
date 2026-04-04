@@ -10,7 +10,7 @@ using System.Text.Json;
 
 namespace Moonglade.Function.Email;
 
-public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messageBuilder, EmailSettings smtpSettings)
+public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messageBuilder, EmailSettings smtpSettings, IEmailDispatcher dispatcher)
 {
     [Function("QueueProcessor")]
     public async Task Run(
@@ -40,7 +40,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
 
                 logger.LogInformation("Sending {MessageType} message", en.MessageType);
 
-                await SendMessage(en, messageBuilder, smtpSettings);
+                await SendMessage(en);
 
                 logger.LogInformation("Message {MessageId} processed successfully.", queueMessage.MessageId);
             }
@@ -52,7 +52,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
         }
     }
 
-    private async Task SendMessage(EmailNotification en, MessageBuilder builder, EmailSettings smtpSettings)
+    private async Task SendMessage(EmailNotification en)
     {
         var recipients = en.DistributionList.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
@@ -70,8 +70,8 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
             {
                 logger.LogInformation("Sending to {Recipient}", recipient);
 
-                var message = GetMessage(en.MessageType, [recipient], en.MessageBody, builder, smtpSettings);
-                await SendMessageInternal(message, smtpSettings);
+                var message = GetMessage(en.MessageType, [recipient], en.MessageBody);
+                await dispatcher.SendAsync(message);
             }
             catch (SmtpCommandException e)
             {
@@ -89,51 +89,24 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
         }
     }
 
-    private async Task SendMessageInternal(CommonMailMessage message, EmailSettings smtpSettings)
-    {
-        string sender = "smtp";
-        var envSender = EnvHelper.Get<string>("MOONGLADE_EMAIL_PROVIDER");
-        if (!string.IsNullOrWhiteSpace(envSender))
-        {
-            sender = envSender.ToLower();
-        }
-
-        switch (sender)
-        {
-            case "smtp":
-                var response = await message.SendAsync(smtpSettings);
-                logger.LogInformation("SMTP response: {Response}", response);
-                break;
-
-            case "azurecommunication":
-                var result = await message.SendAzureCommunicationAsync();
-                logger.LogInformation("AzureCommunication operation ID: {OperationId}", result.Id);
-                break;
-
-            default:
-                throw new InvalidOperationException("Sender not supported");
-        }
-    }
-
-    private CommonMailMessage GetMessage(string messageType, string[] recipients, string messageBody,
-        MessageBuilder builder, EmailSettings smtpSettings)
+    private CommonMailMessage GetMessage(string messageType, string[] recipients, string messageBody)
     {
         switch (messageType)
         {
             case "TestMail":
-                return builder.BuildTestNotification(recipients, smtpSettings);
+                return messageBuilder.BuildTestNotification(recipients, smtpSettings);
 
             case "NewCommentNotification":
                 var ncPayload = JsonSerializer.Deserialize<NewCommentPayload>(messageBody, options);
-                return builder.BuildNewCommentNotification(recipients, ncPayload);
+                return messageBuilder.BuildNewCommentNotification(recipients, ncPayload);
 
             case "AdminReplyNotification":
                 var replyPayload = JsonSerializer.Deserialize<CommentReplyPayload>(messageBody, options);
-                return builder.BuildCommentReplyNotification(recipients, replyPayload);
+                return messageBuilder.BuildCommentReplyNotification(recipients, replyPayload);
 
             case "BeingPinged":
                 var pingPayload = JsonSerializer.Deserialize<PingPayload>(messageBody, options);
-                return builder.BuildPingNotification(recipients, pingPayload);
+                return messageBuilder.BuildPingNotification(recipients, pingPayload);
 
             default:
                 throw new ArgumentOutOfRangeException();
