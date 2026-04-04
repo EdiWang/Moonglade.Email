@@ -1,5 +1,6 @@
 ﻿using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
+using Moonglade.Function.Email.Core;
 using System.Text;
 using System.Text.Json;
 
@@ -180,11 +181,4 @@ internal class Program
             return null;
         }
     }
-}
-
-public class EmailNotification
-{
-    public string DistributionList { get; set; } = string.Empty;
-    public string MessageType { get; set; } = string.Empty;
-    public string MessageBody { get; set; } = string.Empty;
 }

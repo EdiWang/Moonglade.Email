@@ -1,8 +1,8 @@
 ﻿namespace Moonglade.Function.Email.Core;
 
-internal record EmailNotification
+public record EmailNotification
 {
-    public string DistributionList { get; set; }
-    public string MessageType { get; set; }
-    public string MessageBody { get; set; }
+    public string DistributionList { get; init; }
+    public string MessageType { get; init; }
+    public string MessageBody { get; init; }
 }

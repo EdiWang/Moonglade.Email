@@ -59,7 +59,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
 
     private async Task SendMessage(EmailNotification en, MessageBuilder builder, EmailSettings smtpSettings)
     {
-        var dl = en.DistributionList.Split(';');
+        var recipients = en.DistributionList.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
         // Workaround for error when sending to multiple recipients in case a part of them failed
         // which result in other recipients also not receiving email 
@@ -69,17 +69,14 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
         // - Fail fast only when ALL recipients blow up
 
         var exceptions = new List<SmtpCommandException>();
-        foreach (var recipient in dl)
+        foreach (var recipient in recipients)
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(recipient))
-                {
-                    logger.LogInformation("Sending to {Recipient}", recipient);
+                logger.LogInformation("Sending to {Recipient}", recipient);
 
-                    var message = GetMessage(en.MessageType, [recipient], en.MessageBody, builder, smtpSettings);
-                    await SendMessageInternal(message, smtpSettings);
-                }
+                var message = GetMessage(en.MessageType, [recipient], en.MessageBody, builder, smtpSettings);
+                await SendMessageInternal(message, smtpSettings);
             }
             catch (SmtpCommandException e)
             {
@@ -88,11 +85,11 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
             }
         }
 
-        if (exceptions.Count == dl.Length)
+        if (exceptions.Count == recipients.Length)
         {
-            logger.LogError("Sending email all failed");
+            logger.LogError("All {RecipientCount} email recipients failed", recipients.Length);
 
-            // All blow up, notify Azure to retry or put message into poison queue for developers to work 996
+            // All blow up, notify Azure to retry or put message into poison queue
             throw new AggregateException("All email recipients failed to receive the message.", innerExceptions: exceptions);
         }
     }
