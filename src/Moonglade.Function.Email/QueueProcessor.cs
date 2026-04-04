@@ -93,18 +93,18 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
     {
         switch (messageType)
         {
-            case "TestMail":
+            case MessageTypes.TestMail:
                 return messageBuilder.BuildTestNotification(recipients, smtpSettings);
 
-            case "NewCommentNotification":
+            case MessageTypes.NewCommentNotification:
                 var ncPayload = JsonSerializer.Deserialize<NewCommentPayload>(messageBody, options);
                 return messageBuilder.BuildNewCommentNotification(recipients, ncPayload);
 
-            case "AdminReplyNotification":
+            case MessageTypes.AdminReplyNotification:
                 var replyPayload = JsonSerializer.Deserialize<CommentReplyPayload>(messageBody, options);
                 return messageBuilder.BuildCommentReplyNotification(recipients, replyPayload);
 
-            case "BeingPinged":
+            case MessageTypes.BeingPinged:
                 var pingPayload = JsonSerializer.Deserialize<PingPayload>(messageBody, options);
                 return messageBuilder.BuildPingNotification(recipients, pingPayload);
 

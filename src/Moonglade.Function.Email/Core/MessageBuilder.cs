@@ -8,7 +8,7 @@ public class MessageBuilder(IEmailHelper emailHelper)
 {
     public CommonMailMessage BuildTestNotification(string[] toAddresses, EmailSettings smtpSettings)
     {
-        var message = emailHelper.ForType("TestMail")
+        var message = emailHelper.ForType(MessageTypes.TestMail)
                           .Map(nameof(Environment.MachineName), Environment.MachineName)
                           .Map(nameof(SmtpSettings.SmtpServer), smtpSettings.SmtpSettings.SmtpServer)
                           .Map(nameof(SmtpSettings.SmtpServerPort), smtpSettings.SmtpSettings.SmtpServerPort)
@@ -21,7 +21,7 @@ public class MessageBuilder(IEmailHelper emailHelper)
 
     public CommonMailMessage BuildNewCommentNotification(string[] toAddresses, NewCommentPayload request)
     {
-        var message = emailHelper.ForType("NewCommentNotification")
+        var message = emailHelper.ForType(MessageTypes.NewCommentNotification)
                           .Map(nameof(request.Username), request.Username)
                           .Map(nameof(request.Email), request.Email)
                           .Map(nameof(request.IpAddress), request.IpAddress)
@@ -33,7 +33,7 @@ public class MessageBuilder(IEmailHelper emailHelper)
 
     public CommonMailMessage BuildCommentReplyNotification(string[] toAddress, CommentReplyPayload request)
     {
-        var message = emailHelper.ForType("AdminReplyNotification")
+        var message = emailHelper.ForType(MessageTypes.AdminReplyNotification)
                           .Map(nameof(request.ReplyContentHtml), request.ReplyContentHtml)
                           .Map("RouteLink", request.PostLink)
                           .Map("PostTitle", request.Title)
@@ -44,7 +44,7 @@ public class MessageBuilder(IEmailHelper emailHelper)
 
     public CommonMailMessage BuildPingNotification(string[] toAddresses, PingPayload request)
     {
-        var message = emailHelper.ForType("BeingPinged")
+        var message = emailHelper.ForType(MessageTypes.BeingPinged)
                           .Map(nameof(request.TargetPostTitle), request.TargetPostTitle)
                           .Map(nameof(request.Domain), request.Domain)
                           .Map(nameof(request.SourceIp), request.SourceIp)
