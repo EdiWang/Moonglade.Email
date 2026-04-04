@@ -10,5 +10,6 @@
     <File Path="Directory.Build.props" />
   </Folder>
   <Project Path="Moonglade.Function.Email/Moonglade.Function.Email.csproj" />
+  <Project Path="Moonglade.Function.Email.Tests/Moonglade.Function.Email.Tests.csproj" />
   <Project Path="TestClient/TestClient.csproj" />
 </Solution>
