@@ -118,4 +118,4 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
         PropertyNameCaseInsensitive = true
     };
 
-    }
+}

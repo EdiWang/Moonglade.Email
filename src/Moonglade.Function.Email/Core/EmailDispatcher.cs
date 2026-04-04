@@ -2,7 +2,6 @@ using Edi.TemplateEmail;
 using Edi.TemplateEmail.Smtp;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Moonglade.Function.Email;
 
 namespace Moonglade.Function.Email.Core;
 
