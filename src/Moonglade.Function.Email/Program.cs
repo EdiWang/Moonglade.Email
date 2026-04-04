@@ -21,6 +21,9 @@ var host = new HostBuilder()
             opts.SmtpPort = int.TryParse(config["MOONGLADE_EMAIL_SMTP_PORT"], out var port) ? port : 25;
             opts.EnableSsl = bool.TryParse(config["MOONGLADE_EMAIL_SSL"], out var ssl) && ssl;
             opts.SenderDisplayName = config["MOONGLADE_EMAIL_SENDER_NAME"] ?? string.Empty;
+            opts.Provider = config["MOONGLADE_EMAIL_PROVIDER"] ?? "smtp";
+            opts.AcsConnectionString = config["MOONGLADE_EMAIL_ACS_CONN"] ?? string.Empty;
+            opts.AcsSenderAddress = config["MOONGLADE_EMAIL_ACS_ADDR"] ?? string.Empty;
         });
 
         services.AddSingleton<IEmailHelper>(_ =>

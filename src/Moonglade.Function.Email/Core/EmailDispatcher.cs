@@ -1,15 +1,20 @@
 using Edi.TemplateEmail;
 using Edi.TemplateEmail.Smtp;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Moonglade.Function.Email;
 
 namespace Moonglade.Function.Email.Core;
 
-public class EmailDispatcher(EmailSettings smtpSettings, ILogger<EmailDispatcher> logger) : IEmailDispatcher
+public class EmailDispatcher(
+    EmailSettings smtpSettings,
+    IOptions<EmailServiceOptions> options,
+    ILogger<EmailDispatcher> logger) : IEmailDispatcher
 {
     public async Task SendAsync(CommonMailMessage message)
     {
-        var provider = EnvHelper.Get<string>("MOONGLADE_EMAIL_PROVIDER");
-        var sender = string.IsNullOrWhiteSpace(provider) ? "smtp" : provider.ToLowerInvariant();
+        var opts = options.Value;
+        var sender = string.IsNullOrWhiteSpace(opts.Provider) ? "smtp" : opts.Provider.ToLowerInvariant();
 
         switch (sender)
         {
@@ -19,7 +24,10 @@ public class EmailDispatcher(EmailSettings smtpSettings, ILogger<EmailDispatcher
                 break;
 
             case "azurecommunication":
-                var result = await message.SendAzureCommunicationAsync();
+                var result = await AzureCommunicationSender.SendAsync(
+                    message,
+                    opts.AcsConnectionString,
+                    opts.AcsSenderAddress);
                 logger.LogInformation("AzureCommunication operation ID: {OperationId}", result.Id);
                 break;
 
