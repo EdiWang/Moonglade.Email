@@ -101,25 +101,19 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
                 return messageBuilder.BuildTestNotification(recipients, smtpSettings);
 
             case MessageTypes.NewCommentNotification:
-                var ncPayload = JsonSerializer.Deserialize<NewCommentPayload>(messageBody, options);
+                var ncPayload = JsonSerializer.Deserialize<NewCommentPayload>(messageBody, MoongladeJsonSerializerOptions.Default);
                 return messageBuilder.BuildNewCommentNotification(recipients, ncPayload);
 
             case MessageTypes.AdminReplyNotification:
-                var replyPayload = JsonSerializer.Deserialize<CommentReplyPayload>(messageBody, options);
+                var replyPayload = JsonSerializer.Deserialize<CommentReplyPayload>(messageBody, MoongladeJsonSerializerOptions.Default);
                 return messageBuilder.BuildCommentReplyNotification(recipients, replyPayload);
 
             case MessageTypes.BeingPinged:
-                var pingPayload = JsonSerializer.Deserialize<PingPayload>(messageBody, options);
+                var pingPayload = JsonSerializer.Deserialize<PingPayload>(messageBody, MoongladeJsonSerializerOptions.Default);
                 return messageBuilder.BuildPingNotification(recipients, pingPayload);
 
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
-
-    private readonly JsonSerializerOptions options = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
-
 }
