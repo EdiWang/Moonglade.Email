@@ -1,4 +1,3 @@
-using Edi.TemplateEmail;
 using Edi.TemplateEmail.Smtp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +9,7 @@ using FromBodyAttribute = Microsoft.Azure.Functions.Worker.Http.FromBodyAttribut
 
 namespace Moonglade.Function.Email;
 
-public class TestEmail(ILogger<TestEmail> logger)
+public class TestEmail(ILogger<TestEmail> logger, MessageBuilder messageBuilder, EmailSettings smtpSettings)
 {
     [Function("TestEmail")]
     public async Task<IActionResult> Run(
@@ -21,10 +20,6 @@ public class TestEmail(ILogger<TestEmail> logger)
 
         try
         {
-            var runningDirectory = Environment.CurrentDirectory;
-            var emailHelper = Helper.GetEmailHelper(runningDirectory);
-
-            var builder = new MessageBuilder(emailHelper);
             logger.LogInformation("Sending test message");
 
             string sender = "smtp";
@@ -34,8 +29,7 @@ public class TestEmail(ILogger<TestEmail> logger)
                 sender = envSender.ToLower();
             }
 
-            var smtpSettings = sender == "smtp" ? Helper.GetSmtpSettings() : null;
-            var message = builder.BuildTestNotification(payload.ToAddresses, smtpSettings);
+            var message = messageBuilder.BuildTestNotification(payload.ToAddresses, smtpSettings);
 
             switch (sender)
             {

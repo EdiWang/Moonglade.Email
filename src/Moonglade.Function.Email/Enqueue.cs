@@ -11,9 +11,9 @@ using FromBodyAttribute = Microsoft.Azure.Functions.Worker.Http.FromBodyAttribut
 
 namespace Moonglade.Function.Email;
 
-public class Enqueue(ILogger<Enqueue> logger)
+public class Enqueue(ILogger<Enqueue> logger, QueueClient queue)
 {
-    private const string QueueName = "moongladeemailqueue";
+    internal const string QueueName = "moongladeemailqueue";
 
     [Function("Enqueue")]
     public async Task<IActionResult> Run(
@@ -41,15 +41,6 @@ public class Enqueue(ILogger<Enqueue> logger)
                 return new BadRequestObjectResult(new { Errors = errors });
             }
 
-            var connectionString = EnvHelper.Get<string>("MOONGLADE_EMAIL_STORAGE");
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                logger.LogError("Storage connection string not configured");
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
-            }
-
-            var queue = new QueueClient(connectionString, QueueName);
-
             var emailNotification = new EmailNotification
             {
                 DistributionList = string.Join(';', payload.Recipients),
@@ -57,7 +48,7 @@ public class Enqueue(ILogger<Enqueue> logger)
                 MessageBody = JsonSerializer.Serialize(payload.Payload, MoongladeJsonSerializerOptions.Default)
             };
 
-            await InsertMessageAsync(queue, emailNotification);
+            await InsertMessageAsync(emailNotification);
 
             logger.LogInformation("Email notification enqueued successfully. Type={Type}, Recipients={RecipientCount}",
                 payload.Type, payload.Recipients.Length);
@@ -76,7 +67,7 @@ public class Enqueue(ILogger<Enqueue> logger)
         }
     }
 
-    private async Task InsertMessageAsync(QueueClient queue, EmailNotification emailNotification)
+    private async Task InsertMessageAsync(EmailNotification emailNotification)
     {
         try
         {

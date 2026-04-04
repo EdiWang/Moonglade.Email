@@ -10,7 +10,7 @@ using System.Text.Json;
 
 namespace Moonglade.Function.Email;
 
-public class QueueProcessor(ILogger<QueueProcessor> logger)
+public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messageBuilder, EmailSettings smtpSettings)
 {
     [Function("QueueProcessor")]
     public async Task Run(
@@ -38,13 +38,8 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
                     return;
                 }
 
-                var runningDirectory = Environment.CurrentDirectory;
-                var emailHelper = Helper.GetEmailHelper(runningDirectory);
-
-                var messageBuilder = new MessageBuilder(emailHelper);
                 logger.LogInformation("Sending {MessageType} message", en.MessageType);
 
-                var smtpSettings = IsSmtpProvider() ? Helper.GetSmtpSettings() : null;
                 await SendMessage(en, messageBuilder, smtpSettings);
 
                 logger.LogInformation("Message {MessageId} processed successfully.", queueMessage.MessageId);
@@ -150,9 +145,4 @@ public class QueueProcessor(ILogger<QueueProcessor> logger)
         PropertyNameCaseInsensitive = true
     };
 
-    private static bool IsSmtpProvider()
-    {
-        var envSender = EnvHelper.Get<string>("MOONGLADE_EMAIL_PROVIDER");
-        return string.IsNullOrWhiteSpace(envSender) || envSender.Equals("smtp", StringComparison.OrdinalIgnoreCase);
     }
-}
