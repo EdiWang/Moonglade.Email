@@ -16,8 +16,8 @@
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.7" />
 		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.1.0" />
 		<PackageReference Include="Azure.Communication.Email" Version="1.1.0" />
-		<PackageReference Include="Edi.TemplateEmail" Version="2026.4.0" />
-		<PackageReference Include="Edi.TemplateEmail.Smtp" Version="2026.4.0" />
+		<PackageReference Include="Edi.TemplateEmail" Version="2026.4.1" />
+		<PackageReference Include="Edi.TemplateEmail.Smtp" Version="2026.4.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="local.settings.json">
