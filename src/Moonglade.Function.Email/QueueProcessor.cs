@@ -1,8 +1,6 @@
-using Azure;
 using Azure.Storage.Queues.Models;
 using Edi.TemplateEmail;
 using Edi.TemplateEmail.Smtp;
-using MailKit.Net.Smtp;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Moonglade.Function.Email.Core;
@@ -70,7 +68,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
         // - Log SmtpCommandException only instead of failing
         // - Fail fast only when ALL recipients blow up
 
-        var exceptions = new List<Exception>();
+        var failures = new List<EmailDeliveryFailure>();
         foreach (var recipient in recipients)
         {
             try
@@ -80,20 +78,49 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
                 var message = GetMessage(en.MessageType, [recipient], en.MessageBody);
                 await dispatcher.SendAsync(message);
             }
-            catch (Exception e) when (e is SmtpCommandException or RequestFailedException)
+            catch (Exception e) when (EmailDeliveryFailureClassifier.TryClassify(e, out _))
             {
-                exceptions.Add(e);
-                logger.LogError(e, "Error sending to {Recipient}", recipient);
+                EmailDeliveryFailureClassifier.TryClassify(e, out var kind);
+                failures.Add(new EmailDeliveryFailure(recipient, kind, e));
+                logger.LogError(e, "{FailureKind} error sending {MessageType} message to {Recipient}",
+                    kind, en.MessageType, recipient);
             }
         }
 
-        if (exceptions.Count == recipients.Length)
+        if (failures.Count == 0)
         {
-            logger.LogError("All {RecipientCount} email recipients failed", recipients.Length);
-
-            // All blow up, notify Azure to retry or put message into poison queue
-            throw new AggregateException("All email recipients failed to receive the message.", innerExceptions: exceptions);
+            return;
         }
+
+        var permanentFailures = failures.Count(f => f.Kind == EmailDeliveryFailureKind.Permanent);
+        var transientFailures = failures.Count(f => f.Kind == EmailDeliveryFailureKind.Transient);
+        logger.LogWarning(
+            "Message {MessageType} send completed with {PermanentFailureCount} permanent failures and {TransientFailureCount} transient failures out of {RecipientCount} recipients.",
+            en.MessageType,
+            permanentFailures,
+            transientFailures,
+            recipients.Length);
+
+        if (failures.Count != recipients.Length)
+        {
+            return;
+        }
+
+        if (transientFailures > 0)
+        {
+            logger.LogError(
+                "All {RecipientCount} email recipients failed and {TransientFailureCount} failures are retryable.",
+                recipients.Length,
+                transientFailures);
+
+            throw new AggregateException(
+                "All email recipients failed to receive the message, and at least one failure is retryable.",
+                innerExceptions: failures.Select(f => f.Exception));
+        }
+
+        logger.LogWarning(
+            "All {RecipientCount} email recipients failed permanently; message will not be retried.",
+            recipients.Length);
     }
 
     private CommonMailMessage GetMessage(string messageType, string[] recipients, string messageBody)

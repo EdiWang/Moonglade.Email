@@ -1,3 +1,4 @@
+using Azure;
 using Azure.Storage.Queues.Models;
 using Edi.TemplateEmail;
 using Edi.TemplateEmail.Smtp;
@@ -267,11 +268,70 @@ public class QueueProcessorTests
     }
 
     [Fact]
-    public async Task Run_AllRecipientsFail_ThrowsAggregateException()
+    public async Task Run_AllRecipientsFailPermanently_DoesNotThrow()
     {
         _mockDispatcher
             .Setup(d => d.SendAsync(It.IsAny<CommonMailMessage>()))
             .ThrowsAsync(new SmtpCommandException(SmtpErrorCode.RecipientNotAccepted, SmtpStatusCode.MailboxUnavailable, "fail"));
+
+        var notification = new EmailNotification
+        {
+            DistributionList = "admin@example.com",
+            MessageType = MessageTypes.TestMail,
+            MessageBody = ""
+        };
+        var queueMessage = CreateQueueMessage(JsonSerializer.Serialize(notification));
+
+        var exception = await Record.ExceptionAsync(() => _sut.Run(queueMessage));
+
+        Assert.Null(exception);
+        _mockDispatcher.Verify(d => d.SendAsync(It.IsAny<CommonMailMessage>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Run_AllRecipientsFailTransiently_ThrowsAggregateException()
+    {
+        _mockDispatcher
+            .Setup(d => d.SendAsync(It.IsAny<CommonMailMessage>()))
+            .ThrowsAsync(new SmtpCommandException(SmtpErrorCode.MessageNotAccepted, SmtpStatusCode.ServiceNotAvailable, "try later"));
+
+        var notification = new EmailNotification
+        {
+            DistributionList = "admin@example.com",
+            MessageType = MessageTypes.TestMail,
+            MessageBody = ""
+        };
+        var queueMessage = CreateQueueMessage(JsonSerializer.Serialize(notification));
+
+        await Assert.ThrowsAsync<AggregateException>(() => _sut.Run(queueMessage));
+    }
+
+    [Fact]
+    public async Task Run_AcsPermanentFailureForAllRecipients_DoesNotThrow()
+    {
+        _mockDispatcher
+            .Setup(d => d.SendAsync(It.IsAny<CommonMailMessage>()))
+            .ThrowsAsync(new RequestFailedException(400, "Bad request"));
+
+        var notification = new EmailNotification
+        {
+            DistributionList = "admin@example.com",
+            MessageType = MessageTypes.TestMail,
+            MessageBody = ""
+        };
+        var queueMessage = CreateQueueMessage(JsonSerializer.Serialize(notification));
+
+        var exception = await Record.ExceptionAsync(() => _sut.Run(queueMessage));
+
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public async Task Run_AcsTransientFailureForAllRecipients_ThrowsAggregateException()
+    {
+        _mockDispatcher
+            .Setup(d => d.SendAsync(It.IsAny<CommonMailMessage>()))
+            .ThrowsAsync(new RequestFailedException(503, "Service unavailable"));
 
         var notification = new EmailNotification
         {
@@ -309,5 +369,23 @@ public class QueueProcessorTests
         var exception = await Record.ExceptionAsync(() => _sut.Run(queueMessage));
 
         Assert.Null(exception);
+    }
+
+    [Fact]
+    public async Task Run_UnknownDispatcherFailure_BubblesForRetryVisibility()
+    {
+        _mockDispatcher
+            .Setup(d => d.SendAsync(It.IsAny<CommonMailMessage>()))
+            .ThrowsAsync(new InvalidOperationException("Unexpected failure"));
+
+        var notification = new EmailNotification
+        {
+            DistributionList = "admin@example.com",
+            MessageType = MessageTypes.TestMail,
+            MessageBody = ""
+        };
+        var queueMessage = CreateQueueMessage(JsonSerializer.Serialize(notification));
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => _sut.Run(queueMessage));
     }
 }
