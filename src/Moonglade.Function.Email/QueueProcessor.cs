@@ -44,7 +44,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
 
             await SendMessage(en);
 
-            logger.LogInformation("Message {MessageId} processed successfully.", queueMessage.MessageId);
+            logger.LogInformation("Message {MessageId} processing completed.", queueMessage.MessageId);
         }
         catch (JsonException e)
         {
@@ -61,12 +61,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
     {
         var recipients = EmailNotificationContract.ParseDistributionList(en.DistributionList);
 
-        // Workaround for error when sending to multiple recipients in case a part of them failed
-        // which result in other recipients also not receiving email 
-        // Fix:
-        // - Send email one by one
-        // - Log SmtpCommandException only instead of failing
-        // - Fail fast only when ALL recipients blow up
+        // Send one by one so a permanent failure for one recipient does not block the rest.
 
         var failures = new List<EmailDeliveryFailure>();
         foreach (var recipient in recipients)
