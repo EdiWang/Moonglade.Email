@@ -18,11 +18,11 @@ public static class EmailNotificationContract
         MessageTypes.BeingPinged
     ];
 
-    public static bool IsSupportedMessageType(string? messageType) =>
+    public static bool IsSupportedMessageType(string messageType) =>
         !string.IsNullOrWhiteSpace(messageType) &&
         SupportedMessageTypes.Contains(messageType, StringComparer.Ordinal);
 
-    public static string[] ValidateMessageType(string? messageType)
+    public static string[] ValidateMessageType(string messageType)
     {
         if (string.IsNullOrWhiteSpace(messageType))
         {
@@ -37,11 +37,11 @@ public static class EmailNotificationContract
         return [];
     }
 
-    public static string[] ParseDistributionList(string? distributionList) =>
+    public static string[] ParseDistributionList(string distributionList) =>
         (distributionList ?? string.Empty)
         .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
-    public static string[] ValidateRecipients(IEnumerable<string>? recipients)
+    public static string[] ValidateRecipients(IEnumerable<string> recipients)
     {
         var errors = new List<string>();
         var recipientList = recipients?.ToArray() ?? [];
@@ -80,7 +80,7 @@ public static class EmailNotificationContract
         return [.. errors];
     }
 
-    public static string[] ValidateNotification(EmailNotification? notification)
+    public static string[] ValidateNotification(EmailNotification notification)
     {
         if (notification == null)
         {
@@ -94,7 +94,7 @@ public static class EmailNotificationContract
         ];
     }
 
-    public static string[] ValidatePayload(string messageType, string? messageBody)
+    public static string[] ValidatePayload(string messageType, string messageBody)
     {
         try
         {
@@ -113,7 +113,7 @@ public static class EmailNotificationContract
         }
     }
 
-    private static string[] ValidateTypedPayload<TPayload>(string? messageBody)
+    private static string[] ValidateTypedPayload<TPayload>(string messageBody)
         where TPayload : class
     {
         if (string.IsNullOrWhiteSpace(messageBody))

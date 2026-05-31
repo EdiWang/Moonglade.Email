@@ -13,18 +13,29 @@ var host = new HostBuilder()
     {
         var config = context.Configuration;
 
-        services.Configure<EmailServiceOptions>(opts =>
-        {
-            opts.SmtpServer = config["MOONGLADE_EMAIL_SMTP_SERVER"] ?? string.Empty;
-            opts.SmtpUserName = config["MOONGLADE_EMAIL_SMTP_USER"] ?? string.Empty;
-            opts.SmtpPassword = config["MOONGLADE_EMAIL_SMTP_PASS"] ?? string.Empty;
-            opts.SmtpPort = int.TryParse(config["MOONGLADE_EMAIL_SMTP_PORT"], out var port) ? port : 25;
-            opts.EnableSsl = bool.TryParse(config["MOONGLADE_EMAIL_SSL"], out var ssl) && ssl;
-            opts.SenderDisplayName = config["MOONGLADE_EMAIL_SENDER_NAME"] ?? string.Empty;
-            opts.Provider = config["MOONGLADE_EMAIL_PROVIDER"] ?? "smtp";
-            opts.AcsConnectionString = config["MOONGLADE_EMAIL_ACS_CONN"] ?? string.Empty;
-            opts.AcsSenderAddress = config["MOONGLADE_EMAIL_ACS_ADDR"] ?? string.Empty;
-        });
+        services.AddSingleton<IValidateOptions<EmailServiceOptions>, EmailServiceOptionsValidator>();
+        services.AddOptions<EmailServiceOptions>()
+            .Configure(opts =>
+            {
+                opts.SmtpServer = config["MOONGLADE_EMAIL_SMTP_SERVER"] ?? string.Empty;
+                opts.SmtpUserName = config["MOONGLADE_EMAIL_SMTP_USER"] ?? string.Empty;
+                opts.SmtpPassword = config["MOONGLADE_EMAIL_SMTP_PASS"] ?? string.Empty;
+                opts.SmtpPort = int.TryParse(config["MOONGLADE_EMAIL_SMTP_PORT"], out var port) ? port : 25;
+                opts.EnableSsl = bool.TryParse(config["MOONGLADE_EMAIL_SSL"], out var ssl) && ssl;
+                opts.SenderDisplayName = config["MOONGLADE_EMAIL_SENDER_NAME"] ?? string.Empty;
+                opts.Provider = config["MOONGLADE_EMAIL_PROVIDER"] ?? EmailServiceOptions.SmtpProvider;
+                opts.AcsConnectionString = config["MOONGLADE_EMAIL_ACS_CONN"] ?? string.Empty;
+                opts.AcsSenderAddress = config["MOONGLADE_EMAIL_ACS_ADDR"] ?? string.Empty;
+            })
+            .ValidateOnStart();
+
+        services.AddSingleton<IValidateOptions<EmailQueueOptions>, EmailQueueOptionsValidator>();
+        services.AddOptions<EmailQueueOptions>()
+            .Configure(opts =>
+            {
+                opts.StorageConnectionString = config["MOONGLADE_EMAIL_STORAGE"] ?? string.Empty;
+            })
+            .ValidateOnStart();
 
         services.AddSingleton<IEmailHelper>(_ =>
         {
@@ -52,10 +63,10 @@ var host = new HostBuilder()
         services.AddSingleton<IEmailDispatcher, EmailDispatcher>();
         services.AddSingleton<IEmailNotificationQueue, StorageQueueEmailNotificationQueue>();
 
-        services.AddSingleton(_ =>
+        services.AddSingleton(sp =>
         {
-            var connectionString = config["MOONGLADE_EMAIL_STORAGE"] ?? string.Empty;
-            return new QueueClient(connectionString, Enqueue.QueueName);
+            var options = sp.GetRequiredService<IOptions<EmailQueueOptions>>().Value;
+            return new QueueClient(options.StorageConnectionString, Enqueue.QueueName);
         });
     })
     .Build();

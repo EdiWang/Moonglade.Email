@@ -80,7 +80,7 @@ public class EnqueueTests
     public async Task Run_ValidRequest_QueuesEmailNotification()
     {
         var sut = CreateSut();
-        EmailNotification capturedNotification = null;
+        EmailNotification? capturedNotification = null;
         _mockQueue
             .Setup(q => q.SendAsync(It.IsAny<EmailNotification>()))
             .Callback<EmailNotification>(notification => capturedNotification = notification)

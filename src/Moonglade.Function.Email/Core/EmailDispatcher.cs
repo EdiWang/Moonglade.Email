@@ -13,18 +13,16 @@ public class EmailDispatcher(
 {
     public async Task SendAsync(CommonMailMessage message)
     {
-        var sender = string.IsNullOrWhiteSpace(options.Value.Provider)
-            ? "smtp"
-            : options.Value.Provider.ToLowerInvariant();
+        var sender = options.Value.NormalizedProvider;
 
         switch (sender)
         {
-            case "smtp":
+            case EmailServiceOptions.SmtpProvider:
                 var response = await message.SendAsync(smtpSettings);
                 logger.LogInformation("SMTP response: {Response}", response);
                 break;
 
-            case "azurecommunication":
+            case EmailServiceOptions.AzureCommunicationProvider:
                 var result = await acsSender.SendAsync(message);
                 logger.LogInformation("AzureCommunication operation ID: {OperationId}", result.Id);
                 break;
