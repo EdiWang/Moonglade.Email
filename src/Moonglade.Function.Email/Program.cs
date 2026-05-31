@@ -50,6 +50,7 @@ var host = new HostBuilder()
         services.AddSingleton<MessageBuilder>();
         services.AddSingleton<AzureCommunicationSender>();
         services.AddSingleton<IEmailDispatcher, EmailDispatcher>();
+        services.AddSingleton<IEmailNotificationQueue, StorageQueueEmailNotificationQueue>();
 
         services.AddSingleton(_ =>
         {

@@ -23,31 +23,34 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
         {
             var en = JsonSerializer.Deserialize<EmailNotification>(queueMessage.MessageText);
 
-            if (en == null)
+            var contractErrors = EmailNotificationContract.ValidateNotification(en);
+
+            if (contractErrors.Length > 0)
             {
-                logger.LogWarning("Message {MessageId} could not be deserialized, skipping.", queueMessage.MessageId);
+                logger.LogWarning("Message {MessageId} contract validation failed: {Errors}",
+                    queueMessage.MessageId, string.Join(", ", contractErrors));
+                return;
+            }
+
+            var payloadErrors = EmailNotificationContract.ValidatePayload(en.MessageType, en.MessageBody);
+            if (payloadErrors.Length > 0)
+            {
+                logger.LogWarning("Message {MessageId} payload validation failed: {Errors}",
+                    queueMessage.MessageId, string.Join(", ", payloadErrors));
                 return;
             }
 
             logger.LogInformation("Found message: {MessageId}", queueMessage.MessageId);
-
-            if (string.IsNullOrWhiteSpace(en.DistributionList))
-            {
-                logger.LogError("Message {MessageId} has no DistributionList, operation aborted.", queueMessage.MessageId);
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(en.MessageType))
-            {
-                logger.LogError("Message {MessageId} has no MessageType, operation aborted.", queueMessage.MessageId);
-                return;
-            }
 
             logger.LogInformation("Sending {MessageType} message", en.MessageType);
 
             await SendMessage(en);
 
             logger.LogInformation("Message {MessageId} processed successfully.", queueMessage.MessageId);
+        }
+        catch (JsonException e)
+        {
+            logger.LogWarning(e, "Queue message {MessageId} is not valid JSON, skipping.", queueMessage.MessageId);
         }
         catch (Exception e)
         {
@@ -58,7 +61,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
 
     private async Task SendMessage(EmailNotification en)
     {
-        var recipients = en.DistributionList.Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        var recipients = EmailNotificationContract.ParseDistributionList(en.DistributionList);
 
         // Workaround for error when sending to multiple recipients in case a part of them failed
         // which result in other recipients also not receiving email 
@@ -113,7 +116,7 @@ public class QueueProcessor(ILogger<QueueProcessor> logger, MessageBuilder messa
                 return messageBuilder.BuildPingNotification(recipients, pingPayload);
 
             default:
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(messageType), messageType, "Unsupported message type.");
         }
     }
 }

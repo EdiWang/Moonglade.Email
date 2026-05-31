@@ -207,7 +207,7 @@ public class QueueProcessorTests
     }
 
     [Fact]
-    public async Task Run_UnknownMessageType_ThrowsException()
+    public async Task Run_UnknownMessageType_DoesNotCallDispatcher()
     {
         var notification = new EmailNotification
         {
@@ -217,7 +217,53 @@ public class QueueProcessorTests
         };
         var queueMessage = CreateQueueMessage(JsonSerializer.Serialize(notification));
 
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _sut.Run(queueMessage));
+        var exception = await Record.ExceptionAsync(() => _sut.Run(queueMessage));
+
+        Assert.Null(exception);
+        _mockDispatcher.Verify(d => d.SendAsync(It.IsAny<CommonMailMessage>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Run_InvalidJson_DoesNotCallDispatcher()
+    {
+        var queueMessage = CreateQueueMessage("{ invalid json");
+
+        var exception = await Record.ExceptionAsync(() => _sut.Run(queueMessage));
+
+        Assert.Null(exception);
+        _mockDispatcher.Verify(d => d.SendAsync(It.IsAny<CommonMailMessage>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Run_InvalidRecipient_DoesNotCallDispatcher()
+    {
+        var notification = new EmailNotification
+        {
+            DistributionList = "not-an-email",
+            MessageType = MessageTypes.TestMail,
+            MessageBody = ""
+        };
+        var queueMessage = CreateQueueMessage(JsonSerializer.Serialize(notification));
+
+        await _sut.Run(queueMessage);
+
+        _mockDispatcher.Verify(d => d.SendAsync(It.IsAny<CommonMailMessage>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Run_InvalidTypedPayload_DoesNotCallDispatcher()
+    {
+        var notification = new EmailNotification
+        {
+            DistributionList = "admin@example.com",
+            MessageType = MessageTypes.NewCommentNotification,
+            MessageBody = JsonSerializer.Serialize(new { Username = "User" })
+        };
+        var queueMessage = CreateQueueMessage(JsonSerializer.Serialize(notification));
+
+        await _sut.Run(queueMessage);
+
+        _mockDispatcher.Verify(d => d.SendAsync(It.IsAny<CommonMailMessage>()), Times.Never);
     }
 
     [Fact]

@@ -1,17 +1,15 @@
-using Azure.Storage.Queues;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using Moonglade.Function.Email.Core;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
 using System.Text.Json;
 using FromBodyAttribute = Microsoft.Azure.Functions.Worker.Http.FromBodyAttribute;
 
 namespace Moonglade.Function.Email;
 
-public class Enqueue(ILogger<Enqueue> logger, QueueClient queue)
+public class Enqueue(ILogger<Enqueue> logger, IEmailNotificationQueue queue)
 {
     internal const string QueueName = "moongladeemailqueue";
 
@@ -41,11 +39,28 @@ public class Enqueue(ILogger<Enqueue> logger, QueueClient queue)
                 return new BadRequestObjectResult(new { Errors = errors });
             }
 
+            var contractErrors = EmailNotificationContract.ValidateMessageType(payload.Type)
+                .Concat(EmailNotificationContract.ValidateRecipients(payload.Recipients))
+                .ToArray();
+            if (contractErrors.Length > 0)
+            {
+                logger.LogWarning("Contract validation failed: {Errors}", string.Join(", ", contractErrors));
+                return new BadRequestObjectResult(new { Errors = contractErrors });
+            }
+
+            var messageBody = JsonSerializer.Serialize(payload.Payload, MoongladeJsonSerializerOptions.Default);
+            var payloadErrors = EmailNotificationContract.ValidatePayload(payload.Type, messageBody);
+            if (payloadErrors.Length > 0)
+            {
+                logger.LogWarning("Payload validation failed: {Errors}", string.Join(", ", payloadErrors));
+                return new BadRequestObjectResult(new { Errors = payloadErrors });
+            }
+
             var emailNotification = new EmailNotification
             {
                 DistributionList = string.Join(';', payload.Recipients),
                 MessageType = payload.Type,
-                MessageBody = JsonSerializer.Serialize(payload.Payload, MoongladeJsonSerializerOptions.Default)
+                MessageBody = messageBody
             };
 
             await InsertMessageAsync(emailNotification);
@@ -71,11 +86,7 @@ public class Enqueue(ILogger<Enqueue> logger, QueueClient queue)
     {
         try
         {
-            var json = JsonSerializer.Serialize(emailNotification, MoongladeJsonSerializerOptions.Default);
-            var bytes = Encoding.UTF8.GetBytes(json);
-            var base64Json = Convert.ToBase64String(bytes);
-
-            await queue.SendMessageAsync(base64Json);
+            await queue.SendAsync(emailNotification);
 
             logger.LogDebug("Message sent to queue successfully. MessageType={MessageType}",
                 emailNotification.MessageType);
