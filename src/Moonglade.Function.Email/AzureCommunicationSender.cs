@@ -1,17 +1,20 @@
 ﻿using Azure;
 using Azure.Communication.Email;
 using Edi.TemplateEmail;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moonglade.Function.Email.Core;
 
 namespace Moonglade.Function.Email;
 
-public class AzureCommunicationSender(IOptions<EmailServiceOptions> options)
+public class AzureCommunicationSender(
+    IOptions<EmailServiceOptions> options,
+    IAzureCommunicationEmailClient client,
+    ILogger<AzureCommunicationSender> logger) : IEmailProviderSender
 {
-    private readonly Lazy<EmailClient> _client =
-        new(() => new EmailClient(options.Value.AcsConnectionString));
+    public string Provider => EmailServiceOptions.AzureCommunicationProvider;
 
-    public async Task<EmailSendOperation> SendAsync(CommonMailMessage message)
+    public async Task SendAsync(CommonMailMessage message)
     {
         var emailMessage = new EmailMessage(
             senderAddress: options.Value.AcsSenderAddress,
@@ -27,6 +30,7 @@ public class AzureCommunicationSender(IOptions<EmailServiceOptions> options)
             emailMessage.Content.PlainText = message.Body;
         }
 
-        return await _client.Value.SendAsync(WaitUntil.Completed, emailMessage);
+        var operationId = await client.SendAsync(WaitUntil.Started, emailMessage);
+        logger.LogInformation("AzureCommunication operation ID: {OperationId}", operationId);
     }
 }

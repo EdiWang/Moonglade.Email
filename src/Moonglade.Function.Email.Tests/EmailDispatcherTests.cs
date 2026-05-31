@@ -1,6 +1,4 @@
 using Edi.TemplateEmail;
-using Edi.TemplateEmail.Smtp;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moonglade.Function.Email.Core;
@@ -9,18 +7,23 @@ namespace Moonglade.Function.Email.Tests;
 
 public class EmailDispatcherTests
 {
-    private readonly EmailSettings _smtpSettings = new()
+    private readonly Mock<IEmailProviderSender> _mockSmtpSender = new();
+    private readonly Mock<IEmailProviderSender> _mockAcsSender = new();
+
+    public EmailDispatcherTests()
     {
-        SmtpSettings = new SmtpSettings("localhost", string.Empty, string.Empty, 25)
-    };
-    private readonly Mock<ILogger<EmailDispatcher>> _mockLogger = new();
+        _mockSmtpSender.SetupGet(s => s.Provider).Returns(EmailServiceOptions.SmtpProvider);
+        _mockSmtpSender.Setup(s => s.SendAsync(It.IsAny<CommonMailMessage>())).Returns(Task.CompletedTask);
+
+        _mockAcsSender.SetupGet(s => s.Provider).Returns(EmailServiceOptions.AzureCommunicationProvider);
+        _mockAcsSender.Setup(s => s.SendAsync(It.IsAny<CommonMailMessage>())).Returns(Task.CompletedTask);
+    }
 
     private EmailDispatcher CreateDispatcher(string provider)
     {
-        var options = Options.Create(new EmailServiceOptions { Provider = provider });
-        var acsSender = new AzureCommunicationSender(
-            Options.Create(new EmailServiceOptions { AcsConnectionString = "dummy", AcsSenderAddress = "no-reply@dummy.com" }));
-        return new EmailDispatcher(_smtpSettings, options, acsSender, _mockLogger.Object);
+        return new EmailDispatcher(
+            Options.Create(new EmailServiceOptions { Provider = provider }),
+            [_mockSmtpSender.Object, _mockAcsSender.Object]);
     }
 
     [Fact]
@@ -45,28 +48,38 @@ public class EmailDispatcherTests
     }
 
     [Fact]
-    public async Task SendAsync_NullOrEmptyProvider_DefaultsToSmtp_ThrowsSmtpException()
+    public async Task SendAsync_NullOrEmptyProvider_DefaultsToSmtpSender()
     {
         var dispatcher = CreateDispatcher(string.Empty);
         var message = new CommonMailMessage { Subject = "Test", Receipts = ["test@example.com"] };
 
-        // Empty provider falls back to "smtp" which will attempt SMTP connection
-        // Without a real server it throws a network-level or SMTP exception
-        await Assert.ThrowsAnyAsync<Exception>(() => dispatcher.SendAsync(message));
+        await dispatcher.SendAsync(message);
+
+        _mockSmtpSender.Verify(s => s.SendAsync(message), Times.Once);
+        _mockAcsSender.Verify(s => s.SendAsync(It.IsAny<CommonMailMessage>()), Times.Never);
     }
 
     [Fact]
-    public async Task SendAsync_ProviderIsCaseInsensitive_SmtpAndSMTPRouteSamePath()
+    public async Task SendAsync_ProviderIsCaseInsensitive_RoutesToSmtpSender()
     {
-        var dispatcher1 = CreateDispatcher("smtp");
-        var dispatcher2 = CreateDispatcher("SMTP");
+        var dispatcher = CreateDispatcher("SMTP");
         var message = new CommonMailMessage { Subject = "Test", Receipts = ["test@example.com"] };
 
-        var ex1 = await Record.ExceptionAsync(() => dispatcher1.SendAsync(message));
-        var ex2 = await Record.ExceptionAsync(() => dispatcher2.SendAsync(message));
+        await dispatcher.SendAsync(message);
 
-        // Both should produce the same kind of exception (SMTP connection failure), not InvalidOperationException
-        Assert.IsNotType<InvalidOperationException>(ex1);
-        Assert.IsNotType<InvalidOperationException>(ex2);
+        _mockSmtpSender.Verify(s => s.SendAsync(message), Times.Once);
+        _mockAcsSender.Verify(s => s.SendAsync(It.IsAny<CommonMailMessage>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task SendAsync_AzureCommunicationProvider_RoutesToAcsSender()
+    {
+        var dispatcher = CreateDispatcher("AzureCommunication");
+        var message = new CommonMailMessage { Subject = "Test", Receipts = ["test@example.com"] };
+
+        await dispatcher.SendAsync(message);
+
+        _mockAcsSender.Verify(s => s.SendAsync(message), Times.Once);
+        _mockSmtpSender.Verify(s => s.SendAsync(It.IsAny<CommonMailMessage>()), Times.Never);
     }
 }

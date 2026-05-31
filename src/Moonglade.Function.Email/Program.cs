@@ -59,7 +59,9 @@ var host = new HostBuilder()
         });
 
         services.AddSingleton<MessageBuilder>();
-        services.AddSingleton<AzureCommunicationSender>();
+        services.AddSingleton<IAzureCommunicationEmailClient, AzureCommunicationEmailClient>();
+        services.AddSingleton<IEmailProviderSender, SmtpEmailSender>();
+        services.AddSingleton<IEmailProviderSender, AzureCommunicationSender>();
         services.AddSingleton<IEmailDispatcher, EmailDispatcher>();
         services.AddSingleton<IEmailNotificationQueue, StorageQueueEmailNotificationQueue>();
 
