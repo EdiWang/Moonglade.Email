@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/azure-functions/dotnet:4 AS base
+FROM mcr.microsoft.com/azure-functions/dotnet-isolated:4-dotnet-isolated10.0 AS base
 WORKDIR /home/site/wwwroot
 EXPOSE 80
 
@@ -21,4 +21,5 @@ FROM base AS final
 WORKDIR /home/site/wwwroot
 COPY --from=publish /app/publish .
 ENV AzureWebJobsScriptRoot=/home/site/wwwroot \
+    FUNCTIONS_WORKER_RUNTIME=dotnet-isolated \
     AzureFunctionsJobHost__Logging__Console__IsEnabled=true
