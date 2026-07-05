@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Azure.Storage.Queues" Version="12.26.0" />
+    <PackageReference Include="Azure.Storage.Queues" Version="12.27.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Moonglade.Function.Email\Moonglade.Function.Email.csproj" />
